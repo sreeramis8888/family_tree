@@ -27,7 +27,8 @@ import 'package:familytree/src/interface/screens/main_pages/business_page.dart';
 import 'package:familytree/src/interface/screens/main_pages/chat_page.dart';
 import 'package:familytree/src/interface/screens/main_pages/home_page.dart';
 import 'package:familytree/src/interface/screens/main_pages/login_page.dart';
-import 'package:familytree/src/interface/screens/main_pages/news_page.dart';
+import 'package:familytree/src/interface/screens/main_pages/news_bookmark/news_list_page.dart';
+import 'package:familytree/src/interface/screens/main_pages/news_bookmark/news_page.dart';
 import 'package:familytree/src/interface/screens/main_pages/user_inactive_page.dart';
 import 'package:familytree/src/interface/screens/no_chapter_condition_page.dart';
 
@@ -109,21 +110,21 @@ class _MainPageState extends ConsumerState<MainPage> {
       HomePage(
         user: user,
       ),
-      BusinessPage(),
+      // BusinessPage(),
       ProfilePage(user: user),
-      NewsPage(),
+      NewsListPage(),
       PeoplePage(),
     ];
     _activeIcons = [
       'assets/svg/icons/active_home.svg',
-      'assets/svg/icons/active_business.svg',
+      // 'assets/svg/icons/active_business.svg',
       'assets/svg/icons/active_analytics.svg',
       'assets/svg/icons/active_news.svg',
       'assets/svg/icons/active_chat.svg',
     ];
     _inactiveIcons = [
       'assets/svg/icons/inactive_home.svg',
-      'assets/svg/icons/inactive_business.svg',
+      // 'assets/svg/icons/inactive_business.svg',
       'assets/svg/icons/inactive_analytics.svg',
       'assets/svg/icons/inactive_news.svg',
       'assets/svg/icons/inactive_chat.svg',
@@ -165,7 +166,7 @@ class _MainPageState extends ConsumerState<MainPage> {
                 ),
                 child: BottomNavigationBar(
                   type: BottomNavigationBarType.fixed,
-                  items: List.generate(5, (index) {
+                  items: List.generate(4, (index) {
                     final isSelected = selectedIndex == index;
                     final isProfile = index == 2;
 

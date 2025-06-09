@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:familytree/src/data/models/chat_model.dart';
 import 'package:familytree/src/data/models/events_model.dart';
@@ -25,7 +26,7 @@ import 'package:familytree/src/interface/screens/main_pages/menuPages/my_reviews
 import 'package:familytree/src/interface/screens/main_pages/menuPages/privacy_policy.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/request_nfc.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/terms.dart';
-import 'package:familytree/src/interface/screens/main_pages/news_page.dart';
+import 'package:familytree/src/interface/screens/main_pages/news_bookmark/news_page.dart';
 import 'package:familytree/src/interface/screens/main_pages/notification_page.dart';
 import 'package:familytree/src/interface/screens/main_pages/profile/editUser.dart';
 import 'package:familytree/src/interface/screens/main_pages/profile/idcard.dart';
@@ -100,8 +101,7 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       return MaterialPageRoute(builder: (context) => NotificationPage());
     case 'AboutPage':
       return MaterialPageRoute(builder: (context) => AboutPage());
-    case 'News':
-      return MaterialPageRoute(builder: (context) => NewsPage());
+
     case 'MemberCreation':
       return MaterialPageRoute(builder: (context) => MemberCreationPage());
     case 'MyEvents':

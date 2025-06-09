@@ -23,11 +23,8 @@ import 'package:familytree/src/interface/components/expandable_text.dart';
 import 'package:familytree/src/interface/components/loading_indicator/loading_indicator.dart';
 import 'package:familytree/src/interface/screens/crop_image_screen.dart';
 import 'package:familytree/src/interface/screens/main_pages/notification_page.dart';
-
 import 'package:path_provider/path_provider.dart';
-
 import 'package:shimmer/shimmer.dart';
-
 import '../../../components/ModalSheets/bussiness_enquiry_modal.dart';
 
 class BusinessView extends ConsumerStatefulWidget {
@@ -352,10 +349,10 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
   late AnimationController _animationController;
   TextEditingController commentController = TextEditingController();
   int likes = 0;
+
   @override
   void initState() {
     super.initState();
-
     initialize();
   }
 
@@ -365,6 +362,7 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
         isLiked = true;
       }
     }
+    likes = widget.business.likes?.length ?? 0;
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -514,9 +512,7 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
               ),
               onPressed: () async {
                 if (commentController.text != '') {
-                  FocusScope.of(context)
-                      .unfocus(); // Ensure the keyboard is dismissed immediately
-
+                  FocusScope.of(context).unfocus();
                   await postComment(
                       feedId: widget.business.id!,
                       comment: commentController.text);
@@ -539,110 +535,222 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
     super.dispose();
   }
 
-  bool _isExpanded = false;
-
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Container(
       color: Colors.white,
-      elevation: 0,
-      margin: const EdgeInsets.only(bottom: 16.0),
-      shape: RoundedRectangleBorder(
-        side: const BorderSide(color: Color.fromARGB(255, 213, 208, 208)),
-        borderRadius: BorderRadius.circular(10.0),
-      ),
+      margin: const EdgeInsets.only(bottom: 8.0),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.all(15),
-            child: buildUserInfo(widget.author, widget.business, context),
-          ),
-          if (widget.withImage)
-            Padding(
-              padding: const EdgeInsets.only(left: 10, right: 10),
-              child: _buildPostImage(widget.business.media!),
-            ),
-          Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                const SizedBox(height: 5),
-                ExpandableText(text: widget.business.content ?? ''),
-                const SizedBox(height: 16),
-                _buildActionButtons(),
-                GestureDetector(
-                  onTap: () => _openCommentModal(),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 10, right: 10, top: 5),
-                    child: Text(
-                      'View all ${widget.business.comments?.length ?? 0} comments',
-                      style:
-                          const TextStyle(color: Colors.grey, fontSize: 14.5),
-                    ),
+                ClipOval(
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    color: Colors.grey[200],
+                    child: widget.author.image != null
+                        ? Image.network(
+                            widget.author.image!,
+                            fit: BoxFit.cover,
+                          )
+                        : const Icon(Icons.person, color: Colors.grey),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
-                  child: Row(
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ClipOval(
-                        child: Container(
-                            width: 30,
-                            height: 30,
-                            color: const Color.fromARGB(255, 255, 255, 255),
-                            child: SvgPicture.asset(
-                                'assets/svg/icons/dummy_person_small.svg')),
-                      ),
-                      GestureDetector(
-                        onTap: () => _openCommentModal(),
-                        child: const Padding(
-                          padding: EdgeInsets.only(
-                            left: 10,
-                          ),
-                          child: Text(
-                            'Add a comment...',
-                            style: TextStyle(
-                                color: Color.fromARGB(255, 129, 128, 128)),
-                          ),
+                      Text(
+                        widget.author.name ?? 'Unknown User',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
                         ),
                       ),
-                      const Spacer(),
-                      GestureDetector(
-                        onTap: () => _openCommentModal(),
-                        child: const Row(
-                          children: [
-                            Text(
-                              '❤️',
-                              style: TextStyle(color: Colors.red),
-                            ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text('🙌'),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Icon(
-                              Icons.add_circle_outline_sharp,
-                              color: Colors.grey,
-                              size: 16,
-                            ),
-                          ],
+                      Text(
+                        timeAgo(widget.business.createdAt!),
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 12,
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
-                  child: Text(
-                    '${timeAgo(widget.business.createdAt!)}',
-                    style: const TextStyle(fontSize: 13),
+                if (widget.business.author != id)
+                  IconButton(
+                    icon: const Icon(Icons.more_vert, color: Colors.grey),
+                    onPressed: () {
+                      // Show options menu
+                    },
                   ),
+              ],
+            ),
+          ),
+
+          // // Post title
+          // Padding(
+          //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          //   child: Text(
+          //     widget.business. ?? 'Post Title',
+          //     style: const TextStyle(
+          //       fontWeight: FontWeight.bold,
+          //       fontSize: 18,
+          //     ),
+          //   ),
+          // ),
+
+          const SizedBox(height: 8),
+
+          // Post content
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: ExpandableText(text: widget.business.content ?? ''),
+          ),
+
+          const SizedBox(height: 12),
+
+          // Hashtags
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text(
+              '#FamilyHistory #FoundersStory',
+              style: TextStyle(
+                color: Colors.blue[700],
+                fontSize: 14,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Post image
+          if (widget.withImage && widget.business.media != null)
+            _buildPostImage(widget.business.media!),
+
+          const SizedBox(height: 16),
+
+          // Action buttons row
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              children: [
+                // Like button with count
+                GestureDetector(
+                  onTap: _toggleLike,
+                  child: Row(
+                    children: [
+                      Icon(
+                        isLiked ? Icons.favorite : Icons.favorite_outline,
+                        color: isLiked ? Colors.red : kBlack,
+                        size: 30,
+                      ),
+                      Text(
+                        '$likes',
+                        style: TextStyle(
+                          color: Colors.grey[700],
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(width: 24),
+
+                // Comment button with count
+                GestureDetector(
+                  onTap: _openCommentModal,
+                  child: Row(
+                    children: [
+                      SvgPicture.asset('assets/svg/icons/comment.svg'),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${widget.business.comments?.length ?? 0}',
+                        style: TextStyle(
+                          color: Colors.grey[700],
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(width: 24),
+
+                // Share button with count
+                if (widget.business.author != id)
+                  GestureDetector(
+                    onTap: () => widget.onShare(),
+                    child: Row(
+                      children: [
+                        SvgPicture.asset('assets/svg/icons/share.svg'),
+                        const SizedBox(width: 4),
+                        Text(
+                          '32', // You can replace this with actual share count
+                          style: TextStyle(
+                            color: Colors.grey[700],
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                const Spacer(),
+
+                // Bookmark button
+                Icon(
+                  Icons.bookmark_border,
+                  color: Colors.grey[600],
+                  size: 29,
                 ),
               ],
             ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Add comment section
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: GestureDetector(
+              onTap: _openCommentModal,
+              child: Row(
+                children: [
+                  ClipOval(
+                    child: Container(
+                      width: 32,
+                      height: 32,
+                      color: Colors.grey[200],
+                      child: const Icon(Icons.person,
+                          color: Colors.grey, size: 20),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Add a comment...',
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Divider
+          Container(
+            height: 8,
+            color: Colors.grey[100],
           ),
         ],
       ),
@@ -655,38 +763,27 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
       child: Stack(
         alignment: Alignment.center,
         children: [
-          AspectRatio(
-            aspectRatio: 4 / 5,
-            child: ClipRRect(
-              borderRadius:
-                  BorderRadius.circular(10), // Ensure border radius is applied
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.grey[200],
-                ),
-                child: Image.network(
-                  imageUrl,
-                  fit: BoxFit
-                      .cover, // Changed to BoxFit.cover for better rendering inside the border
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) {
-                      return child; // Image fully loaded
-                    }
-                    return Shimmer.fromColors(
-                      baseColor: Colors.grey[300]!,
-                      highlightColor: Colors.grey[100]!,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(
-                            10), // Shimmer respects border radius
-                        child: Container(
-                          color: Colors.grey[300],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
+          Container(
+            width: double.infinity,
+            constraints: const BoxConstraints(
+              maxHeight: 400,
+            ),
+            child: Image.network(
+              imageUrl,
+              fit: BoxFit.cover,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) {
+                  return child;
+                }
+                return Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    height: 300,
+                    color: Colors.grey[300],
+                  ),
+                );
+              },
             ),
           ),
           if (showHeartAnimation)
@@ -701,52 +798,6 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
             ),
         ],
       ),
-    );
-  }
-
-  Widget _buildActionButtons() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                IconButton(
-                  icon: Icon(
-                    isLiked ? Icons.favorite : Icons.favorite_border,
-                    color: isLiked ? Colors.red : Colors.black,
-                  ),
-                  onPressed: _toggleLike,
-                ),
-                IconButton(
-                  icon: SvgPicture.asset('assets/svg/icons/comment.svg'),
-                  onPressed: _openCommentModal,
-                ),
-                if (widget.business.author != id)
-                  IconButton(
-                    icon: SvgPicture.asset('assets/svg/icons/share.svg'),
-                    onPressed: () => widget.onShare(),
-                  ),
-              ],
-            ),
-            // Padding(
-            //   padding: const EdgeInsets.only(left: 10, right: 10),
-            //   child: Text(
-            //     '${widget.business.likes?.length ?? 0} Likes',
-            //     style: const TextStyle(fontWeight: FontWeight.w600),
-            //   ),
-            // ),
-          ],
-        ),
-        const Spacer(),
-        if (widget.business.author != id)
-          BlockReportDropdown(
-            isBlocked: false,
-            feed: widget.business,
-          )
-      ],
     );
   }
 }

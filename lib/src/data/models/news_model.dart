@@ -1,4 +1,5 @@
 class News {
+  final String? id;
   final String? category;
   final String? title;
   final String? content;
@@ -8,6 +9,7 @@ class News {
   final DateTime? updatedAt;
 
   News({
+    this.id,
     this.category,
     this.title,
     this.content,
@@ -20,6 +22,7 @@ class News {
   /// Factory method to create a News instance from JSON
   factory News.fromJson(Map<String, dynamic> json) {
     return News(
+      id: json['_id'] as String?,
       category: json['category'] as String?,
       title: json['title'] as String?,
       content: json['content'] as String?,

@@ -25,7 +25,7 @@ import 'package:familytree/src/interface/components/custom_widgets/custom_news.d
 import 'package:familytree/src/interface/components/custom_widgets/event_Card.dart';
 import 'package:familytree/src/interface/components/loading_indicator/loading_indicator.dart';
 import 'package:familytree/src/interface/components/shimmers/promotion_shimmers.dart';
-import 'package:familytree/src/interface/screens/main_pages/news_page.dart';
+import 'package:familytree/src/interface/screens/main_pages/news_bookmark/news_page.dart';
 import 'package:familytree/src/interface/screens/main_pages/notification_page.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sidebarx/sidebarx.dart';

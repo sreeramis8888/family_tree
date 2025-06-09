@@ -1,3 +1,4 @@
+import 'package:familytree/src/interface/screens/main_pages/bussiness_products/business_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -24,51 +25,80 @@ class PeoplePage extends ConsumerWidget {
         }
       });
     });
+
     return DefaultTabController(
-        length: 3,
-        child: Scaffold(
-            backgroundColor: kWhite,
-            body: SafeArea(
-              child: Column(
-                children: [
-                  PreferredSize(
-                    preferredSize: Size.fromHeight(20),
-                    child: Container(
-                      margin: EdgeInsets.only(top: 0),
-                      child: const SizedBox(
-                        height: 40,
-                        child: TabBar(
-                          enableFeedback: true,
-                          isScrollable: false,
-                          indicatorColor: kPrimaryColor,
-                          indicatorWeight: 3.0,
-                          indicatorSize: TabBarIndicatorSize.tab,
-                          labelColor: kPrimaryColor,
-                          unselectedLabelColor: Colors.grey,
-                          labelStyle: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          tabs: [
-                            Tab(text: "MEMBERS"),
-                            Tab(text: "CHAT LIST"),
-                            Tab(text: "GROUP CHAT"),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: TabBarView(
-                      children: [
-                        const MembersPage(),
-                        ChatDash(),
-                        GroupChatPage()
-                      ],
-                    ),
+      length: 3,
+      child: Scaffold(
+        backgroundColor: kWhite,
+        appBar: AppBar(
+          backgroundColor: kWhite,
+          elevation: 0,
+          automaticallyImplyLeading: false,
+          title: Row(
+            children: [
+              const Icon(
+                Icons.people,
+                color: kPrimaryColor,
+                size: 30,
+              ),
+              const SizedBox(width: 12),
+              const Text(
+                'Community',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(48),
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    offset: Offset(0, 2),
+                    blurRadius: 4,
+                    spreadRadius: 0,
                   ),
                 ],
               ),
-            )));
+              child: TabBar(
+                indicatorColor: kPrimaryColor,
+                indicatorSize: TabBarIndicatorSize.tab,
+                enableFeedback: true,
+                indicatorWeight: 3,
+                isScrollable: false,
+                labelColor: kPrimaryColor,
+                unselectedLabelColor: Colors.grey,
+                labelStyle: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+                unselectedLabelStyle: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+                tabs: const [
+                  Tab(text: "Feed"),
+                  Tab(text: "Members"),
+                  Tab(text: "Chat"),
+                ],
+              ),
+            ),
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            const BusinessView(),
+            const MembersPage(),
+            ChatDash(),
+          ],
+        ),
+      ),
+    );
   }
 }
