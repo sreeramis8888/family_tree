@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
+import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -17,8 +17,8 @@ class GlowingAnimatedAvatar extends StatefulWidget {
     this.imageUrl,
     required this.defaultAvatarAsset,
     this.size = 100,
-    this.glowColor = Colors.white,
-    this.borderColor = Colors.white,
+    this.glowColor = kWhite,
+    this.borderColor = kWhite,
     this.borderWidth = 3.0,
   }) : super(key: key);
 

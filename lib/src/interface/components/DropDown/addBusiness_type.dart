@@ -1,7 +1,6 @@
-
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
-
+import 'package:familytree/src/data/constants/color_constants.dart';
 class AddbusinessTypeDropDown extends StatefulWidget {
   final ValueChanged<String?> onValueChanged;
   final FormFieldValidator<String?>?
@@ -14,7 +13,8 @@ class AddbusinessTypeDropDown extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _AddbusinessTypeDropDownState createState() => _AddbusinessTypeDropDownState();
+  _AddbusinessTypeDropDownState createState() =>
+      _AddbusinessTypeDropDownState();
 }
 
 class _AddbusinessTypeDropDownState extends State<AddbusinessTypeDropDown> {
@@ -35,7 +35,7 @@ class _AddbusinessTypeDropDownState extends State<AddbusinessTypeDropDown> {
           const Text('Select type'), // Show the label when no value is selected
       decoration: InputDecoration(
         filled: true,
-        fillColor: Colors.white,
+        fillColor: kWhite,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12), // Circular border
           borderSide: const BorderSide(
@@ -75,7 +75,7 @@ class _AddbusinessTypeDropDownState extends State<AddbusinessTypeDropDown> {
         maxHeight: 200,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12), // Circular dropdown menu
-          color: Colors.white, // Dropdown menu background color
+          color: kWhite, // Dropdown menu background color
         ),
         elevation: 8,
       ),
@@ -88,7 +88,7 @@ class _AddbusinessTypeDropDownState extends State<AddbusinessTypeDropDown> {
         height: 20,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12), // Circular dropdown button
-          color: Colors.white,
+          color: kWhite,
         ),
       ),
       items: _dropdownValues

@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,13 +24,13 @@ class NotificationPage extends StatelessWidget {
             }
           },
           child: Scaffold(
-            backgroundColor: Colors.white,
+            backgroundColor: kWhite,
             appBar: AppBar(
               title: Text(
                 "Notifications",
                 style: TextStyle(fontSize: 17),
               ),
-              backgroundColor: Colors.white,
+              backgroundColor: kWhite,
               scrolledUnderElevation: 0,
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back),
@@ -91,7 +92,7 @@ class NotificationPage extends StatelessWidget {
       padding: const EdgeInsets.only(left: 15, right: 15, bottom: 5),
       child: Card(
         elevation: 1,
-        color: readed ? Color(0xFFF2F2F2) : Colors.white,
+        color: readed ? Color(0xFFF2F2F2) : kWhite,
         child: Padding(
           padding: EdgeInsets.all(16.0),
           child: Column(

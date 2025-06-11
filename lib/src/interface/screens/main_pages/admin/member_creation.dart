@@ -475,7 +475,7 @@ class _UploadPhotoWidgetState extends State<UploadPhotoWidget> {
             height: 50,
             padding: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: kWhite,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: kGreyLight),
             ),

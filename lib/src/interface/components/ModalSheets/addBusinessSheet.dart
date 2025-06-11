@@ -216,7 +216,7 @@ class _ShowAdddBusinessSheetState extends State<ShowAdddBusinessSheet> {
                   ),
                   child: const Text(
                     'ADD POST',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: kWhite),
                   ),
                 ),
                 const SizedBox(height: 10),

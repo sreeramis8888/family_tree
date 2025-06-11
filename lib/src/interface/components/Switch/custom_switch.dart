@@ -1,3 +1,4 @@
+import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:flutter/material.dart';
 
 class CustomSwitch extends StatelessWidget {
@@ -43,7 +44,7 @@ class CustomSwitch extends StatelessWidget {
                 height: thumbSize,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white,
+                  color: kWhite,
                 ),
               ),
             ),

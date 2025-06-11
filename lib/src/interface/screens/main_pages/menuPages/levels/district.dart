@@ -74,7 +74,7 @@ class _DistrictsPageState extends ConsumerState<DistrictsPage> {
             ),
             title: Text("Districts"),
             centerTitle: false,
-            backgroundColor: Colors.white,
+            backgroundColor: kWhite,
             elevation: 0,
             titleTextStyle: TextStyle(
               color: Colors.black,
@@ -165,7 +165,7 @@ class _DistrictsPageState extends ConsumerState<DistrictsPage> {
           floatingActionButton: FloatingActionButton(
             onPressed: _showNotificationDialog,
             backgroundColor: Colors.orange,
-            child: Icon(Icons.notifications, color: Colors.white),
+            child: Icon(Icons.notifications, color: kWhite),
           ),
           backgroundColor: Color(0xFFF8F8F8), // Light background color
         );

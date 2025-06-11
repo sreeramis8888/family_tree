@@ -109,7 +109,7 @@ class _EventAttendanceSuccessPageState extends State<EventAttendanceSuccessPage>
                       width: 120,
                       height: 120,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: kWhite,
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
@@ -141,7 +141,7 @@ class _EventAttendanceSuccessPageState extends State<EventAttendanceSuccessPage>
                       child: Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: kWhite,
                           borderRadius: BorderRadius.circular(16),
                           boxShadow: [
                             BoxShadow(

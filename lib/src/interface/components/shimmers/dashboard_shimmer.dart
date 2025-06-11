@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-
+import 'package:familytree/src/data/constants/color_constants.dart';
 Widget buildDashboardShimmer() {
   return Padding(
     padding: const EdgeInsets.only(left: 20, right: 20),
@@ -44,7 +44,7 @@ Widget _buildShimmerCard() {
   return Container(
     width: double.infinity,
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: kWhite,
       borderRadius: BorderRadius.circular(8),
       boxShadow: [
         BoxShadow(
@@ -68,7 +68,7 @@ Widget _buildShimmerCard() {
             width: 80,
             height: 12,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: kWhite,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -77,7 +77,7 @@ Widget _buildShimmerCard() {
             width: 50,
             height: 24,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: kWhite,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -85,4 +85,4 @@ Widget _buildShimmerCard() {
       ),
     ),
   );
-} 
+}

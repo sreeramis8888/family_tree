@@ -130,8 +130,8 @@ class _MainPageState extends ConsumerState<MainPage> {
       'assets/svg/icons/inactive_chat.svg',
     ];
 
-    await SecureStorage.write('id', user.uid ?? '');
-    id = user.uid ?? '';
+    await SecureStorage.write('id', user.id ?? '');
+    id = user.id ?? '';
     log('main page user id:$id');
   }
 
@@ -147,7 +147,7 @@ class _MainPageState extends ConsumerState<MainPage> {
             ),
             bottomNavigationBar: Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: kWhite,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(24),
                   topRight: Radius.circular(24),
@@ -188,7 +188,7 @@ class _MainPageState extends ConsumerState<MainPage> {
                         iconPath: isSelected
                             ? _activeIcons[index]
                             : _inactiveIcons[index],
-                        color: isSelected ? Colors.white : Colors.grey,
+                        color: isSelected ? kWhite : Colors.grey,
                       );
                     }
 

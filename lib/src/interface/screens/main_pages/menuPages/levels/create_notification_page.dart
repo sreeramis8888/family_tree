@@ -60,7 +60,7 @@ class _CreateNotificationPageState
                 color: kPrimaryColor, fontWeight: FontWeight.bold),
           ),
           selectedColor: kPrimaryColor,
-          checkColor: Colors.white,
+          checkColor: kWhite,
           searchable: true,
           confirmText: const Text(
             "CONFIRM",
@@ -73,7 +73,7 @@ class _CreateNotificationPageState
             "CANCEL",
             style: TextStyle(color: Color.fromARGB(255, 130, 130, 130)),
           ),
-          backgroundColor: Colors.white,
+          backgroundColor: kWhite,
         );
       },
     );
@@ -118,7 +118,7 @@ class _CreateNotificationPageState
         ),
         title: Text("Create Notification"),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: kWhite,
         elevation: 0,
         titleTextStyle: TextStyle(
           color: Colors.black,

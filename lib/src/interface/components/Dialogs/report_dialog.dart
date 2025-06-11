@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:familytree/src/data/api_routes/user_api/user_data/user_data.dart';
-
+import 'package:familytree/src/data/constants/color_constants.dart';
 class ReportPersonDialog extends StatelessWidget {
   final String? userId;
   final VoidCallback onReportStatusChanged;
@@ -26,7 +26,7 @@ class ReportPersonDialog extends StatelessWidget {
         borderRadius: BorderRadius.circular(16.0),
       ),
       elevation: 12,
-      backgroundColor: Colors.white,
+      backgroundColor: kWhite,
       child: Container(
         width: MediaQuery.of(context).size.width * 0.7,
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
@@ -68,7 +68,7 @@ class ReportPersonDialog extends StatelessWidget {
                   ),
                 ),
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: kWhite,
                 contentPadding:
                     EdgeInsets.symmetric(vertical: 15.0, horizontal: 20.0),
               ),
@@ -137,7 +137,7 @@ class ReportPersonDialog extends StatelessWidget {
           child: Text(
             'Report',
             style: const TextStyle(
-              color: Colors.white,
+              color: kWhite,
               fontWeight: FontWeight.bold,
               fontSize: 16.0,
             ),

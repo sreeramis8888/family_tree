@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -18,13 +19,13 @@ class MyBusinessesPage extends StatelessWidget {
       builder: (context, ref, child) {
         final asyncMyPosts = ref.watch(fetchMyBusinessesProvider);
         return Scaffold(
-            backgroundColor: Colors.white,
+            backgroundColor: kWhite,
             appBar: AppBar(
               title: Text(
                 "My Businesses",
                 style: TextStyle(fontSize: 17),
               ),
-              backgroundColor: Colors.white,
+              backgroundColor: kWhite,
               scrolledUnderElevation: 0,
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back),
@@ -85,7 +86,7 @@ class MyBusinessesPage extends StatelessWidget {
     String formattedDate =
         DateFormat('h:mm a · MMM d, y').format(localDateTime);
     return Card(
-      color: Colors.white,
+      color: kWhite,
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
           side: BorderSide(color: Color.fromARGB(255, 226, 221, 221))),
@@ -145,7 +146,7 @@ class MyBusinessesPage extends StatelessWidget {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFFEB5757),
-                foregroundColor: Colors.white,
+                foregroundColor: kWhite,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5.0),
                 ),
@@ -156,7 +157,7 @@ class MyBusinessesPage extends StatelessWidget {
               child: const Text(
                 'DELETE',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: kWhite,
                   fontSize: 10,
                 ),
               ),
@@ -212,7 +213,7 @@ class MyBusinessesPage extends StatelessWidget {
                           Navigator.of(context).pop();
                         },
                         child: Text('Yes, Delete',
-                            style: TextStyle(color: Colors.white)),
+                            style: TextStyle(color: kWhite)),
                       );
                     },
                   ),

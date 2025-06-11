@@ -56,13 +56,13 @@ class PeoplePage extends ConsumerWidget {
             preferredSize: const Size.fromHeight(48),
             child: Container(
               decoration: const BoxDecoration(
-                color: Colors.white,
+                color: kWhite,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black12,
-                    offset: Offset(0, 2),
-                    blurRadius: 4,
-                    spreadRadius: 0,
+                    offset: Offset(0, 4), // Push shadow further down
+                    blurRadius: 6, // Softens the shadow below
+                    spreadRadius: 0, // No upward spread
                   ),
                 ],
               ),

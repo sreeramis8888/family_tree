@@ -5,7 +5,7 @@ import 'package:familytree/src/data/models/business_model.dart';
 import 'package:familytree/src/data/models/user_model.dart';
 import 'package:intl/intl.dart';
 import 'package:familytree/src/interface/components/custom_widgets/blue_tick_names.dart';
-
+import 'package:familytree/src/data/constants/color_constants.dart';
 Widget buildUserInfo(UserModel user, Business feed, context) {
   String formattedDateTime = DateFormat('h:mm a · MMM d, yyyy')
       .format(DateTime.parse(feed.createdAt.toString()).toLocal());
@@ -24,7 +24,7 @@ Widget buildUserInfo(UserModel user, Business feed, context) {
                 child: Container(
                   width: 30,
                   height: 30,
-                  color: Colors.white,
+                  color: kWhite,
                   child: Image.network(
                     user.image ?? '',
                     fit: BoxFit.cover,

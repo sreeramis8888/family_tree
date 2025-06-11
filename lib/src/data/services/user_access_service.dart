@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:familytree/src/data/globals.dart';
 import 'package:http/http.dart' as http;
 
 class UserAccessPermissions {
@@ -39,7 +40,7 @@ class UserAccessService {
     }
 
     final response = await http.get(
-      Uri.parse('http://api.familytreeconnect.com/api/v1/userAccess'),
+      Uri.parse('$baseUrl/api/v1/userAccess'),
     );
 
     if (response.statusCode == 200) {

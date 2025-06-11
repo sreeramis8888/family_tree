@@ -188,8 +188,8 @@ class _IndividualPageState extends ConsumerState<IndividualPage> {
                     )
                   ],
                   elevation: 1,
-                  shadowColor: Colors.white,
-                  backgroundColor: Colors.white,
+                  shadowColor: kWhite,
+                  backgroundColor: kWhite,
                   leadingWidth: 90,
                   titleSpacing: 0,
                   leading: Row(
@@ -268,16 +268,7 @@ class _IndividualPageState extends ConsumerState<IndividualPage> {
                   ),
                 )),
             body: Container(
-              decoration: const BoxDecoration(
-                gradient: RadialGradient(
-                  colors: [
-                    Color.fromARGB(255, 253, 253, 254),
-                    Color.fromARGB(255, 162, 172, 250),
-                  ],
-                  center: Alignment.center,
-                  radius: 0.8,
-                ),
-              ),
+              decoration: const BoxDecoration(color: kWhite),
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
               child: PopScope(
@@ -356,7 +347,7 @@ class _IndividualPageState extends ConsumerState<IndividualPage> {
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                  color: kWhite,
                                   letterSpacing: 1.5,
                                   shadows: [
                                     // Shadow(
@@ -374,13 +365,13 @@ class _IndividualPageState extends ConsumerState<IndividualPage> {
                             child: Container(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 8.0, vertical: 12.0),
-                              color: kPrimaryLightColor,
+                              color: kWhite,
                               child: Row(
                                 children: [
                                   Expanded(
                                     child: Card(
                                       elevation: 1,
-                                      color: Colors.white,
+                                      color: kWhite,
                                       shape: RoundedRectangleBorder(
                                         side: const BorderSide(
                                           color: Color.fromARGB(
@@ -440,7 +431,7 @@ class _IndividualPageState extends ConsumerState<IndividualPage> {
                                       child: IconButton(
                                         icon: const Icon(
                                           Icons.send,
-                                          color: Colors.white,
+                                          color: kWhite,
                                         ),
                                         onPressed: () {
                                           sendMessage();
@@ -540,7 +531,7 @@ class _IndividualPageState extends ConsumerState<IndividualPage> {
             child: Icon(
               icons,
               size: 29,
-              color: Colors.white,
+              color: kWhite,
             ),
           ),
           const SizedBox(

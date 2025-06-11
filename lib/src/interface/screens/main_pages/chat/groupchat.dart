@@ -22,7 +22,7 @@ class _ChatPageState extends ConsumerState<GroupChatPage> {
       final asyncGroups = ref.watch(getGroupListProvider);
 
       return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: kWhite,
           body: asyncGroups.when(
             data: (groups) {
               if (groups.isNotEmpty) {
@@ -45,7 +45,7 @@ class _ChatPageState extends ConsumerState<GroupChatPage> {
                             errorBuilder: (context, error, stackTrace) {
                               return const Icon(
                                 Icons.groups_2,
-                                color: Colors.white,
+                                color: kWhite,
                               );
                             },
                           ),
@@ -79,7 +79,7 @@ class _ChatPageState extends ConsumerState<GroupChatPage> {
                                       ? Text(
                                           '${groups[index].unreadCount}',
                                           style: TextStyle(
-                                            color: Colors.white,
+                                            color: kWhite,
                                             fontSize: 12,
                                           ),
                                           textAlign: TextAlign.center,

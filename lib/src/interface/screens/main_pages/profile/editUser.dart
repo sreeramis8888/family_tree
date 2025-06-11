@@ -7,7 +7,6 @@ import 'package:familytree/src/data/api_routes/user_api/user_data/edit_user.dart
 import 'package:familytree/src/data/api_routes/user_api/user_data/user_data.dart';
 import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/data/constants/style_constants.dart';
-import 'package:familytree/src/data/globals.dart';
 import 'package:familytree/src/data/models/user_model.dart';
 import 'package:familytree/src/data/notifiers/user_notifier.dart';
 import 'package:familytree/src/data/services/image_upload.dart';
@@ -560,7 +559,7 @@ class _EditUserState extends ConsumerState<EditUser> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-          backgroundColor: kPrimaryLightColor,
+          backgroundColor: kWhite,
           body: asyncUser.when(
             loading: () {
               return const EditUserShimmer();
@@ -621,7 +620,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                               Container(
                                 child: AppBar(
                                   scrolledUnderElevation: 0,
-                                  backgroundColor: kPrimaryLightColor,
+                                  backgroundColor: kWhite,
                                   elevation: 0,
                                   leadingWidth: 50,
                                   leading: Padding(
@@ -708,8 +707,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                                   ),
                                                   child: const CircleAvatar(
                                                     radius: 17,
-                                                    backgroundColor:
-                                                        Colors.white,
+                                                    backgroundColor: kWhite,
                                                     child: Icon(
                                                       Icons.edit,
                                                       color: kPrimaryColor,
@@ -1077,7 +1075,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                                                       200),
                                                           decoration:
                                                               BoxDecoration(
-                                                            color: Colors.white,
+                                                            color: kWhite,
                                                             borderRadius:
                                                                 BorderRadius
                                                                     .circular(
@@ -1191,7 +1189,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                           icon: const Icon(Icons.add),
                                           style: IconButton.styleFrom(
                                             backgroundColor: kPrimaryColor,
-                                            foregroundColor: Colors.white,
+                                            foregroundColor: kWhite,
                                           ),
                                         ),
                                       ],
@@ -1355,8 +1353,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                                   ),
                                                   child: const CircleAvatar(
                                                     radius: 17,
-                                                    backgroundColor:
-                                                        Colors.white,
+                                                    backgroundColor: kWhite,
                                                     child: Icon(
                                                       Icons.edit,
                                                       color: Color(0xFFE30613),
@@ -2156,7 +2153,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                             //               const EdgeInsets.all(
                                             //                   16),
                                             //           decoration: BoxDecoration(
-                                            //             color: Colors.white,
+                                            //             color: kWhite,
                                             //             borderRadius:
                                             //                 BorderRadius
                                             //                     .circular(12),

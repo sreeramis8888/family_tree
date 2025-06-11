@@ -8,7 +8,7 @@ class EditUserShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kPrimaryLightColor,
+      backgroundColor: kWhite,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         actions: [

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:familytree/src/data/models/user_model.dart';
 import 'package:familytree/src/interface/components/DropDown/remove_edit_dropdown.dart';
+import 'package:familytree/src/data/constants/color_constants.dart';
 
 class AwardCard extends StatelessWidget {
   final VoidCallback? onRemove;
@@ -39,7 +40,7 @@ class AwardCard extends StatelessWidget {
             Stack(
               children: [
                 Container(
-                  height: 90.0,
+                  height: 80.0,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     image: DecorationImage(
@@ -59,7 +60,7 @@ class AwardCard extends StatelessWidget {
                     child: Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
-                          color: Colors.white,
+                          color: kWhite,
                         ),
                         child: Padding(
                           padding: const EdgeInsets.all(4.0),

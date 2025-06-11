@@ -43,7 +43,7 @@ class _MyEnquiriesPageState extends ConsumerState<MyEnquiriesPage> {
           "My Enquiries",
           style: TextStyle(fontSize: 17),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: kWhite,
         scrolledUnderElevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),

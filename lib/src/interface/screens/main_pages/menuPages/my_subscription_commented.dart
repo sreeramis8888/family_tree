@@ -90,7 +90,7 @@
 //                 "My Subscription",
 //                 style: TextStyle(fontSize: 15),
 //               ),
-//               backgroundColor: Colors.white,
+//               backgroundColor: kWhite,
 //               scrolledUnderElevation: 0,
 //               leading: IconButton(
 //                 icon: const Icon(Icons.arrow_back),
@@ -99,7 +99,7 @@
 //                 },
 //               ),
 //             ),
-//             backgroundColor: Colors.white,
+//             backgroundColor: kWhite,
 //             body: asyncSubscriptions.when(
 //                 data: (subscriptions) {
 //                   if (subscriptions.isNotEmpty) {
@@ -136,7 +136,7 @@
 //                             child: Container(
 //                               padding: const EdgeInsets.all(16.0),
 //                               decoration: BoxDecoration(
-//                                 color: Colors.white,
+//                                 color: kWhite,
 //                                 borderRadius: BorderRadius.circular(12),
 //                                 boxShadow: [
 //                                   const BoxShadow(
@@ -183,7 +183,7 @@
 //                                   const SizedBox(height: 10),
 //                                   Container(
 //                                     decoration: BoxDecoration(
-//                                       color: Colors.white,
+//                                       color: kWhite,
 //                                       border: Border.all(
 //                                           color: const Color.fromARGB(
 //                                               255, 218, 206, 206)),
@@ -208,7 +208,7 @@
 //                                                         horizontal: 12,
 //                                                         vertical: 4),
 //                                                 decoration: BoxDecoration(
-//                                                   color: Colors.white,
+//                                                   color: kWhite,
 //                                                   border: Border.all(
 //                                                     color: Colors.green,
 //                                                   ),
@@ -382,7 +382,7 @@
 //                         //     child: Container(
 //                         //       padding: const EdgeInsets.all(16.0),
 //                         //       decoration: BoxDecoration(
-//                         //         color: Colors.white,
+//                         //         color: kWhite,
 //                         //         borderRadius: BorderRadius.circular(12),
 //                         //         boxShadow: [
 //                         //           const BoxShadow(
@@ -432,7 +432,7 @@
 //                         //           const SizedBox(height: 10),
 //                         //           Container(
 //                         //             decoration: BoxDecoration(
-//                         //               color: Colors.white,
+//                         //               color: kWhite,
 //                         //               border: Border.all(
 //                         //                   color: const Color.fromARGB(
 //                         //                       255, 218, 206, 206)),
@@ -457,7 +457,7 @@
 //                         //                               horizontal: 12,
 //                         //                               vertical: 5),
 //                         //                           decoration: BoxDecoration(
-//                         //                             color: Colors.white,
+//                         //                             color: kWhite,
 //                         //                             border: Border.all(
 //                         //                               color: Colors.green,
 //                         //                             ),

@@ -139,7 +139,7 @@ class ProductCard extends StatelessWidget {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: Colors.white,
+                  color: kWhite,
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(4.0),
@@ -157,7 +157,7 @@ class ProductCard extends StatelessWidget {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: Colors.white,
+                  color: kWhite,
                 ),
                 child: Padding(
                     padding: const EdgeInsets.all(4.0),

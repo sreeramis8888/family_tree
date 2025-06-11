@@ -96,7 +96,7 @@ Widget eventWidget({
                   const SizedBox(width: 8),
                   Text(
                     timeRange,
-                    style: const TextStyle(color: Colors.white),
+                    style: const TextStyle(color: kWhite),
                   ),
                 ],
               ),
@@ -111,7 +111,7 @@ Widget eventWidget({
                   const SizedBox(width: 10),
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: kWhite,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     padding: const EdgeInsets.all(8),

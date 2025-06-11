@@ -27,7 +27,7 @@ class BusinessPage extends ConsumerWidget {
     return DefaultTabController(
         length: 2, // Number of tabs
         child: Scaffold(
-            backgroundColor: Colors.white,
+            backgroundColor: kWhite,
             body: SafeArea(
               child: Column(
                 children: [

@@ -126,7 +126,7 @@ class _FolderViewPageState extends ConsumerState<FolderViewPage>
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.white),
+                  icon: const Icon(Icons.delete, color: kWhite),
                   onPressed: () => _showDeleteConfirmation(file),
                 ),
               ),
@@ -150,7 +150,7 @@ class _FolderViewPageState extends ConsumerState<FolderViewPage>
                 borderRadius: BorderRadius.circular(20),
               ),
               child: IconButton(
-                icon: const Icon(Icons.delete, color: Colors.white),
+                icon: const Icon(Icons.delete, color: kWhite),
                 onPressed: () => _showDeleteConfirmation(file),
               ),
             ),
@@ -318,7 +318,7 @@ class _FolderViewPageState extends ConsumerState<FolderViewPage>
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: IconButton(
-                        icon: const Icon(Icons.download, color: Colors.white),
+                        icon: const Icon(Icons.download, color: kWhite),
                         onPressed: () => _downloadImage(file.url),
                       ),
                     ),
@@ -329,7 +329,7 @@ class _FolderViewPageState extends ConsumerState<FolderViewPage>
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: IconButton(
-                        icon: const Icon(Icons.close, color: Colors.white),
+                        icon: const Icon(Icons.close, color: kWhite),
                         onPressed: () => Navigator.of(context).pop(),
                       ),
                     ),
@@ -378,7 +378,7 @@ class _FolderViewPageState extends ConsumerState<FolderViewPage>
             color: Colors.black87,
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: kWhite,
         scrolledUnderElevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black87),

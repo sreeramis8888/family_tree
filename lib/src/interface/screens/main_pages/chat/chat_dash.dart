@@ -1,3 +1,4 @@
+import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
@@ -24,7 +25,7 @@ class _ChatDashState extends ConsumerState<ChatDash> {
       final asyncChats = ref.watch(fetchChatThreadProvider);
 
       return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: kWhite,
           body: asyncChats.when(
             data: (chats) {
               if (chats.isNotEmpty) {
@@ -109,7 +110,7 @@ class _ChatDashState extends ConsumerState<ChatDash> {
                                           ? Text(
                                               '${chats[index].unreadCount?[sender!.id]}',
                                               style: TextStyle(
-                                                color: Colors.white,
+                                                color: kWhite,
                                                 fontSize: 12,
                                               ),
                                               textAlign: TextAlign.center,

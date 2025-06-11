@@ -40,7 +40,7 @@ class EulaAgreementScreen extends StatelessWidget {
                     child: const Text(
                       'I Agree to Terms & Conditions',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: kWhite,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),

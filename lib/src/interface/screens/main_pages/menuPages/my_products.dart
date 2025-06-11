@@ -98,13 +98,13 @@ class _MyProductPageState extends ConsumerState<MyProductPage> {
       builder: (context, ref, child) {
         final asyncProducts = ref.watch(fetchMyProductsProvider);
         return Scaffold(
-            backgroundColor: Colors.white,
+            backgroundColor: kWhite,
             appBar: AppBar(
               title: Text(
                 "My Products",
                 style: TextStyle(fontSize: 17),
               ),
-              backgroundColor: Colors.white,
+              backgroundColor: kWhite,
               scrolledUnderElevation: 0,
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back),
@@ -199,12 +199,12 @@ class _MyProductPageState extends ConsumerState<MyProductPage> {
                       padding: const EdgeInsets.all(8.0),
                       child: const Text(
                         'Add Product',
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(color: kWhite),
                       ),
                     ),
                     icon: const Icon(
                       Icons.add,
-                      color: Colors.white,
+                      color: kWhite,
                       size: 27,
                     ),
                     backgroundColor: kPrimaryColor,

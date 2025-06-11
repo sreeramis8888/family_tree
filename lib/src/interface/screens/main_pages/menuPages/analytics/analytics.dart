@@ -290,7 +290,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage>
         preferredSize: const Size.fromHeight(56.0),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: kWhite,
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.1),
@@ -300,7 +300,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage>
             ],
           ),
           child: AppBar(
-            backgroundColor: Colors.white,
+            backgroundColor: kWhite,
             centerTitle: true,
             title: const Text(
               "Analytics",

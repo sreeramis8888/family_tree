@@ -311,7 +311,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                               //                     child: Text(
                               //                       'Your 30-day free trial is active!',
                               //                       style: TextStyle(
-                              //                         color: Colors.white,
+                              //                         color: kWhite,
                               //                         fontWeight:
                               //                             FontWeight.bold,
                               //                         fontSize: 16,
@@ -896,7 +896,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   //     child: Container(
   //       width: double.infinity,
   //       decoration: BoxDecoration(
-  //         color: Colors.white,
+  //         color: kWhite,
   //         borderRadius: BorderRadius.circular(8),
   //         boxShadow: [
   //           BoxShadow(

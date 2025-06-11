@@ -130,12 +130,12 @@ class _EnterProductsPageState extends ConsumerState<EnterProductsPage> {
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: kWhite,
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(65.0),
           child: Container(
             decoration: const BoxDecoration(
-              color: Colors.white,
+              color: kWhite,
               border: Border(
                 bottom: BorderSide(
                   color: Color.fromARGB(255, 231, 226, 226),
@@ -146,7 +146,7 @@ class _EnterProductsPageState extends ConsumerState<EnterProductsPage> {
             child: AppBar(
               toolbarHeight: 45.0,
               scrolledUnderElevation: 0,
-              backgroundColor: Colors.white,
+              backgroundColor: kWhite,
               elevation: 0,
               leadingWidth: 100,
               leading: Padding(

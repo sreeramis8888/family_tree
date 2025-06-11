@@ -125,7 +125,7 @@ class IDCardScreen extends ConsumerWidget {
                                   children: [
                                     QrImageView(
                                       data:
-                                          'https://admin.familytreeconnect.com/user/${user.uid}',
+                                          'https://admin.familytreeconnect.com/user/${user.id}',
                                       version: QrVersions.auto,
                                       size: 150,
                                       foregroundColor: Colors.white,
@@ -472,13 +472,12 @@ class ContactRow extends StatelessWidget {
       children: [
         CustomIconContainer(
           icon: icon,
-          backgroundColor: kWhite,
         ),
         const SizedBox(width: 10),
         Expanded(
           child: Text(
             text,
-            style: GoogleFonts.poppins(color: Colors.white, fontSize: 13),
+            style: GoogleFonts.poppins(color: kBlack, fontSize: 13),
           ),
         )
       ],

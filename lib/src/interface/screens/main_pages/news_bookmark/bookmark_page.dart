@@ -15,11 +15,12 @@ class BookmarkPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bookmarkedIds = ref.watch(bookmarkedNewsProvider);
-    
+
     // Get mock news data from NewsListPage for UI demonstration consistency
     final mockNews = NewsListPage.getMockNews(); // Access mock news data
 
-    final bookmarkedNews = mockNews.where((news) => bookmarkedIds.contains(news.id)).toList();
+    final bookmarkedNews =
+        mockNews.where((news) => bookmarkedIds.contains(news.id)).toList();
 
     return Scaffold(
       backgroundColor: kWhite,
@@ -29,7 +30,7 @@ class BookmarkPage extends ConsumerWidget {
           "Bookmarks",
           style: TextStyle(fontSize: 17),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: kWhite,
         scrolledUnderElevation: 0,
       ),
       body: bookmarkedNews.isEmpty
@@ -61,7 +62,8 @@ class BookmarkPage extends ConsumerWidget {
                   onTap: () {
                     final initialIndex = mockNews.indexOf(newsItem);
                     if (initialIndex != -1) {
-                      ref.read(currentNewsIndexProvider.notifier).state = initialIndex;
+                      ref.read(currentNewsIndexProvider.notifier).state =
+                          initialIndex;
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -73,7 +75,9 @@ class BookmarkPage extends ConsumerWidget {
                   child: BookmarkNewsCard(
                     news: newsItem,
                     onBookmarkRemoved: () {
-                      ref.read(bookmarkedNewsProvider.notifier).toggleBookmark(newsItem.id!);
+                      ref
+                          .read(bookmarkedNewsProvider.notifier)
+                          .toggleBookmark(newsItem.id!);
                     },
                   ),
                 );
@@ -95,8 +99,8 @@ class BookmarkNewsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final formattedDate = DateFormat('MMM dd, yyyy, hh:mm a')
-        .format(news.updatedAt!.toLocal());
+    final formattedDate =
+        DateFormat('MMM dd, yyyy, hh:mm a').format(news.updatedAt!.toLocal());
 
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -241,4 +245,4 @@ class ShimmerLoadingEffect extends StatelessWidget {
       child: child,
     );
   }
-} 
+}

@@ -44,7 +44,7 @@ class PermissionDeniedDialog extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: kWhite,
           shape: BoxShape.rectangle,
           borderRadius: BorderRadius.circular(16),
           boxShadow: const [
@@ -98,7 +98,7 @@ class PermissionDeniedDialog extends StatelessWidget {
               child: Text(
                 buttonText,
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: kWhite,
                   fontSize: 16,
                 ),
               ),

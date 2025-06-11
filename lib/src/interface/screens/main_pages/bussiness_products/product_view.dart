@@ -106,7 +106,7 @@ class _ProductViewState extends ConsumerState<ProductView> {
 
                     decoration: InputDecoration(
                       filled: true,
-                      fillColor: Colors.white,
+                      fillColor: kWhite,
                       prefixIcon: const Icon(Icons.search),
                       hintText: 'Search',
                       border: OutlineInputBorder(
@@ -155,7 +155,7 @@ class _ProductViewState extends ConsumerState<ProductView> {
                           data: (productOwner) {
                             final receiver = Participant(
                                 name: productOwner.name ?? '',
-                                id: productOwner.uid,
+                                id: productOwner.id,
                                 image: productOwner.image);
                             return GestureDetector(
                               onTap: () => showProductDetails(

@@ -289,7 +289,7 @@ class CustomTextFormField2 extends StatelessWidget {
                   child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5),
-                        color: Colors.white,
+                        color: kWhite,
                       ),
                       width: 42,
                       height: 42,
@@ -307,7 +307,7 @@ class CustomTextFormField2 extends StatelessWidget {
                       child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(5),
-                            color: Colors.white,
+                            color: kWhite,
                           ),
                           width: 42,
                           height: 42,
@@ -324,7 +324,7 @@ class CustomTextFormField2 extends StatelessWidget {
                   child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5),
-                        color: Colors.white,
+                        color: kWhite,
                       ),
                       width: 42,
                       height: 42,

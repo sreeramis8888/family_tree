@@ -37,7 +37,7 @@ class AttendedPage extends StatelessWidget {
             ),
             title: Text("Back"),
             centerTitle: false,
-            backgroundColor: Colors.white,
+            backgroundColor: kWhite,
             elevation: 0,
             titleTextStyle: TextStyle(
               color: Colors.black,

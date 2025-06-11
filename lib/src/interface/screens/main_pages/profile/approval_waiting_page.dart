@@ -14,7 +14,7 @@
 //   @override
 //   Widget build(BuildContext context, WidgetRef ref) {
 //     return Scaffold(
-//       backgroundColor: Colors.white,
+//       backgroundColor: kWhite,
 //       body: Consumer(
 //         builder: (context, ref, child) {
 //           final asyncUser = ref.watch(userProvider);
@@ -25,7 +25,7 @@
 //             return premium_flow_shown != 'true'
 //     ? MySubscriptionPage(
 //         // onComplete: () async {
-//         //   await SecureStorage.write('premium_flow_shown_${user.uid}', 'true');
+//         //   await SecureStorage.write('premium_flow_shown_${user.id}', 'true');
 //         //   premium_flow_shown = 'true';
 //         //   Navigator.of(context).pushReplacementNamed('MainPage');
 //         //   Navigator.of(context).pushNamed('MySubscriptionPage');
@@ -47,7 +47,7 @@
 //               }
           
 //               return RefreshIndicator(
-//                 backgroundColor: Colors.white,
+//                 backgroundColor: kWhite,
 //                 color: kPrimaryColor,
 //                 onRefresh: () async {
 //                   await ref.read(userProvider.notifier).refreshUser();

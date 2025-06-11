@@ -118,7 +118,7 @@ class _ContactEditorState extends State<ContactEditor> {
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             shape: BoxShape.rectangle,
-            color: isValuePresent ? kPrimaryColor : kWhite),
+            color: isValuePresent ? kPrimaryColor : kSecondaryColor),
         padding: const EdgeInsets.all(16),
         child: Icon(
           widget.icon,

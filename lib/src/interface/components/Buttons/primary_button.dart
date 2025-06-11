@@ -6,7 +6,7 @@ Widget customButton({
   required String label,
   required Function()? onPressed,
   Color sideColor = kPrimaryLightColor,
-  Color labelColor = Colors.white,
+  Color labelColor = kWhite,
   int fontSize = 16,
   int buttonHeight = 45,
   Color buttonColor = kPrimaryLightColor,

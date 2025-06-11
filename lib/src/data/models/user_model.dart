@@ -160,7 +160,7 @@ class UserStateModel {
 
 class UserModel {
   final String? name;
-  final String? uid;
+  final String? id;
   final String? memberId;
   final String? bloodgroup;
   final bool? isAdmin;
@@ -199,7 +199,7 @@ class UserModel {
 
   UserModel({
     this.name,
-    this.uid,
+    this.id,
     this.memberId,
     this.bloodgroup,
     this.isAdmin,
@@ -240,7 +240,7 @@ class UserModel {
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       name: json['name'] as String? ?? '',
-      uid: json['_id'] as String? ?? '',
+      id: json['_id'] as String? ?? '',
       memberId: json['memberId'] as String? ?? '',
       bloodgroup: json['bloodgroup'] as String? ?? '',
       isAdmin: json['isAdmin'] as bool? ?? false,
@@ -318,7 +318,7 @@ class UserModel {
   Map<String, dynamic> toJson() {
     return {
       'name': name,
-      'uid': uid,
+      'id': id,
       'memberId': memberId,
       'bloodgroup': bloodgroup,
       'isAdmin': isAdmin,
@@ -357,7 +357,7 @@ class UserModel {
 
   UserModel copyWith({
     String? name,
-    String? uid,
+    String? id,
     String? role,
     String? memberId,
     String? bloodgroup,
@@ -393,7 +393,7 @@ class UserModel {
   }) {
     return UserModel(
       name: name ?? this.name,
-      uid: uid ?? this.uid,
+      id: id ?? this.id,
       memberId: memberId ?? this.memberId,
       bloodgroup: bloodgroup ?? this.bloodgroup,
       isAdmin: isAdmin ?? this.isAdmin,

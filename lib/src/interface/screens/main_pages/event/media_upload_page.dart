@@ -164,7 +164,7 @@ class _MediaUploadPageState extends ConsumerState<MediaUploadPage>
             color: Colors.black87,
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: kWhite,
         scrolledUnderElevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black87),
@@ -253,7 +253,7 @@ class _MediaUploadPageState extends ConsumerState<MediaUploadPage>
                                           right: 4,
                                           child: Container(
                                             decoration: BoxDecoration(
-                                              color: Colors.white,
+                                              color: kWhite,
                                               shape: BoxShape.circle,
                                               boxShadow: [
                                                 BoxShadow(
@@ -395,7 +395,7 @@ class _MediaUploadPageState extends ConsumerState<MediaUploadPage>
                                   child: const Text(
                                     'Add',
                                     style: TextStyle(
-                                      color: Colors.white,
+                                      color: kWhite,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -410,7 +410,7 @@ class _MediaUploadPageState extends ConsumerState<MediaUploadPage>
                                   return Container(
                                     margin: const EdgeInsets.only(bottom: 12),
                                     decoration: BoxDecoration(
-                                      color: Colors.white,
+                                      color: kWhite,
                                       borderRadius: BorderRadius.circular(12),
                                       boxShadow: [
                                         BoxShadow(
@@ -464,7 +464,7 @@ class _MediaUploadPageState extends ConsumerState<MediaUploadPage>
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: kWhite,
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.05),

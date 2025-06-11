@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:familytree/src/data/constants/color_constants.dart';
 class SearchableDropDown extends StatefulWidget {
   final String? hintText;
   final String? label;
@@ -29,11 +29,11 @@ class _SearchableDropDownState extends State<SearchableDropDown>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-  
+
   final LayerLink _layerLink = LayerLink();
   final FocusNode _focusNode = FocusNode();
   final TextEditingController _searchController = TextEditingController();
-  
+
   bool _isDropdownOpen = false;
   List<DropdownMenuItem<String>> _filteredItems = [];
   OverlayEntry? _overlayEntry;
@@ -61,11 +61,11 @@ class _SearchableDropDownState extends State<SearchableDropDown>
     ));
 
     _animationController.forward();
-    
+
     _filteredItems = List.from(widget.items);
     _selectedValue = widget.value;
   }
-  
+
   // Track search field focus state
   bool _searchHasFocus = false;
 
@@ -80,7 +80,7 @@ class _SearchableDropDownState extends State<SearchableDropDown>
 
   void _openDropdown() {
     if (_isDropdownOpen) return;
-    
+
     _isDropdownOpen = true;
     _overlayEntry = _createOverlayEntry();
     Overlay.of(context).insert(_overlayEntry!);
@@ -101,9 +101,12 @@ class _SearchableDropDownState extends State<SearchableDropDown>
   void _filterItems(String query) {
     setState(() {
       _filteredItems = widget.items
-          .where((item) => (item.child as Text).data!.toLowerCase().contains(query.toLowerCase()))
+          .where((item) => (item.child as Text)
+              .data!
+              .toLowerCase()
+              .contains(query.toLowerCase()))
           .toList();
-      
+
       if (_overlayEntry != null) {
         _overlayEntry!.markNeedsBuild();
       }
@@ -122,132 +125,138 @@ class _SearchableDropDownState extends State<SearchableDropDown>
 
   String? _getDisplayText() {
     if (_selectedValue == null) return null;
-    
+
     final selectedItem = widget.items.firstWhere(
       (item) => item.value == _selectedValue,
       orElse: () => const DropdownMenuItem(value: '', child: Text('')),
     );
-    
+
     return selectedItem.value == '' ? null : (selectedItem.child as Text).data;
   }
 
-OverlayEntry _createOverlayEntry() {
-  final RenderBox renderBox = context.findRenderObject() as RenderBox;
-  final size = renderBox.size;
+  OverlayEntry _createOverlayEntry() {
+    final RenderBox renderBox = context.findRenderObject() as RenderBox;
+    final size = renderBox.size;
 
-  return OverlayEntry(
-    builder: (context) => Positioned(
-      width: size.width,
-      child: CompositedTransformFollower(
-        link: _layerLink,
-        showWhenUnlinked: false,
-        offset: Offset(0.0, size.height + 5.0),
-        child: Material(
-          elevation: 4.0,
-          borderRadius: BorderRadius.circular(8),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0xFFE2E8F0)),
-            ),
-            constraints: BoxConstraints(
-              maxHeight: 300,
-              minWidth: size.width,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: _searchController,
-                    autofocus: true,
-                    decoration: InputDecoration(
-                      hintText: widget.searchHintText,
-                      isDense: true,
-                      prefixIcon: const Icon(Icons.search, color: Color(0xFF718096)),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFF3182CE), width: 2),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                      hintStyle: const TextStyle(
-                        color: Color(0xFF718096),
-                        fontSize: 14,
-                      ),
-                    ),
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF2D3748),
-                    ),
-                    onChanged: _filterItems,
-                  ),
-                ),
-                Flexible(
-                  child: ListView.builder(
-                    padding: EdgeInsets.zero,
-                    shrinkWrap: true,
-                    itemCount: _filteredItems.length,
-                    itemBuilder: (context, index) {
-                      final item = _filteredItems[index];
-                      final isSelected = item.value == _selectedValue;
-
-                      return InkWell(
-                        onTap: () => _selectItem(item),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          color: isSelected ? const Color(0xFFEBF8FF) : Colors.transparent,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: DefaultTextStyle(
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: isSelected
-                                        ? const Color(0xFF3182CE)
-                                        : const Color(0xFF2D3748),
-                                    fontWeight: isSelected
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
-                                  ),
-                                  child: item.child,
-                                ),
-                              ),
-                              if (isSelected)
-                                const Icon(
-                                  Icons.check,
-                                  color: Color(0xFF3182CE),
-                                  size: 18,
-                                ),
-                            ],
-                          ),
+    return OverlayEntry(
+      builder: (context) => Positioned(
+        width: size.width,
+        child: CompositedTransformFollower(
+          link: _layerLink,
+          showWhenUnlinked: false,
+          offset: Offset(0.0, size.height + 5.0),
+          child: Material(
+            elevation: 4.0,
+            borderRadius: BorderRadius.circular(8),
+            child: Container(
+              decoration: BoxDecoration(
+                color: kWhite,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
+              ),
+              constraints: BoxConstraints(
+                maxHeight: 300,
+                minWidth: size.width,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      controller: _searchController,
+                      autofocus: true,
+                      decoration: InputDecoration(
+                        hintText: widget.searchHintText,
+                        isDense: true,
+                        prefixIcon:
+                            const Icon(Icons.search, color: Color(0xFF718096)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide:
+                              const BorderSide(color: Color(0xFFE2E8F0)),
                         ),
-                      );
-                    },
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                              color: Color(0xFF3182CE), width: 2),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide:
+                              const BorderSide(color: Color(0xFFE2E8F0)),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        hintStyle: const TextStyle(
+                          color: Color(0xFF718096),
+                          fontSize: 14,
+                        ),
+                      ),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF2D3748),
+                      ),
+                      onChanged: _filterItems,
+                    ),
                   ),
-                ),
-              ],
+                  Flexible(
+                    child: ListView.builder(
+                      padding: EdgeInsets.zero,
+                      shrinkWrap: true,
+                      itemCount: _filteredItems.length,
+                      itemBuilder: (context, index) {
+                        final item = _filteredItems[index];
+                        final isSelected = item.value == _selectedValue;
+
+                        return InkWell(
+                          onTap: () => _selectItem(item),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 12),
+                            color: isSelected
+                                ? const Color(0xFFEBF8FF)
+                                : Colors.transparent,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: DefaultTextStyle(
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: isSelected
+                                          ? const Color(0xFF3182CE)
+                                          : const Color(0xFF2D3748),
+                                      fontWeight: isSelected
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
+                                    ),
+                                    child: item.child,
+                                  ),
+                                ),
+                                if (isSelected)
+                                  const Icon(
+                                    Icons.check,
+                                    color: Color(0xFF3182CE),
+                                    size: 18,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -294,7 +303,7 @@ OverlayEntry _createOverlayEntry() {
                         children: [
                           Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: kWhite,
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
                                 color: _isDropdownOpen
@@ -314,7 +323,9 @@ OverlayEntry _createOverlayEntry() {
                                       vertical: 12,
                                     ),
                                     child: Text(
-                                      _getDisplayText() ?? widget.hintText ?? '',
+                                      _getDisplayText() ??
+                                          widget.hintText ??
+                                          '',
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: _selectedValue == null
@@ -340,7 +351,8 @@ OverlayEntry _createOverlayEntry() {
                           ),
                           if (state.hasError)
                             Padding(
-                              padding: const EdgeInsets.only(top: 4.0, left: 16.0),
+                              padding:
+                                  const EdgeInsets.only(top: 4.0, left: 16.0),
                               child: Text(
                                 state.errorText!,
                                 style: const TextStyle(

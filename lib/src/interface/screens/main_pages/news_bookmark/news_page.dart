@@ -9,7 +9,9 @@ import 'package:shimmer/shimmer.dart';
 import 'bookmark_page.dart';
 
 final currentNewsIndexProvider = StateProvider<int>((ref) => 0);
-final bookmarkedNewsProvider = StateNotifierProvider<BookmarkedNewsNotifier, Set<String>>((ref) => BookmarkedNewsNotifier());
+final bookmarkedNewsProvider =
+    StateNotifierProvider<BookmarkedNewsNotifier, Set<String>>(
+        (ref) => BookmarkedNewsNotifier());
 
 class BookmarkedNewsNotifier extends StateNotifier<Set<String>> {
   BookmarkedNewsNotifier() : super({});
@@ -42,7 +44,7 @@ class NewsDetailView extends ConsumerWidget {
             "News",
             style: TextStyle(fontSize: 17),
           ),
-          backgroundColor: Colors.white,
+          backgroundColor: kWhite,
           scrolledUnderElevation: 0,
           actions: [
             IconButton(
@@ -66,7 +68,8 @@ class NewsDetailContentView extends ConsumerStatefulWidget {
   const NewsDetailContentView({Key? key, required this.news}) : super(key: key);
 
   @override
-  ConsumerState<NewsDetailContentView> createState() => _NewsDetailContentViewState();
+  ConsumerState<NewsDetailContentView> createState() =>
+      _NewsDetailContentViewState();
 }
 
 class _NewsDetailContentViewState extends ConsumerState<NewsDetailContentView> {
@@ -194,10 +197,10 @@ class NewsContent extends ConsumerWidget {
     final formattedDate = DateFormat('MMM dd, yyyy, hh:mm a')
         .format(newsItem.updatedAt!.toLocal());
 
-    final minsToRead =
-        calculateReadingTimeAndWordCount(newsItem.content ?? '');
+    final minsToRead = calculateReadingTimeAndWordCount(newsItem.content ?? '');
 
-    final isBookmarked = ref.watch(bookmarkedNewsProvider).contains(newsItem.id);
+    final isBookmarked =
+        ref.watch(bookmarkedNewsProvider).contains(newsItem.id);
 
     return Stack(
       children: [
@@ -237,11 +240,13 @@ class NewsContent extends ConsumerWidget {
                     child: IconButton(
                       icon: Icon(
                         isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                        color: isBookmarked ? kPrimaryColor : Colors.white,
+                        color: isBookmarked ? kPrimaryColor : kWhite,
                         size: 28,
                       ),
                       onPressed: () {
-                        ref.read(bookmarkedNewsProvider.notifier).toggleBookmark(newsItem.id!);
+                        ref
+                            .read(bookmarkedNewsProvider.notifier)
+                            .toggleBookmark(newsItem.id!);
                       },
                     ),
                   ),

@@ -1,36 +1,65 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:familytree/src/data/constants/color_constants.dart';
 
 class CustomIconContainer extends StatelessWidget {
-  final IconData icon;
+  final IconData? icon;
+  final String? svgPath;
   final Color iconColor;
-  final Color backgroundColor;
+
   final double padding;
   final double borderRadius;
+  final bool useGradient;
+  final List<Color>? gradientColors;
+  final double? iconSize;
 
   const CustomIconContainer({
     Key? key,
-    required this.icon,
+    this.icon,
+    this.svgPath,
     this.iconColor = kPrimaryColor,
-    this.backgroundColor = kGreyLight,
     this.padding = 2.0,
     this.borderRadius = 5.0,
-  }) : super(key: key);
+    this.useGradient = true,
+    this.gradientColors,
+    this.iconSize,
+  }) : assert(icon != null || svgPath != null, 'Either icon or svgPath must be provided'),
+       super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(borderRadius),
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(padding),
-        child: Icon(
-          icon,
-          color: iconColor,
-        ),
-      ),
+    return Padding(
+      padding: EdgeInsets.all(padding),
+      child: useGradient
+          ? ShaderMask(
+              shaderCallback: (bounds) => LinearGradient(
+                colors: gradientColors ?? [
+                  const Color(0xFFE83A33),
+                  const Color(0xFF96120D),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ).createShader(bounds),
+              child: _buildIcon(),
+            )
+          : _buildIcon(),
     );
+  }
+
+  Widget _buildIcon() {
+    if (svgPath != null) {
+      return SvgPicture.asset(
+        svgPath!,
+        color: useGradient ? Colors.white : iconColor,
+        width: iconSize,
+        height: iconSize,
+      );
+    } else {
+      return Icon(
+        icon!,
+        color: useGradient ? Colors.white : iconColor,
+        size: iconSize,
+      );
+    }
   }
 }

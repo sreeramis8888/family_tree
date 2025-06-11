@@ -20,9 +20,9 @@ class RequestNFCPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: kWhite,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: kWhite,
         title: const Text(
           'Request NFC',
           style: TextStyle(fontSize: 17),

@@ -1,3 +1,4 @@
+import 'package:familytree/src/interface/screens/main_pages/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
@@ -75,7 +76,7 @@ class _MembersPageState extends ConsumerState<MembersPage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: kWhite,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
@@ -364,7 +365,7 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                                                 maxHeight: 250,
                                               ),
                                               decoration: BoxDecoration(
-                                                color: Colors.white,
+                                                color: kWhite,
                                                 borderRadius:
                                                     BorderRadius.circular(8),
                                                 boxShadow: [
@@ -516,7 +517,7 @@ class _MembersPageState extends ConsumerState<MembersPage> {
     final isFirstLoad = ref.read(peopleNotifierProvider.notifier).isFirstLoad;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: kWhite,
       body: SingleChildScrollView(
         controller: _scrollController,
         child: Column(
@@ -534,7 +535,7 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                           focusNode: _searchFocus,
                           decoration: InputDecoration(
                             filled: true,
-                            fillColor: Colors.white,
+                            fillColor: kWhite,
                             prefixIcon: const Icon(Icons.search),
                             hintText: 'Search Members',
                             border: OutlineInputBorder(
@@ -627,12 +628,12 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                     data: (chats) {
                       final chatForUser = chats.firstWhere(
                         (chat) =>
-                            chat.participants?.any((p) => p.id == user.uid) ??
+                            chat.participants?.any((p) => p.id == user.id) ??
                             false,
                         orElse: () => ChatModel(
                           participants: [
                             Participant(
-                              id: user.uid,
+                              id: user.id,
                               name: user.name ?? '',
                               image: user.image ?? '',
                             ),
@@ -644,7 +645,7 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                       final receiver = chatForUser.participants?.firstWhere(
                         (p) => p.id != id,
                         orElse: () => Participant(
-                          id: user.uid,
+                          id: user.id,
                           name: user.name ?? '',
                           image: user.image,
                         ),
@@ -732,7 +733,7 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => ProfilePreview(user: user),
+                          builder: (context) => ProfilePage(user: user),
                         ),
                       );
                     },

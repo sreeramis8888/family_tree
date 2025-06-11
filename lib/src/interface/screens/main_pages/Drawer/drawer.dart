@@ -11,6 +11,7 @@ import 'package:familytree/src/interface/screens/main_pages/menuPages/levels/dis
 import 'package:familytree/src/interface/screens/main_pages/menuPages/levels/level_members.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/levels/zones.dart';
 import 'package:familytree/src/interface/screens/web_view_screen.dart';
+import 'package:familytree/src/interface/screens/main_pages/menuPages/financial_program/financial_program_page.dart';
 
 Widget customDrawer({required UserModel user, required BuildContext context}) {
   NavigationService navigationService = NavigationService();
@@ -107,7 +108,14 @@ Widget customDrawer({required UserModel user, required BuildContext context}) {
                   icon: 'assets/svg/icons/analytics.svg',
                   label: 'Financial Program',
                   onTap: () {
-                    navigationService.pushNamed('AnalyticsPage');
+                    // navigationService.pushNamed('AnalyticsPage');
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const FinancialProgramPage(),
+                      ),
+                    );
                   },
                 ),
                 _buildDrawerItem(

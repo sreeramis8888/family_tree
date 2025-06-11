@@ -59,13 +59,13 @@
 //   Widget build(BuildContext context) {
 //     String textToCopy = '';
 //     return Scaffold(
-//       backgroundColor: Colors.white,
+//       backgroundColor: kWhite,
 //       appBar: AppBar(
 //         title: const Text(
 //           "Upgrade Plan",
 //           style: TextStyle(fontSize: 17),
 //         ),
-//         backgroundColor: Colors.white,
+//         backgroundColor: kWhite,
 //         scrolledUnderElevation: 0,
 //         leading: IconButton(
 //           icon: const Icon(Icons.arrow_back),
@@ -138,7 +138,7 @@
 //                           'BANK DETAILS',
 //                           style: TextStyle(
 //                             fontSize: 13,
-//                             color: Colors.white,
+//                             color: kWhite,
 //                             fontWeight: FontWeight.bold,
 //                           ),
 //                         ),
@@ -151,7 +151,7 @@
 //                           'Bank Name: SOUTH INDIAN BANK',
 //                           style: TextStyle(
 //                             fontSize: 13,
-//                             color: Colors.white,
+//                             color: kWhite,
 //                           ),
 //                         ),
 //                         IconButton(
@@ -165,7 +165,7 @@
 //                           },
 //                           icon: const Icon(
 //                             Icons.copy,
-//                             color: Colors.white,
+//                             color: kWhite,
 //                           ),
 //                         ),
 //                       ],
@@ -176,7 +176,7 @@
 //                           'Branch: CHEBUKKAVU BRANCH',
 //                           style: TextStyle(
 //                             fontSize: 13,
-//                             color: Colors.white,
+//                             color: kWhite,
 //                           ),
 //                         ),
 //                         IconButton(
@@ -190,7 +190,7 @@
 //                           },
 //                           icon: const Icon(
 //                             Icons.copy,
-//                             color: Colors.white,
+//                             color: kWhite,
 //                           ),
 //                         ),
 //                       ],
@@ -201,7 +201,7 @@
 //                           'A/c no.: 0834073000000169',
 //                           style: TextStyle(
 //                             fontSize: 13,
-//                             color: Colors.white,
+//                             color: kWhite,
 //                           ),
 //                         ),
 //                         IconButton(
@@ -215,7 +215,7 @@
 //                           },
 //                           icon: const Icon(
 //                             Icons.copy,
-//                             color: Colors.white,
+//                             color: kWhite,
 //                           ),
 //                         ),
 //                       ],
@@ -226,7 +226,7 @@
 //                           'A/c name: Hindu Economic Forum',
 //                           style: TextStyle(
 //                             fontSize: 13,
-//                             color: Colors.white,
+//                             color: kWhite,
 //                           ),
 //                         ),
 //                         IconButton(
@@ -240,7 +240,7 @@
 //                           },
 //                           icon: const Icon(
 //                             Icons.copy,
-//                             color: Colors.white,
+//                             color: kWhite,
 //                           ),
 //                         ),
 //                       ],
@@ -251,7 +251,7 @@
 //                           'IFS code: SIBL0000834',
 //                           style: TextStyle(
 //                             fontSize: 13,
-//                             color: Colors.white,
+//                             color: kWhite,
 //                           ),
 //                         ),
 //                         IconButton(
@@ -265,7 +265,7 @@
 //                           },
 //                           icon: const Icon(
 //                             Icons.copy,
-//                             color: Colors.white,
+//                             color: kWhite,
 //                           ),
 //                         ),
 //                       ],

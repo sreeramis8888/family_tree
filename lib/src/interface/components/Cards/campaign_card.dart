@@ -31,7 +31,7 @@ class CampaignCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
       decoration: BoxDecoration(
         border: Border.all(color: kTertiary),
-        color: Colors.white,
+        color: kWhite,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -67,7 +67,7 @@ class CampaignCard extends StatelessWidget {
                       child: Text(
                         '#$tag',
                         style: const TextStyle(
-                            color: Colors.white,
+                            color: kWhite,
                             fontWeight: FontWeight.bold,
                             fontSize: 12),
                       ),

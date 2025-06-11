@@ -206,7 +206,7 @@ part 'activity_api.g.dart';
 //         child: Container(
 //           padding: EdgeInsets.all(20),
 //           decoration: BoxDecoration(
-//             color: Colors.white,
+//             color: kWhite,
 //             borderRadius: BorderRadius.circular(10),
 //           ),
 //           child: Column(

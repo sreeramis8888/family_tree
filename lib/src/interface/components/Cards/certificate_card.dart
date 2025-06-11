@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:familytree/src/data/models/user_model.dart';
-
+import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/interface/components/DropDown/remove_edit_dropdown.dart';
 
 class CertificateCard extends StatelessWidget {
@@ -47,7 +47,7 @@ class CertificateCard extends StatelessWidget {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(5),
-                  color: Colors.white,
+                  color: kWhite,
                 ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -67,7 +67,7 @@ class CertificateCard extends StatelessWidget {
                         Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
-                            color: Colors.white,
+                            color: kWhite,
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(4.0),

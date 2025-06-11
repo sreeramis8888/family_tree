@@ -38,7 +38,7 @@ class PremiumDialog extends ConsumerWidget {
               const Text(
                 'Premium',
                 style: TextStyle(
-                  color: Colors.white, // To contrast against the dark gradient
+                  color: kWhite, // To contrast against the dark gradient
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -128,7 +128,7 @@ class _PulseIconState extends State<PulseIcon>
                     color: Color(0xFFFFD700),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.star, color: Colors.white, size: 10),
+                  child: const Icon(Icons.star, color: kWhite, size: 10),
                 ),
               ),
             ],

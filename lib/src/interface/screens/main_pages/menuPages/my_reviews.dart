@@ -1,3 +1,4 @@
+import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -48,7 +49,7 @@ class _MyReviewsPageState extends ConsumerState<MyReviewsPage> {
           );
         } else {
           return Scaffold(
-            backgroundColor: Colors.white,
+            backgroundColor: kWhite,
             appBar: AppBar(
               title: const Text(
                 'My Reviews',
@@ -58,7 +59,7 @@ class _MyReviewsPageState extends ConsumerState<MyReviewsPage> {
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () => Navigator.of(context).pop(),
               ),
-              backgroundColor: Colors.white,
+              backgroundColor: kWhite,
               iconTheme: const IconThemeData(color: Colors.black),
               elevation: 0,
             ),

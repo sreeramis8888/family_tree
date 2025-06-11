@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:familytree/src/data/globals.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
@@ -89,15 +90,7 @@ class ProfilePage extends ConsumerWidget {
                               decoration: BoxDecoration(
                                 border: Border.all(
                                     color: const Color.fromARGB(
-                                        255, 237, 231, 231)),
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    Color(0xFF0B96F5).withOpacity(.67),
-                                    Color(0xFF0C1E8A).withOpacity(.67),
-                                  ],
-                                ),
+                                        255, 255, 255, 255)),
                                 borderRadius: BorderRadius.circular(15),
                                 boxShadow: [
                                   BoxShadow(
@@ -110,261 +103,307 @@ class ProfilePage extends ConsumerWidget {
                                   ),
                                 ],
                               ),
-                              child: Column(
-                                children: [
-                                  Stack(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                  image: DecorationImage(
+                                    image: AssetImage(
+                                        'assets/pngs/profile_background.png'),
+                                    fit: BoxFit.cover,
+                                    colorFilter: ColorFilter.mode(
+                                      kWhite.withOpacity(0.4),
+                                      BlendMode.hardLight,
+                                    ),
+                                  ),
+                                ),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15),
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: [
+                                        Colors.transparent,
+                                        kWhite.withOpacity(0.1),
+                                        kWhite.withOpacity(0.3),
+                                        kWhite.withOpacity(1),
+                                        kWhite.withOpacity(1),
+                                        kWhite,
+                                      ],
+                                      stops: [0.0, 0.1, 0.2, 0.5, 0.8, 1.0],
+                                    ),
+                                  ),
+                                  child: Column(
                                     children: [
-                                      Positioned(
-                                        top: 10,
-                                        right: 10,
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                              color: Color(0xFFFFFFFF)
-                                                  .withOpacity(.54),
-                                              borderRadius:
-                                                  BorderRadius.circular(30)),
-                                          child: IconButton(
-                                            icon: Icon(
-                                              Icons.remove_red_eye,
-                                              color: kPrimaryColor,
+                                      Stack(
+                                        children: [
+                                          // if (user.id != id)
+                                          Positioned(
+                                            top: 10,
+                                            right: 10,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                  color: Color(0xFFFFFFFF)
+                                                      .withOpacity(.54),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          30)),
+                                              child: IconButton(
+                                                icon: Icon(
+                                                  Icons.remove_red_eye,
+                                                  color: kPrimaryColor,
+                                                ),
+                                                onPressed: () {
+                                                  navigationService.pushNamed(
+                                                      'ProfilePreviewUsingID',
+                                                      arguments: user.id);
+                                                },
+                                              ),
                                             ),
-                                            onPressed: () {
-                                              navigationService.pushNamed(
-                                                  'ProfilePreviewUsingID',
-                                                  arguments: user.uid);
-                                            },
                                           ),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: double
-                                            .infinity, // Sets a bounded width constraint
-                                        child: Column(
-                                          children: [
-                                            SizedBox(
-                                              height: 30,
-                                            ),
-                                            GlowingAnimatedAvatar(
-                                              imageUrl: user.image,
-                                              defaultAvatarAsset:
-                                                  'assets/svg/icons/dummy_person_large.svg',
-                                              size: 90,
-                                              glowColor: Colors.white,
-                                              borderColor: Colors.white,
-                                              borderWidth: 3.0,
-                                            ),
-                                            VerifiedName(
-                                              tickColor:
-                                                  user.parentSub?.color ?? '',
-                                              label: user.name ?? '',
-                                              textStyle: kHeadTitleSB,
-                                              labelColor: kWhite,
-                                              iconSize: 18,
-                                              showBlueTick:
-                                                  user.blueTick ?? false,
-                                            ),
-                                            const SizedBox(height: 5),
-                                            Column(
+                                          SizedBox(
+                                            width: double.infinity,
+                                            child: Column(
                                               children: [
-                                                if (designations.isNotEmpty ||
-                                                    companyNames.isNotEmpty)
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      if (designations
-                                                          .isNotEmpty)
-                                                        Text(
-                                                          designations
-                                                              .join(' | '),
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                          style:
-                                                              const TextStyle(
-                                                            fontSize: 12,
-                                                            color: Colors.white,
-                                                          ),
-                                                        ),
-                                                      if (companyNames
-                                                          .isNotEmpty)
-                                                        Text(
-                                                          companyNames
-                                                              .join(' | '),
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                          style:
-                                                              const TextStyle(
-                                                            fontSize: 12,
-                                                            color: Colors.white,
-                                                          ),
-                                                        ),
-                                                    ],
-                                                  ),
-                                                if (levelData['chapterName'] !=
-                                                    'undefined')
-                                                  const SizedBox(height: 10),
-                                                if (levelData['chapterName'] !=
-                                                    'undefined')
-                                                  Wrap(
-                                                    alignment:
-                                                        WrapAlignment.center,
-                                                    children: [
-                                                      Text(
-                                                        '${levelData['stateName']} / ',
-                                                        style: const TextStyle(
-                                                            color: kWhite,
-                                                            fontSize: 12),
-                                                      ),
-                                                      Text(
-                                                        '${levelData['zoneName']} / ',
-                                                        style: const TextStyle(
-                                                            color: kWhite,
-                                                            fontSize: 12),
-                                                      ),
-                                                      Text(
-                                                        '${levelData['districtName']} / ',
-                                                        style: const TextStyle(
-                                                            color: kWhite,
-                                                            fontSize: 12),
-                                                      ),
-                                                      Text(
-                                                        '${levelData['chapterName']} ',
-                                                        style: const TextStyle(
-                                                            color: kWhite,
-                                                            fontSize: 12),
-                                                      ),
-                                                    ],
-                                                  ),
+                                                SizedBox(height: 30),
+                                                GlowingAnimatedAvatar(
+                                                  imageUrl: user.image,
+                                                  defaultAvatarAsset:
+                                                      'assets/svg/icons/dummy_person_large.svg',
+                                                  size: 90,
+                                                  glowColor: kWhite,
+                                                  borderColor: kWhite,
+                                                  borderWidth: 3.0,
+                                                ),
+                                                VerifiedName(
+                                                  tickColor:
+                                                      user.parentSub?.color ??
+                                                          '',
+                                                  label: user.name ?? '',
+                                                  textStyle: kHeadTitleSB,
+                                                  labelColor: kBlack,
+                                                  iconSize: 18,
+                                                  showBlueTick:
+                                                      user.blueTick ?? false,
+                                                ),
                                                 const SizedBox(height: 5),
-                                                Text(
-                                                  'Joined Date: $joinedDate',
-                                                  style: const TextStyle(
-                                                    fontSize: 11,
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  height: 20,
-                                                ),
-                                                Container(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 10,
-                                                      vertical: 6),
-                                                  decoration: BoxDecoration(
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10),
-                                                      border: Border.all(
-                                                          color: const Color
-                                                              .fromARGB(255,
-                                                              234, 226, 226))),
-                                                  child: IntrinsicWidth(
-                                                    child: Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
+                                                Column(
+                                                  children: [
+                                                    if (designations
+                                                            .isNotEmpty ||
+                                                        companyNames.isNotEmpty)
+                                                      Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          if (designations
+                                                              .isNotEmpty)
+                                                            Text(
+                                                              designations
+                                                                  .join(' | '),
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                              style:
+                                                                  const TextStyle(
+                                                                fontSize: 12,
+                                                                color: kBlack,
+                                                              ),
+                                                            ),
+                                                          if (companyNames
+                                                              .isNotEmpty)
+                                                            Text(
+                                                              companyNames
+                                                                  .join(' | '),
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                              style:
+                                                                  const TextStyle(
+                                                                fontSize: 12,
+                                                                color: kBlack,
+                                                              ),
+                                                            ),
+                                                        ],
+                                                      ),
+                                                    if (levelData[
+                                                            'chapterName'] !=
+                                                        'undefined')
+                                                      const SizedBox(
+                                                          height: 10),
+                                                    if (levelData[
+                                                            'chapterName'] !=
+                                                        'undefined')
+                                                      Wrap(
+                                                        alignment: WrapAlignment
+                                                            .center,
+                                                        children: [
+                                                          Text(
+                                                            '${levelData['stateName']} / ',
+                                                            style:
+                                                                const TextStyle(
+                                                                    color:
+                                                                        kBlack,
+                                                                    fontSize:
+                                                                        12),
+                                                          ),
+                                                          Text(
+                                                            '${levelData['zoneName']} / ',
+                                                            style:
+                                                                const TextStyle(
+                                                                    color:
+                                                                        kBlack,
+                                                                    fontSize:
+                                                                        12),
+                                                          ),
+                                                          Text(
+                                                            '${levelData['districtName']} / ',
+                                                            style:
+                                                                const TextStyle(
+                                                                    color:
+                                                                        kBlack,
+                                                                    fontSize:
+                                                                        12),
+                                                          ),
+                                                          Text(
+                                                            '${levelData['chapterName']} ',
+                                                            style:
+                                                                const TextStyle(
+                                                                    color:
+                                                                        kBlack,
+                                                                    fontSize:
+                                                                        12),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    const SizedBox(height: 5),
+                                                    Text(
+                                                      'Joined Date: $joinedDate',
+                                                      style: const TextStyle(
+                                                        fontSize: 11,
+                                                        color: kBlack,
+                                                      ),
+                                                    ),
+                                                    SizedBox(height: 20),
+                                                    Container(
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 10,
+                                                          vertical: 6),
+                                                      decoration: BoxDecoration(
+                                                        color: kSecondaryColor,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(30),
+                                                      ),
+                                                      child: IntrinsicWidth(
+                                                        child: Row(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          children: [
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .only(
+                                                                      left: 10),
+                                                              child: Image.asset(
+                                                                  scale: 30,
+                                                                  'assets/pngs/familytree_logo.png'),
+                                                            ),
+                                                            const SizedBox(
+                                                                width: 10),
+                                                            Text(
+                                                                'Member ID: ${user.memberId}',
+                                                                style: kSmallerTitleB
+                                                                    .copyWith(
+                                                                        color:
+                                                                            kPrimaryColor)),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    SizedBox(height: 20),
+                                                    Column(
                                                       children: [
+                                                        Container(
+                                                          height: 1,
+                                                          child: CustomPaint(
+                                                            size: const Size(
+                                                                double.infinity,
+                                                                1),
+                                                            painter:
+                                                                DottedLinePainter(),
+                                                          ),
+                                                        ),
                                                         Padding(
                                                           padding:
                                                               const EdgeInsets
                                                                   .only(
-                                                                  left: 10),
-                                                          child: Image.asset(
-                                                              scale: 20,
-                                                              'assets/pngs/familytree_logo.png'),
+                                                            top: 10,
+                                                            left: 15,
+                                                            right: 15,
+                                                          ),
+                                                          child: Column(
+                                                            children: [
+                                                              ContactRow(
+                                                                  icon: Icons
+                                                                      .phone,
+                                                                  text:
+                                                                      user.phone ??
+                                                                          ''),
+                                                              if (user.email !=
+                                                                      '' &&
+                                                                  user.email !=
+                                                                      null)
+                                                                const SizedBox(
+                                                                    height: 10),
+                                                              if (user.email !=
+                                                                      '' &&
+                                                                  user.email !=
+                                                                      null)
+                                                                ContactRow(
+                                                                    icon: Icons
+                                                                        .email,
+                                                                    text:
+                                                                        user.email ??
+                                                                            ''),
+                                                              if (user.address !=
+                                                                      '' &&
+                                                                  user.address !=
+                                                                      null)
+                                                                const SizedBox(
+                                                                    height: 10),
+                                                              if (user.address !=
+                                                                      '' &&
+                                                                  user.address !=
+                                                                      null)
+                                                                ContactRow(
+                                                                    icon: Icons
+                                                                        .location_on,
+                                                                    text:
+                                                                        user.address ??
+                                                                            ''),
+                                                            ],
+                                                          ),
                                                         ),
                                                         const SizedBox(
-                                                            width:
-                                                                10), // Add spacing between elements
-                                                        Text(
-                                                            'Member ID: ${user.memberId}',
-                                                            style: kSmallerTitleB
-                                                                .copyWith(
-                                                                    color:
-                                                                        kPrimaryColor)),
+                                                            height: 20),
                                                       ],
                                                     ),
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  height: 20,
-                                                ),
-                                                Column(
-                                                  children: [
-                                                    Container(
-                                                      height: 1,
-                                                      child: CustomPaint(
-                                                        size: const Size(
-                                                            double.infinity, 1),
-                                                        painter:
-                                                            DottedLinePainter(),
-                                                      ),
-                                                    ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                        top: 10,
-                                                        left: 15,
-                                                        right: 15,
-                                                      ),
-                                                      child: Column(
-                                                        children: [
-                                                          ContactRow(
-                                                              icon: Icons.phone,
-                                                              text:
-                                                                  user.phone ??
-                                                                      ''),
-                                                          if (user.email !=
-                                                                  '' &&
-                                                              user.email !=
-                                                                  null)
-                                                            const SizedBox(
-                                                                height: 10),
-                                                          if (user.email !=
-                                                                  '' &&
-                                                              user.email !=
-                                                                  null)
-                                                            ContactRow(
-                                                                icon:
-                                                                    Icons.email,
-                                                                text:
-                                                                    user.email ??
-                                                                        ''),
-                                                          if (user.address !=
-                                                                  '' &&
-                                                              user.address !=
-                                                                  null)
-                                                            const SizedBox(
-                                                                height: 10),
-                                                          if (user.address !=
-                                                                  '' &&
-                                                              user.address !=
-                                                                  null)
-                                                            ContactRow(
-                                                                icon: Icons
-                                                                    .location_on,
-                                                                text:
-                                                                    user.address ??
-                                                                        ''),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 20),
                                                   ],
                                                 ),
                                               ],
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
-                                ],
+                                ),
                               ),
                             ),
                           ),
@@ -400,7 +439,7 @@ class ProfilePage extends ConsumerWidget {
                         //       ),
                         //       child: Icon(
                         //         Icons.share,
-                        //         color: Colors.white,
+                        //         color: kWhite,
                         //       ),
                         //     ),
                         //   ),
@@ -420,7 +459,7 @@ class ProfilePage extends ConsumerWidget {
                           //   width: 90,
                           //   height: 90,
                           //   decoration: BoxDecoration(
-                          //     color: Colors.white,
+                          //     color: kWhite,
                           //     borderRadius: BorderRadius.circular(
                           //         50), // Apply circular border to the outer container
                           //   ),
@@ -429,7 +468,7 @@ class ProfilePage extends ConsumerWidget {
                           //     child: Container(
                           //       decoration: BoxDecoration(
                           //         borderRadius: BorderRadius.circular(50),
-                          //         color: Colors.white,
+                          //         color: kWhite,
                           //       ),
                           //       child: Icon(
                           //         Icons.qr_code,

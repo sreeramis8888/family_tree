@@ -53,7 +53,7 @@ Future<void> captureAndShareOrDownloadWidgetScreenshot(BuildContext context,
                     DateFormat('dd/MM/yyyy').format(user.createdAt!);
                 Map<String, String> levelData =
                     extractLevelDetails(user.level ?? '');
-                userId = user.uid ?? '';
+                userId = user.id ?? '';
                 return Container(
                   width: double.infinity,
                   height: double.infinity,
@@ -104,7 +104,7 @@ Future<void> captureAndShareOrDownloadWidgetScreenshot(BuildContext context,
                                         padding: const EdgeInsets.only(
                                             top: 60, bottom: 20),
                                         decoration: BoxDecoration(
-                                          color: Colors.white.withOpacity(0.3),
+                                          color: kWhite.withOpacity(0.3),
                                           borderRadius:
                                               BorderRadius.circular(20),
                                         ),
@@ -114,10 +114,10 @@ Future<void> captureAndShareOrDownloadWidgetScreenshot(BuildContext context,
                                           children: [
                                             QrImageView(
                                               data:
-                                                  'https://admin.familytreeconnect.com/user/${user.uid}',
+                                                  'https://admin.familytreeconnect.com/user/${user.id}',
                                               version: QrVersions.auto,
                                               size: 150,
-                                              foregroundColor: Colors.white,
+                                              foregroundColor: kWhite,
                                             ),
                                             const SizedBox(height: 12),
                                             Text(user.name ?? '',
@@ -213,7 +213,7 @@ Future<void> captureAndShareOrDownloadWidgetScreenshot(BuildContext context,
                                                       'Joined Date: $joinedDate',
                                                       style: const TextStyle(
                                                           fontSize: 11,
-                                                          color: Colors.white),
+                                                          color: kWhite),
                                                       textAlign:
                                                           TextAlign.center,
                                                     ),
@@ -227,7 +227,7 @@ Future<void> captureAndShareOrDownloadWidgetScreenshot(BuildContext context,
                                                                 vertical: 6),
                                                         decoration:
                                                             BoxDecoration(
-                                                          color: Colors.white,
+                                                          color: kWhite,
                                                           borderRadius:
                                                               BorderRadius
                                                                   .circular(10),
@@ -279,8 +279,8 @@ Future<void> captureAndShareOrDownloadWidgetScreenshot(BuildContext context,
                                           defaultAvatarAsset:
                                               'assets/svg/icons/dummy_person_large.svg',
                                           size: 110,
-                                          glowColor: Colors.white,
-                                          borderColor: Colors.white,
+                                          glowColor: kWhite,
+                                          borderColor: kWhite,
                                           borderWidth: 3.0,
                                         ),
                                       ),
@@ -312,8 +312,7 @@ Future<void> captureAndShareOrDownloadWidgetScreenshot(BuildContext context,
                                                 horizontal: 30),
                                             padding: const EdgeInsets.all(20),
                                             decoration: BoxDecoration(
-                                              color:
-                                                  Colors.white.withOpacity(0.3),
+                                              color: kWhite.withOpacity(0.3),
                                               borderRadius:
                                                   BorderRadius.circular(20),
                                             ),

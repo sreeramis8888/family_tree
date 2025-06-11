@@ -24,7 +24,7 @@ class TermsAndConditionsPage extends StatelessWidget {
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         scrolledUnderElevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: kWhite,
         elevation: 0,
         centerTitle: true,
         title: Text(
@@ -45,7 +45,7 @@ class TermsAndConditionsPage extends StatelessWidget {
         child: Container(
           margin: const EdgeInsets.all(16.0),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: kWhite,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(

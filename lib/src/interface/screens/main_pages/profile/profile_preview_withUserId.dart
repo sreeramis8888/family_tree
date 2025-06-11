@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:familytree/src/interface/screens/main_pages/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -71,17 +72,50 @@ class ProfilePreviewUsingId extends ConsumerWidget {
             appBar: AppBar(
               flexibleSpace: Container(),
               actions: [
-                IconButton(
-                  icon: const Icon(
-                    size: 20,
-                    Icons.edit,
-                    color: kPrimaryColor,
+                if (userId == id)
+                  asyncUser.when(
+                    data: (user) {
+                      return IconButton(
+                        icon: const Icon(
+                          size: 20,
+                          Icons.qr_code,
+                          color: kPrimaryColor,
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => ProfilePage(user: user),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    error: (error, stackTrace) {
+                      return SizedBox();
+                    },
+                    loading: () {
+                      return IconButton(
+                        icon: const Icon(
+                          size: 20,
+                          Icons.qr_code,
+                          color: kPrimaryColor,
+                        ),
+                        onPressed: () {},
+                      );
+                    },
                   ),
-                  onPressed: () {
-                    NavigationService navigationService = NavigationService();
-                    navigationService.pushNamed('EditUser');
-                  },
-                )
+                if (userId == id)
+                  IconButton(
+                    icon: const Icon(
+                      size: 20,
+                      Icons.edit,
+                      color: kPrimaryColor,
+                    ),
+                    onPressed: () {
+                      NavigationService navigationService = NavigationService();
+                      navigationService.pushNamed('EditUser');
+                    },
+                  ),
               ],
               centerTitle: true,
               elevation: 0,
@@ -94,7 +128,7 @@ class ProfilePreviewUsingId extends ConsumerWidget {
               backgroundColor: kWhite,
               title: const Text(
                 'Preview',
-                style: kSubHeadingL,
+                style: kBodyTitleL,
               ),
             ),
             backgroundColor: kWhite,
@@ -131,239 +165,107 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                   SizedBox(
                                     height: 110,
                                   ),
-                                  Column(
-                                    children: [
-                                      Container(
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color:
-                                                  Colors.black.withOpacity(0.3),
-                                              blurRadius: 8,
-                                              offset: Offset(0, 4),
-                                            ),
-                                          ],
-                                          gradient: LinearGradient(
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.bottomRight,
-                                            colors: [
-                                              Color(0xFF0B96F5)
-                                                  .withOpacity(0.67),
-                                              Color(0xFF0C1E8A)
-                                                  .withOpacity(0.67),
-                                            ],
-                                          ),
-                                        ),
-                                        child: Stack(
-                                          alignment: Alignment.center,
-                                          children: [
-                                            Positioned.fill(
-                                              child: Image.asset(
-                                                fit: BoxFit.cover,
-                                                'assets/pngs/squares.png',
-                                              ),
-                                            ),
-                                            Column(
-                                              children: [
-                                                GlowingAnimatedAvatar(
-                                                  imageUrl: user.image,
-                                                  defaultAvatarAsset:
-                                                      'assets/svg/icons/dummy_person_large.svg',
-                                                  size: 110,
-                                                  glowColor: Colors.white,
-                                                  borderColor: Colors.white,
-                                                  borderWidth: 3.0,
-                                                ),
-                                                VerifiedName(
-                                                  tickColor:
-                                                      user.parentSub?.color ??
-                                                          '',
-                                                  label: user.name ?? '',
-                                                  textStyle: kHeadTitleSB,
-                                                  labelColor: kWhite,
-                                                  iconSize: 18,
-                                                  showBlueTick:
-                                                      user.blueTick ?? false,
-                                                ),
-                                                const SizedBox(height: 5),
-                                                Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 16.0),
-                                                  child: Column(
-                                                    children: [
-                                                      if (designations
-                                                              .isNotEmpty ||
-                                                          companyNames
-                                                              .isNotEmpty)
-                                                        Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .center,
-                                                          children: [
-                                                            if (designations
-                                                                .isNotEmpty)
-                                                              Text(
-                                                                designations
-                                                                    .join(
-                                                                        ' | '),
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .center,
-                                                                style:
-                                                                    const TextStyle(
-                                                                  fontSize: 12,
-                                                                  color: Colors
-                                                                      .white,
-                                                                ),
-                                                              ),
-                                                            if (companyNames
-                                                                .isNotEmpty)
-                                                              Text(
-                                                                companyNames
-                                                                    .join(
-                                                                        ' | '),
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .center,
-                                                                style:
-                                                                    const TextStyle(
-                                                                  fontSize: 12,
-                                                                  color: Colors
-                                                                      .white,
-                                                                ),
-                                                              ),
-                                                          ],
-                                                        ),
-                                                      if (levelData[
-                                                              'chapterName'] !=
-                                                          'undefined')
-                                                        const SizedBox(
-                                                            height: 10),
-                                                      if (levelData[
-                                                              'chapterName'] !=
-                                                          'undefined')
-                                                        Wrap(
-                                                          alignment:
-                                                              WrapAlignment
-                                                                  .center,
-                                                          children: [
-                                                            Text(
-                                                              '${levelData['stateName']} / ',
-                                                              style:
-                                                                  const TextStyle(
-                                                                      color:
-                                                                          kWhite,
-                                                                      fontSize:
-                                                                          12),
-                                                            ),
-                                                            Text(
-                                                              '${levelData['zoneName']} / ',
-                                                              style:
-                                                                  const TextStyle(
-                                                                      color:
-                                                                          kWhite,
-                                                                      fontSize:
-                                                                          12),
-                                                            ),
-                                                            Text(
-                                                              '${levelData['districtName']} / ',
-                                                              style:
-                                                                  const TextStyle(
-                                                                      color:
-                                                                          kWhite,
-                                                                      fontSize:
-                                                                          12),
-                                                            ),
-                                                            Text(
-                                                              '${levelData['chapterName']} ',
-                                                              style:
-                                                                  const TextStyle(
-                                                                      color:
-                                                                          kWhite,
-                                                                      fontSize:
-                                                                          12),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      const SizedBox(height: 5),
-                                                      Text(
-                                                        'Joined Date: $joinedDate',
-                                                        style: const TextStyle(
-                                                          fontSize: 11,
-                                                          color: Colors.white,
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        height: 20,
-                                                      ),
-                                                      Container(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                                horizontal: 10,
-                                                                vertical: 6),
-                                                        decoration: BoxDecoration(
-                                                            color: Colors.white,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        10),
-                                                            border: Border.all(
-                                                                color: const Color
-                                                                    .fromARGB(
-                                                                    255,
-                                                                    234,
-                                                                    226,
-                                                                    226))),
-                                                        // Use IntrinsicWidth to make the container only as wide as needed
-                                                        child: IntrinsicWidth(
-                                                          child: Row(
-                                                            mainAxisSize:
-                                                                MainAxisSize
-                                                                    .min, // This makes the Row take minimum space
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
-                                                            children: [
-                                                              Padding(
-                                                                padding:
-                                                                    const EdgeInsets
-                                                                        .only(
-                                                                        left:
-                                                                            10),
-                                                                child: Image.asset(
-                                                                    scale: 20,
-                                                                    'assets/pngs/familytree_logo.png'),
-                                                              ),
-                                                              const SizedBox(
-                                                                  width:
-                                                                      10), // Add spacing between elements
-                                                              Text(
-                                                                  'Member ID: ${user.memberId}',
-                                                                  style: kSmallerTitleB
-                                                                      .copyWith(
-                                                                          color:
-                                                                              kPrimaryColor)),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        height: 20,
-                                                      )
-                                                    ],
+                                  GlowingAnimatedAvatar(
+                                    imageUrl: user.image,
+                                    defaultAvatarAsset:
+                                        'assets/svg/icons/dummy_person_large.svg',
+                                    size: 110,
+                                    glowColor: kWhite,
+                                    borderColor: kWhite,
+                                    borderWidth: 3.0,
+                                  ),
+                                  VerifiedName(
+                                    tickColor: user.parentSub?.color ?? '',
+                                    label: user.name ?? '',
+                                    textStyle: kHeadTitleSB,
+                                    labelColor: kBlack,
+                                    iconSize: 18,
+                                    showBlueTick: user.blueTick ?? false,
+                                  ),
+                                  const SizedBox(height: 5),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16.0),
+                                    child: Column(
+                                      children: [
+                                        if (designations.isNotEmpty ||
+                                            companyNames.isNotEmpty)
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              if (designations.isNotEmpty)
+                                                Text(
+                                                  designations.join(' | '),
+                                                  textAlign: TextAlign.center,
+                                                  style: const TextStyle(
+                                                    fontSize: 12,
+                                                    color: kBlack,
                                                   ),
                                                 ),
+                                              if (companyNames.isNotEmpty)
+                                                Text(
+                                                  companyNames.join(' | '),
+                                                  textAlign: TextAlign.center,
+                                                  style: const TextStyle(
+                                                    fontSize: 12,
+                                                    color: kBlack,
+                                                  ),
+                                                ),
+                                            ],
+                                          ),
+                                        const SizedBox(height: 5),
+                                        Text(
+                                          'Joined Date: $joinedDate',
+                                          style: const TextStyle(
+                                            fontSize: 11,
+                                            color: kBlack,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 20,
+                                        ),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10, vertical: 6),
+                                          decoration: BoxDecoration(
+                                              color: kWhite,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              border: Border.all(
+                                                  color: const Color.fromARGB(
+                                                      255, 234, 226, 226))),
+                                          child: IntrinsicWidth(
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 10),
+                                                  child: Image.asset(
+                                                      scale: 30,
+                                                      'assets/pngs/familytree_logo.png'),
+                                                ),
+                                                const SizedBox(width: 10),
+                                                Text(
+                                                    'Member ID: ${user.memberId}',
+                                                    style:
+                                                        kSmallerTitleB.copyWith(
+                                                            color:
+                                                                kPrimaryColor)),
                                               ],
                                             ),
-                                          ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                        SizedBox(
+                                          height: 20,
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
@@ -481,7 +383,8 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                           Row(
                                             children: [
                                               CustomIconContainer(
-                                                icon: FontAwesomeIcons.whatsapp,
+                                                icon: FontAwesomeIcons
+                                                    .squareWhatsapp,
                                               ),
                                               const SizedBox(width: 10),
                                               Expanded(
@@ -497,27 +400,15 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                                 .isNotEmpty)
                                           Row(
                                             children: [
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                  color: kGreyLight,
-                                                  borderRadius:
-                                                      BorderRadius.circular(5),
-                                                ),
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(2.0),
-                                                  child: SvgPicture.asset(
-                                                    color: kPrimaryColor,
+                                              CustomIconContainer(
+                                                svgPath:
                                                     'assets/svg/icons/whatsapp-business.svg',
-                                                  ),
-                                                ),
                                               ),
                                               const SizedBox(width: 10),
                                               Expanded(
-                                                child: Text(user.secondaryPhone
-                                                        ?.business ??
-                                                    ''),
-                                              )
+                                                child: Text(user
+                                                    .secondaryPhone!.whatsapp!),
+                                              ),
                                             ],
                                           ),
                                       ],
@@ -736,7 +627,7 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                   builder: (context, ref, child) {
                                     final asyncReviews = ref.watch(
                                         fetchReviewsProvider(
-                                            userId: user.uid ?? ''));
+                                            userId: user.id ?? ''));
                                     return asyncReviews.when(
                                       data: (reviews) {
                                         return Column(
@@ -872,10 +763,13 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                 ),
                             ]),
                           ),
+                          SizedBox(
+                            height: 100,
+                          )
                         ],
                       ),
                     ),
-                    if (user.uid != id)
+                    if (user.id != id)
                       Positioned(
                           bottom: 40,
                           left: 15,
@@ -892,7 +786,7 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                         label: 'SAY HI',
                                         onPressed: () {
                                           // final Participant receiver = Participant(
-                                          //   id: user.uid,
+                                          //   id: user.id,
                                           //   image: user.image ?? '',
                                           //   name: user.name,
                                           // );

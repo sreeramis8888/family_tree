@@ -153,7 +153,7 @@ class _ProductDetailsModalState extends ConsumerState<ProductDetailsModal> {
                                 child: Text(
                                   'INR ${widget.product.offerPrice?.toDouble()} / piece',
                                   style: const TextStyle(
-                                    color: Colors.white,
+                                    color: kWhite,
                                     fontSize: 13,
                                   ),
                                 ),

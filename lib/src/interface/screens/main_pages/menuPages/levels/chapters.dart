@@ -77,7 +77,7 @@ class _ChaptersPageState extends ConsumerState<ChaptersPage> {
             ),
             title: Text("Chapters"),
             centerTitle: false,
-            backgroundColor: Colors.white,
+            backgroundColor: kWhite,
             elevation: 0,
             titleTextStyle: TextStyle(
               color: Colors.black,
@@ -114,7 +114,7 @@ class _ChaptersPageState extends ConsumerState<ChaptersPage> {
                               horizontal: 16, vertical: 8),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: kWhite,
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
@@ -213,8 +213,7 @@ class _ChaptersPageState extends ConsumerState<ChaptersPage> {
           floatingActionButton: FloatingActionButton(
             onPressed: _showNotificationDialog,
             backgroundColor: Colors.orange,
-            child:
-                Icon(Icons.notifications_active_outlined, color: Colors.white),
+            child: Icon(Icons.notifications_active_outlined, color: kWhite),
           ),
           backgroundColor: Color(0xFFF8F8F8),
         );

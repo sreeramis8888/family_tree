@@ -102,10 +102,10 @@ class _SelectionDropDownState extends State<SelectionDropDown>
                 ),
                 iconSize: 24,
                 isExpanded: true,
-                dropdownColor: Colors.white,
+                dropdownColor: kWhite,
                 menuMaxHeight: 300,
                 decoration: InputDecoration(
-                  fillColor: Colors.white,
+                  fillColor: kWhite,
                   filled: true,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,

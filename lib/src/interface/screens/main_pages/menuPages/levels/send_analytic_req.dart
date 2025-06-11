@@ -155,7 +155,7 @@ class _SendAnalyticRequestPageState
     //     .watch(fetchLevelDataProvider(selectedRefferalChapter ?? '', 'user'));
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: kWhite,
         centerTitle: true,
         title: const Text(
           "Send Request",
@@ -381,7 +381,7 @@ class _SendAnalyticRequestPageState
                   decoration: InputDecoration(
                     labelStyle: const TextStyle(color: Colors.grey),
                     floatingLabelBehavior: FloatingLabelBehavior.never,
-                    fillColor: Colors.white,
+                    fillColor: kWhite,
                     filled: true,
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
@@ -476,7 +476,7 @@ class _SendAnalyticRequestPageState
                       decoration: InputDecoration(
                         labelStyle: const TextStyle(color: Colors.grey),
                         floatingLabelBehavior: FloatingLabelBehavior.never,
-                        fillColor: Colors.white,
+                        fillColor: kWhite,
                         filled: true,
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8.0),
@@ -535,7 +535,7 @@ class _SendAnalyticRequestPageState
                       decoration: InputDecoration(
                         labelStyle: const TextStyle(color: Colors.grey),
                         floatingLabelBehavior: FloatingLabelBehavior.never,
-                        fillColor: Colors.white,
+                        fillColor: kWhite,
                         filled: true,
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8.0),

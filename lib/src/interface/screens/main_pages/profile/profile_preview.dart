@@ -165,8 +165,8 @@ class ProfilePreview extends ConsumerWidget {
                                           defaultAvatarAsset:
                                               'assets/svg/icons/dummy_person_large.svg',
                                           size: 110,
-                                          glowColor: Colors.white,
-                                          borderColor: Colors.white,
+                                          glowColor: kWhite,
+                                          borderColor: kWhite,
                                           borderWidth: 3.0,
                                         ),
                                         VerifiedName(
@@ -198,7 +198,7 @@ class ProfilePreview extends ConsumerWidget {
                                                             TextAlign.center,
                                                         style: const TextStyle(
                                                           fontSize: 12,
-                                                          color: Colors.white,
+                                                          color: kWhite,
                                                         ),
                                                       ),
                                                     if (companyNames.isNotEmpty)
@@ -209,7 +209,7 @@ class ProfilePreview extends ConsumerWidget {
                                                             TextAlign.center,
                                                         style: const TextStyle(
                                                           fontSize: 12,
-                                                          color: Colors.white,
+                                                          color: kWhite,
                                                         ),
                                                       ),
                                                   ],
@@ -254,7 +254,7 @@ class ProfilePreview extends ConsumerWidget {
                                                 'Joined Date: $joinedDate',
                                                 style: const TextStyle(
                                                   fontSize: 11,
-                                                  color: Colors.white,
+                                                  color: kWhite,
                                                 ),
                                               ),
                                               SizedBox(
@@ -266,7 +266,7 @@ class ProfilePreview extends ConsumerWidget {
                                                         horizontal: 10,
                                                         vertical: 6),
                                                 decoration: BoxDecoration(
-                                                    color: Colors.white,
+                                                    color: kWhite,
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             10),
@@ -642,7 +642,7 @@ class ProfilePreview extends ConsumerWidget {
                         child: Consumer(
                           builder: (context, ref, child) {
                             final asyncReviews = ref.watch(
-                                fetchReviewsProvider(userId: user.uid ?? ''));
+                                fetchReviewsProvider(userId: user.id ?? ''));
                             return asyncReviews.when(
                               data: (reviews) {
                                 return Column(
@@ -700,7 +700,7 @@ class ProfilePreview extends ConsumerWidget {
                                               ),
                                               builder: (context) =>
                                                   ShowWriteReviewSheet(
-                                                userId: user.uid!,
+                                                userId: user.id!,
                                               ),
                                             );
                                           },
@@ -798,7 +798,7 @@ class ProfilePreview extends ConsumerWidget {
                 ],
               ),
             ),
-            if (user.uid != id)
+            if (user.id != id)
               Positioned(
                   bottom: 40,
                   left: 15,
@@ -815,7 +815,7 @@ class ProfilePreview extends ConsumerWidget {
                                 label: 'SAY HI',
                                 onPressed: () {
                                   final Participant receiver = Participant(
-                                    id: user.uid,
+                                    id: user.id,
                                     image: user.image ?? '',
                                     name: user.name,
                                   );

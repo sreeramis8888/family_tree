@@ -89,7 +89,7 @@ class DeepLinkService {
                   ?.pushNamed('IndividualPage', arguments: {
                 'sender': Participant(id: id),
                 'receiver': Participant(
-                  id: user.uid,
+                  id: user.id,
                   name: user.name,
                   image: user.image,
                 ),

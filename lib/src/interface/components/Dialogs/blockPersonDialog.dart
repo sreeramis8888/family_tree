@@ -49,14 +49,14 @@ class _BlockPersonDialogState extends ConsumerState<BlockPersonDialog> {
         },
         data: (user) {
           bool isBlocked = user.blockedUsers
-                  ?.any((blockedUser) => blockedUser.uid == widget.userId) ??
+                  ?.any((blockedUser) => blockedUser.id == widget.userId) ??
               false;
           return Dialog(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16.0),
             ),
             elevation: 12,
-            backgroundColor: Colors.white,
+            backgroundColor: kWhite,
             child: Container(
               width: MediaQuery.of(context).size.width * 0.7,
               padding:
@@ -109,7 +109,7 @@ class _BlockPersonDialogState extends ConsumerState<BlockPersonDialog> {
                                   ),
                                 ),
                                 filled: true,
-                                fillColor: Colors.white,
+                                fillColor: kWhite,
                                 contentPadding: EdgeInsets.symmetric(
                                     vertical: 15.0, horizontal: 20.0),
                               ),
@@ -196,7 +196,7 @@ class _BlockPersonDialogState extends ConsumerState<BlockPersonDialog> {
           child: Text(
             isBlocked ? 'Unblock' : 'Block',
             style: const TextStyle(
-              color: Colors.white,
+              color: kWhite,
               fontWeight: FontWeight.bold,
               fontSize: 16.0,
             ),

@@ -132,8 +132,8 @@ class _IndividualPageState extends ConsumerState<Groupchatscreen> {
               preferredSize: const Size.fromHeight(60),
               child: AppBar(
                 elevation: 1,
-                shadowColor: Colors.white,
-                backgroundColor: Colors.white,
+                shadowColor: kWhite,
+                backgroundColor: kWhite,
                 leadingWidth: 90,
                 titleSpacing: 0,
                 leading: Row(
@@ -161,7 +161,7 @@ class _IndividualPageState extends ConsumerState<Groupchatscreen> {
                           errorBuilder: (context, error, stackTrace) {
                             return const Icon(
                               Icons.groups_2,
-                              color: Colors.white,
+                              color: kWhite,
                             );
                           },
                         ),
@@ -304,7 +304,7 @@ class _IndividualPageState extends ConsumerState<Groupchatscreen> {
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: kWhite,
                                 letterSpacing: 1.5,
                                 shadows: [
                                   // Shadow(
@@ -328,7 +328,7 @@ class _IndividualPageState extends ConsumerState<Groupchatscreen> {
                                 Expanded(
                                   child: Card(
                                     elevation: 1,
-                                    color: Colors.white,
+                                    color: kWhite,
                                     shape: RoundedRectangleBorder(
                                       side: const BorderSide(
                                         color:
@@ -384,7 +384,7 @@ class _IndividualPageState extends ConsumerState<Groupchatscreen> {
                                     child: IconButton(
                                       icon: const Icon(
                                         Icons.send,
-                                        color: Colors.white,
+                                        color: kWhite,
                                       ),
                                       onPressed: () {
                                         sendMessage();
@@ -483,7 +483,7 @@ class _IndividualPageState extends ConsumerState<Groupchatscreen> {
             child: Icon(
               icons,
               size: 29,
-              color: Colors.white,
+              color: kWhite,
             ),
           ),
           const SizedBox(

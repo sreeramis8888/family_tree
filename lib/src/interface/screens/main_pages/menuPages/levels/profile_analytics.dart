@@ -29,7 +29,7 @@ class ProfileAnalyticsPage extends StatelessWidget {
         ),
         title: Text("Back"),
         centerTitle: false,
-        backgroundColor: Colors.white,
+        backgroundColor: kWhite,
         elevation: 0,
         titleTextStyle: const TextStyle(
           color: Colors.black,
@@ -46,7 +46,7 @@ class ProfileAnalyticsPage extends StatelessWidget {
             // Profile Section
             Container(
               width: double.infinity,
-              decoration: BoxDecoration(color: Colors.white, boxShadow: [
+              decoration: BoxDecoration(color: kWhite, boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.1),
                   spreadRadius: .1,
@@ -89,7 +89,7 @@ class ProfileAnalyticsPage extends StatelessWidget {
                       child: Consumer(
                         builder: (context, ref, child) {
                           final asyncUser = ref
-                              .watch(fetchUserDetailsProvider(user.uid ?? ''));
+                              .watch(fetchUserDetailsProvider(user.id ?? ''));
                           return asyncUser.when(
                             data: (userData) {
                               return customButton(
@@ -142,7 +142,7 @@ class ProfileAnalyticsPage extends StatelessWidget {
             Consumer(
               builder: (context, ref, child) {
                 final asyncReviews =
-                    ref.watch(fetchReviewsProvider(userId: user.uid ?? ''));
+                    ref.watch(fetchReviewsProvider(userId: user.id ?? ''));
                 return asyncReviews.when(
                   data: (reviews) {
                     final ratingDistribution = getRatingDistribution(reviews);
@@ -157,7 +157,7 @@ class ProfileAnalyticsPage extends StatelessWidget {
                             padding: const EdgeInsets.all(8.0),
                             child: Container(
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: kWhite,
                                 borderRadius: BorderRadius.circular(12),
                                 boxShadow: [
                                   BoxShadow(
@@ -199,7 +199,7 @@ class ProfileAnalyticsPage extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: kWhite,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(

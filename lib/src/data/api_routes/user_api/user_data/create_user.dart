@@ -18,7 +18,6 @@ Future<void> createUser({required UserModel user}) async {
   final body = jsonEncode({
     {
       "name": user.name,
-      "uid": user.name,
       "memberId": user.name,
       "bloodgroup": user.name,
       "role": user.name,

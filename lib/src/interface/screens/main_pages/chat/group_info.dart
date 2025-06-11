@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
@@ -19,13 +20,13 @@ class GroupInfoPage extends StatelessWidget {
       builder: (context, ref, child) {
         final asyncGroupInfo = ref.watch(fetchGroupInfoProvider(id: groupId));
         return Scaffold(
-            backgroundColor: Colors.white,
+            backgroundColor: kWhite,
             appBar: PreferredSize(
               preferredSize: const Size.fromHeight(
                   65.0), // Adjust the size to fit the border and content
               child: Container(
                 decoration: const BoxDecoration(
-                  color: Colors.white, // AppBar background color
+                  color: kWhite, // AppBar background color
                   border: Border(
                     bottom: BorderSide(
                       color: Color.fromARGB(255, 231, 226, 226), // Border color
@@ -36,7 +37,7 @@ class GroupInfoPage extends StatelessWidget {
                 child: AppBar(
                   toolbarHeight: 45.0,
                   scrolledUnderElevation: 0,
-                  backgroundColor: Colors.white,
+                  backgroundColor: kWhite,
                   elevation: 0,
                   leadingWidth: 100,
                   leading: Padding(

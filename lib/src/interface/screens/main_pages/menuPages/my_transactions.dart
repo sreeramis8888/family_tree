@@ -23,13 +23,13 @@
 //       builder: (context, ref, child) {
 //         final asyncTransactions = ref.watch(fetchTransactionsProvider);
 //         return Scaffold(
-//             backgroundColor: Colors.white,
+//             backgroundColor: kWhite,
 //             appBar: AppBar(
 //               title: const Text(
 //                 "My Transactions",
 //                 style: TextStyle(fontSize: 17),
 //               ),
-//               backgroundColor: Colors.white,
+//               backgroundColor: kWhite,
 //               scrolledUnderElevation: 0,
 //               leading: IconButton(
 //                 icon: const Icon(Icons.arrow_back),
@@ -108,7 +108,7 @@
 //             selectedStatus = label;
 //           });
 //         },
-//         backgroundColor: Colors.white, // Unselected background color
+//         backgroundColor: kWhite, // Unselected background color
 //         selectedColor: const Color(0xFFD3EDCA), // Selected color (light green)
 //         shape: RoundedRectangleBorder(
 //           side: const BorderSide(color: Color.fromARGB(255, 214, 210, 210)),
@@ -155,7 +155,7 @@
 //       child: Container(
 //         decoration: BoxDecoration(
 //           borderRadius: BorderRadius.circular(10),
-//           color: Colors.white,
+//           color: kWhite,
 //           border: Border.all(color: const Color.fromARGB(255, 225, 217, 217)),
 //         ),
 //         child: Padding(
@@ -185,7 +185,7 @@
 //                     padding:
 //                         const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
 //                     decoration: BoxDecoration(
-//                       color: Colors.white,
+//                       color: kWhite,
 //                       borderRadius: BorderRadius.circular(20),
 //                       border: Border.all(color: statusColor),
 //                     ),
@@ -223,7 +223,7 @@
 //               //         child: ElevatedButton(
 //               //           style: ElevatedButton.styleFrom(
 //               //             backgroundColor: const kPrimaryColor,
-//               //             foregroundColor: Colors.white,
+//               //             foregroundColor: kWhite,
 //               //             shape: RoundedRectangleBorder(
 //               //               borderRadius: BorderRadius.circular(5),
 //               //             ),

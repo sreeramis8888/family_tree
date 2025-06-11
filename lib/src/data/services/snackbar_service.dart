@@ -13,7 +13,7 @@ class SnackbarService {
     final snackBar = SnackBar(
       content: Row(
         children: [
-          Icon(Icons.info_outline, color: Colors.white),
+          Icon(Icons.info_outline, color: kWhite),
           SizedBox(width: 10),
           Expanded(child: Text(message)),
         ],
@@ -28,7 +28,7 @@ class SnackbarService {
       duration: Duration(seconds: 4), // Duration the Snackbar is visible
       action: SnackBarAction(
         label: 'DISMISS',
-        textColor: Colors.white,
+        textColor: kWhite,
         onPressed: () {
           // Do something when the action is clicked, if needed
         },

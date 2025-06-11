@@ -68,7 +68,7 @@ class _LevelMembersState extends ConsumerState<LevelMembers> {
             ),
             title: Text("Members"),
             centerTitle: false,
-            backgroundColor: Colors.white,
+            backgroundColor: kWhite,
             elevation: 0,
             titleTextStyle: TextStyle(
               color: Colors.black,
@@ -163,7 +163,7 @@ class _LevelMembersState extends ConsumerState<LevelMembers> {
           floatingActionButton: FloatingActionButton(
             onPressed: _showNotificationDialog,
             backgroundColor: Colors.orange,
-            child: Icon(Icons.person_add, color: Colors.white),
+            child: Icon(Icons.person_add, color: kWhite),
           ),
         );
       },

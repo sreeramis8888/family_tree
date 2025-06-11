@@ -1,10 +1,11 @@
+import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:flutter/material.dart';
 
 class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: kWhite,
       appBar: AppBar(
         title: const Text(
           'About',
@@ -14,7 +15,7 @@ class AboutPage extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: kWhite,
         iconTheme: const IconThemeData(color: Colors.black),
         elevation: 0,
       ),

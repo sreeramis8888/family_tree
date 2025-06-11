@@ -104,7 +104,7 @@ class _ViewMoreEventPageState extends ConsumerState<ViewMoreEventPage>
     String formattedDate = DateFormat('dd MMM yyyy').format(dateTime);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: kWhite,
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
@@ -113,7 +113,7 @@ class _ViewMoreEventPageState extends ConsumerState<ViewMoreEventPage>
               expandedHeight: widget.event.image != null ? 300.0 : 0.0,
               floating: false,
               pinned: true,
-              backgroundColor: Colors.white,
+              backgroundColor: kWhite,
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () => Navigator.pop(context),
@@ -145,13 +145,13 @@ class _ViewMoreEventPageState extends ConsumerState<ViewMoreEventPage>
                                       widget.event.status!.toUpperCase(),
                                       style: const TextStyle(
                                         fontSize: 12,
-                                        color: Colors.white,
+                                        color: kWhite,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                     const SizedBox(width: 4),
                                     const Icon(Icons.circle,
-                                        color: Colors.white, size: 8),
+                                        color: kWhite, size: 8),
                                   ],
                                 ),
                               ),
@@ -270,7 +270,7 @@ class _ViewMoreEventPageState extends ConsumerState<ViewMoreEventPage>
                               horizontal: 16, vertical: 8),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: kWhite,
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
@@ -442,7 +442,7 @@ class _ViewMoreEventPageState extends ConsumerState<ViewMoreEventPage>
           ? Container(
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: kWhite,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
@@ -560,7 +560,7 @@ class _ViewMoreEventPageState extends ConsumerState<ViewMoreEventPage>
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: kWhite,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
@@ -612,7 +612,7 @@ class _ViewMoreEventPageState extends ConsumerState<ViewMoreEventPage>
             final speaker = widget.event.speakers![index];
             return Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: kWhite,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
@@ -666,7 +666,7 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
-      color: Colors.white,
+      color: kWhite,
       child: child,
     );
   }

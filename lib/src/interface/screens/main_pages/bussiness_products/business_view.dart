@@ -137,7 +137,7 @@ class _BusinessViewState extends ConsumerState<BusinessView> {
     List<Business> filteredFeeds = filterFeeds(feeds);
 
     return RefreshIndicator(
-      backgroundColor: Colors.white,
+      backgroundColor: kWhite,
       color: Colors.red,
       onRefresh: () =>
           ref.read(businessNotifierProvider.notifier).refreshFeed(),
@@ -222,7 +222,7 @@ class _BusinessViewState extends ConsumerState<BusinessView> {
                   ),
                   child: Icon(
                     Icons.add,
-                    color: Colors.white,
+                    color: kWhite,
                     size: 27,
                   ),
                 ),
@@ -234,11 +234,11 @@ class _BusinessViewState extends ConsumerState<BusinessView> {
         //   onPressed: () => _openModalSheet(sheet: 'post'),
         //   label: const Text(
         //     '',
-        //     style: TextStyle(color: Colors.white),
+        //     style: TextStyle(color: kWhite),
         //   ),
         //   icon: const Icon(
         //     Icons.add,
-        //     color: Colors.white,
+        //     color: kWhite,
         //     size: 27,
         //   ),
         //   backgroundColor: const Color(0xFFE30613),
@@ -259,7 +259,7 @@ class _BusinessViewState extends ConsumerState<BusinessView> {
   //           selectedFilter = label;
   //         });
   //       },
-  //       backgroundColor: Colors.white, // Light green background color
+  //       backgroundColor: kWhite, // Light green background color
   //       selectedColor: const Color(0xFFD3EDCA), // When selected
 
   //       shape: RoundedRectangleBorder(
@@ -279,7 +279,7 @@ class _BusinessViewState extends ConsumerState<BusinessView> {
         return asyncUser.when(
           data: (user) {
             var receiver = Participant(
-              id: user.uid ?? '',
+              id: user.id ?? '',
               name: user.name ?? '',
               image: user.image ?? '',
             );
@@ -395,7 +395,7 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 30),
           child: Container(
             decoration: const BoxDecoration(
-              color: Colors.white,
+              color: kWhite,
               borderRadius: BorderRadius.vertical(
                 top: Radius.circular(20.0),
                 bottom: Radius.circular(20.0),
@@ -414,7 +414,7 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                 backgroundColor: Colors.transparent,
                 appBar: AppBar(
                   title: const Text('Comments'),
-                  backgroundColor: Colors.white,
+                  backgroundColor: kWhite,
                   automaticallyImplyLeading: false,
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.vertical(
@@ -538,7 +538,7 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: kWhite,
       margin: const EdgeInsets.only(bottom: 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -808,7 +808,7 @@ class ReusableFeedPostSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.white,
+      color: kWhite,
       elevation: 0,
       margin: const EdgeInsets.only(bottom: 16.0),
       shape: RoundedRectangleBorder(

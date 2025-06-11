@@ -75,7 +75,7 @@ class NewsListPage extends ConsumerWidget {
     return Scaffold(
       backgroundColor: kWhite,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: kWhite,
         scrolledUnderElevation: 0,
         titleSpacing: 0,
         title: Padding(
@@ -119,7 +119,7 @@ class NewsListPage extends ConsumerWidget {
                   child: Text(
                     '3', // Placeholder for bookmark count
                     style: TextStyle(
-                      color: Colors.white,
+                      color: kWhite,
                       fontSize: 10,
                     ),
                     textAlign: TextAlign.center,
@@ -164,7 +164,7 @@ class NewsListPage extends ConsumerWidget {
                   borderSide: BorderSide(color: Colors.red[400]!, width: 1.5),
                 ),
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: kWhite,
                 contentPadding:
                     EdgeInsets.symmetric(vertical: 12, horizontal: 16),
               ),

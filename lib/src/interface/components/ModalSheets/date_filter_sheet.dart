@@ -24,7 +24,7 @@ class _DateFilterSheetState extends State<DateFilterSheet> {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: kWhite,
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(

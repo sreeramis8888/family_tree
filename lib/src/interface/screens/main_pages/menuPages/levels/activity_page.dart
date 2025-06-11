@@ -56,7 +56,7 @@ class ActivityPage extends StatelessWidget {
               ],
               title: Text("Activity"),
               centerTitle: false,
-              backgroundColor: Colors.white,
+              backgroundColor: kWhite,
               elevation: 0,
               titleTextStyle: TextStyle(
                 color: Colors.black,
@@ -78,7 +78,7 @@ class ActivityPage extends StatelessWidget {
                       return Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          color: Colors.white,
+                          color: kWhite,
                           boxShadow: [
                             BoxShadow(
                               color: Colors.grey.withOpacity(0.1),

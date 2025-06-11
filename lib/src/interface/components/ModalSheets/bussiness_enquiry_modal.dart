@@ -9,7 +9,7 @@ import 'package:familytree/src/data/models/user_model.dart';
 import 'package:familytree/src/interface/components/Buttons/primary_button.dart';
 import 'package:familytree/src/interface/components/custom_widgets/user_tile.dart';
 import 'package:familytree/src/interface/screens/main_pages/chat/chat_screen.dart';
-
+import 'package:familytree/src/data/constants/color_constants.dart';
 void businessEnquiry({
   required BuildContext context,
   required VoidCallback onButtonPressed,
@@ -101,7 +101,7 @@ void businessEnquiry({
                 width: 30,
                 height: 30,
                 decoration: const BoxDecoration(
-                  color: Colors.white,
+                  color: kWhite,
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
@@ -143,7 +143,7 @@ void messageSheet({
 
       return Container(
         decoration: const BoxDecoration(
-            color: Colors.white,
+            color: kWhite,
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(20), topRight: Radius.circular(20))),
         child: Padding(
@@ -282,7 +282,7 @@ void messageSheet({
                     width: 30,
                     height: 30,
                     decoration: const BoxDecoration(
-                      color: Colors.white,
+                      color: kWhite,
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(

@@ -58,7 +58,7 @@ Padding customWebsiteCard({
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: Colors.white,
+        color: kWhite,
       ),
       child: Row(
         children: [
@@ -68,7 +68,7 @@ Padding customWebsiteCard({
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
-                color: Colors.white,
+                color: kWhite,
               ),
               width: 42,
               height: 42,
@@ -94,7 +94,7 @@ Padding customWebsiteCard({
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              color: Colors.white,
+              color: kWhite,
             ),
             child: Padding(
               padding: const EdgeInsets.all(4.0),
@@ -139,7 +139,7 @@ Padding customVideoCard({
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(5),
-                  color: Colors.white,
+                  color: kWhite,
                 ),
                 width: 42,
                 height: 42,
@@ -167,7 +167,7 @@ Padding customVideoCard({
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              color: Colors.white,
+              color: kWhite,
             ),
             child: Padding(
               padding: const EdgeInsets.all(4.0),

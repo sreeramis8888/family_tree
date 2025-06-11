@@ -17,13 +17,13 @@ class MyEventsPage extends StatelessWidget {
       builder: (context, ref, child) {
         final asyncEvents = ref.watch(fetchMyEventsProvider);
         return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: kWhite,
           appBar: AppBar(
             title: Text(
               "My Events",
               style: TextStyle(fontSize: 17),
             ),
-            backgroundColor: Colors.white,
+            backgroundColor: kWhite,
             scrolledUnderElevation: 0,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
@@ -64,7 +64,7 @@ class MyEventsPage extends StatelessWidget {
 
     String formattedDate = DateFormat('yyyy-MM-dd').format(dateTime);
     return Card(
-      color: Colors.white,
+      color: kWhite,
       margin: const EdgeInsets.all(10),
       child: Column(
         children: [
@@ -99,7 +99,7 @@ class MyEventsPage extends StatelessWidget {
                 height: 200,
                 fit: BoxFit.cover,
               ),
-              const Icon(Icons.play_circle_fill, size: 64, color: Colors.white),
+              const Icon(Icons.play_circle_fill, size: 64, color: kWhite),
               Positioned(
                 top: 10,
                 left: 10,
@@ -198,8 +198,8 @@ class MyEventsPage extends StatelessWidget {
                         minimumSize: const Size(
                             150, 40), // Adjust the width of the button
                       ),
-                      child: const Text('JOIN',
-                          style: TextStyle(color: Colors.white)),
+                      child:
+                          const Text('JOIN', style: TextStyle(color: kWhite)),
                     ),
                   ),
               ],

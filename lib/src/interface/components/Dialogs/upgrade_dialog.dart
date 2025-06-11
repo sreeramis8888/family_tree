@@ -7,7 +7,7 @@ import 'package:familytree/src/interface/components/Buttons/primary_button.dart'
 import 'package:familytree/src/interface/components/loading_indicator/loading_indicator.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/my_subscription_commented.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/my_subscription.dart';
-
+import 'package:familytree/src/data/constants/color_constants.dart';
 class UpgradeDialog extends StatelessWidget {
   const UpgradeDialog({Key? key}) : super(key: key);
 
@@ -18,7 +18,7 @@ class UpgradeDialog extends StatelessWidget {
         final asynUser = ref.watch(userProvider);
 
         return Dialog(
-          backgroundColor: Colors.white,
+          backgroundColor: kWhite,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12.0),
           ),

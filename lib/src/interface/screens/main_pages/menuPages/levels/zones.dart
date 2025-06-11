@@ -72,7 +72,7 @@ class _ZonesPageState extends ConsumerState<ZonesPage> {
             ),
             title: Text("Zones"),
             centerTitle: false,
-            backgroundColor: Colors.white,
+            backgroundColor: kWhite,
             elevation: 0,
             titleTextStyle: TextStyle(
               color: Colors.black,
@@ -107,7 +107,7 @@ class _ZonesPageState extends ConsumerState<ZonesPage> {
                               horizontal: 16, vertical: 8),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: kWhite,
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
@@ -162,7 +162,7 @@ class _ZonesPageState extends ConsumerState<ZonesPage> {
           floatingActionButton: FloatingActionButton(
             onPressed: _showNotificationDialog,
             backgroundColor: kPrimaryColor,
-            child: Icon(Icons.notifications, color: Colors.white),
+            child: Icon(Icons.notifications, color: kWhite),
           ),
           backgroundColor: Color(0xFFF8F8F8), // Light background color
         );

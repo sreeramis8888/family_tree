@@ -30,7 +30,7 @@ class MemberCreationTextfield extends StatelessWidget {
           Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           Container(
-            color: Colors.white,
+            color: kWhite,
             child: TextFormField(
               keyboardType: textInputType,
               controller: textEditingController,

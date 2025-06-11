@@ -64,7 +64,7 @@ class _StatesPageState extends ConsumerState<StatesPage> {
             ),
             title: Text("States"),
             centerTitle: true,
-            backgroundColor: Colors.white,
+            backgroundColor: kWhite,
             elevation: 0,
             titleTextStyle: TextStyle(
               color: Colors.black,
@@ -84,7 +84,7 @@ class _StatesPageState extends ConsumerState<StatesPage> {
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: kWhite,
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(

@@ -108,11 +108,11 @@ class _SocialMediaEditorState extends State<SocialMediaEditor> {
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             shape: BoxShape.rectangle,
-            color: isValuePresent ? kPrimaryColor : kWhite),
+            color: isValuePresent ? kPrimaryColor : kSecondaryColor),
         padding: const EdgeInsets.all(16),
         child: Icon(
           widget.icon,
-          color: isValuePresent ? kWhite : kPrimaryColor,
+          color: isValuePresent ? kSecondaryColor : kPrimaryColor,
         ),
       ),
     );
