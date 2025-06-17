@@ -5,6 +5,7 @@ class News {
   final String? content;
   final String? media;
   final String? status;
+  final String? pdf;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -15,11 +16,11 @@ class News {
     this.content,
     this.media,
     this.status,
+    this.pdf,
     this.createdAt,
     this.updatedAt,
   });
 
-  /// Factory method to create a News instance from JSON
   factory News.fromJson(Map<String, dynamic> json) {
     return News(
       id: json['_id'] as String?,
@@ -28,44 +29,49 @@ class News {
       content: json['content'] as String?,
       media: json['media'] as String?,
       status: json['status'] as String?,
+      pdf: json['pdf'] as String?,
       createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'] as String)
+          ? DateTime.tryParse(json['createdAt'])
           : null,
       updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'] as String)
+          ? DateTime.tryParse(json['updatedAt'])
           : null,
     );
   }
 
-  /// Converts a News instance to JSON
   Map<String, dynamic> toJson() {
     return {
+      '_id': id,
       'category': category,
       'title': title,
       'content': content,
       'media': media,
       'status': status,
+      'pdf': pdf,
       'createdAt': createdAt?.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
     };
   }
 
-  /// Method to create a copy of the News object with updated fields
   News copyWith({
+    String? id,
     String? category,
     String? title,
     String? content,
     String? media,
     String? status,
+    String? pdf,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
     return News(
+      id: id ?? this.id,
       category: category ?? this.category,
       title: title ?? this.title,
       content: content ?? this.content,
       media: media ?? this.media,
       status: status ?? this.status,
+      pdf: pdf ?? this.pdf,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

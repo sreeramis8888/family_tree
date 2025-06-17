@@ -16,12 +16,12 @@ part 'user_data.g.dart';
 class UserService {
   static Map<String, String> _headers() => {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
+        // 'Authorization': 'Bearer $token',
         'accept': '*/*',
       };
 
   static Future<UserModel> fetchUserDetails(String userId) async {
-    final url = Uri.parse('$baseUrl/user/single/$userId');
+    final url = Uri.parse('$baseUrl/person/$userId');
     final response = await http.get(url, headers: _headers());
     log(response.body);
 
@@ -103,7 +103,7 @@ class UserService {
     try {
       final response = await http.put(url, headers: _headers());
       if (response.statusCode == 200) {
-        ref.read(userProvider.notifier).refreshUser();
+        // ref.read(userProvider.notifier).refreshUser();
         SnackbarService().showSnackBar('Blocked');
       } else {
         SnackbarService().showSnackBar('Failed to Block');

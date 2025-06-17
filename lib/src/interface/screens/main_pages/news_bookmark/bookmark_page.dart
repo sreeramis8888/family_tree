@@ -15,9 +15,64 @@ class BookmarkPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bookmarkedIds = ref.watch(bookmarkedNewsProvider);
+   List<News> getMockNews() {
+    return [
+      News(
+        id: '1',
+        title: 'Rahim Electronics Crosses 500 Orders!',
+        content:
+            'The annual family reunion was a great success with over 100 members attending...',
+        category: 'Electronics',
+        media: 'https://picsum.photos/id/10/800/450',
+        updatedAt: DateTime.now().subtract(Duration(hours: 11)),
+      ),
+      News(
+        id: '2',
+        title: 'Homemade Pickles By Fatima Now Available!',
+        content: 'Welcome to our newest family member, born on May 15th...',
+        category: 'Food',
+        media: 'https://picsum.photos/id/20/800/450',
+        updatedAt: DateTime.now().subtract(Duration(hours: 11)),
+      ),
+      News(
+        id: '3',
+        title: 'Rahim Electronics Crosses 500 Orders!',
+        content: 'Our family history project has reached a new milestone...',
+        category: 'Electronics',
+        media: 'https://picsum.photos/id/30/800/450',
+        updatedAt: DateTime.now().subtract(Duration(hours: 11)),
+      ),
+      News(
+        id: '4',
+        title: 'Rahim Electronics Crosses 500 Orders!',
+        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+        category: 'Electronics',
+        media: 'https://picsum.photos/id/40/800/450',
+        updatedAt: DateTime.now().subtract(Duration(hours: 11)),
+      ),
+      News(
+        id: '5',
+        title: 'Rahim Electronics Crosses 500 Orders!',
+        content:
+            'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+        category: 'Electronics',
+        media: 'https://picsum.photos/id/50/800/450',
+        updatedAt: DateTime.now().subtract(Duration(hours: 11)),
+      ),
+      News(
+        id: '6',
+        title: 'Rahim Electronics Crosses 500 Orders!',
+        content:
+            'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.',
+        category: 'Electronics',
+        media: 'https://picsum.photos/id/60/800/450',
+        updatedAt: DateTime.now().subtract(Duration(hours: 11)),
+      ),
+    ];
+  }
 
-    // Get mock news data from NewsListPage for UI demonstration consistency
-    final mockNews = NewsListPage.getMockNews(); // Access mock news data
+
+    final mockNews = getMockNews(); 
 
     final bookmarkedNews =
         mockNews.where((news) => bookmarkedIds.contains(news.id)).toList();

@@ -40,6 +40,7 @@ import 'package:familytree/src/interface/components/custom_widgets/circle_icon_b
 import 'package:familytree/src/interface/components/Cards/campaign_card.dart';
 import 'package:familytree/src/data/api_routes/activity_api/activity_api.dart';
 import 'package:familytree/src/data/models/activity_model.dart';
+import 'package:familytree/src/interface/screens/main_pages/menuPages/campaigns/campaigns_list_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   final UserModel user;
@@ -841,8 +842,10 @@ class _HomePageState extends ConsumerState<HomePage> {
               },
               loading: () =>
                   Center(child: buildShimmerPromotionsColumn(context: context)),
-              error: (error, stackTrace) =>
-                  const Center(child: Text('NO PROMOTIONS YET')),
+              error: (error, stackTrace) {
+                log(name: "Promotions api call ", error.toString());
+                return const Center(child: Text('NO PROMOTIONS YET'));
+              },
             ),
           ),
         );
@@ -1250,7 +1253,14 @@ class _CampaignsTabSectionState extends State<_CampaignsTabSection>
             children: [
               Text('Campaigns', style: kBodyTitleB.copyWith(color: kBlack)),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CampaignsMainScreen(),
+                    ),
+                  );
+                },
                 child: const Text('View All',
                     style: TextStyle(color: kRed, fontWeight: FontWeight.bold)),
               ),
@@ -1301,8 +1311,14 @@ class _CampaignsTabSectionState extends State<_CampaignsTabSection>
                     return CampaignCard(
                       campaign: campaign,
                       tag: _types[_currentIndex],
-                      onDonate: () {},
-                      onLearnMore: () {},
+                      leftButtonLabel: 'Learn More',
+                      rightButtonLabel: 'Donate Now',
+                      leftButtonAction: () {
+                        // TODO: Navigate to campaign detail page
+                      },
+                      rightButtonAction: () {
+                        // TODO: Navigate to campaign detail page
+                      },
                     );
                   },
                 ),

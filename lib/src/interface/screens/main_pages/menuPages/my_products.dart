@@ -181,19 +181,19 @@ class _MyProductPageState extends ConsumerState<MyProductPage> {
                   right: 16,
                   child: FloatingActionButton.extended(
                     onPressed: () {
-                      final userAsync = ref.watch(userProvider);
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        userAsync.whenOrNull(data: (user) {
-                          if (user.status == 'trial') {
-                            showDialog(
-                              context: context,
-                              builder: (_) => const PremiumDialog(),
-                            );
-                          } else {
+                      // final userAsync = ref.watch(userProvider);
+                      // WidgetsBinding.instance.addPostFrameCallback((_) {
+                      //   userAsync.whenOrNull(data: (user) {
+                      //     if (user.status == 'trial') {
+                      //       showDialog(
+                      //         context: context,
+                      //         builder: (_) => const PremiumDialog(),
+                      //       );
+                          // } else {
                             _openModalSheet(sheet: 'product');
-                          }
-                        });
-                      });
+                      //     }
+                      //   });
+                      // });
                     },
                     label: Padding(
                       padding: const EdgeInsets.all(8.0),

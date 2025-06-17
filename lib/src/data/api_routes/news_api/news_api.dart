@@ -15,7 +15,7 @@ Future<List<News>> fetchNews(FetchNewsRef ref) async {
     url,
     headers: {
       "Content-Type": "application/json",
-      "Authorization": "Bearer $token"
+      // "Authorization": "Bearer $token"
     },
   );
   print(json.decode(response.body)['status']);

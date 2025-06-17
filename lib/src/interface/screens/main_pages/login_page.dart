@@ -460,18 +460,19 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
   Future<void> _handleOtpVerification(
       BuildContext context, WidgetRef ref) async {
     ref.read(loadingProvider.notifier).startLoading();
-
+    final countryCode = ref.watch(countryCodeProvider);
     try {
       print(_otpController.text);
 
       Map<String, dynamic> responseMap = await verifyOTP(
+          phone: '+$countryCode${_mobileController.text}',
           verificationId: widget.verificationId,
           fcmToken: fcmToken,
           smsCode: _otpController.text,
           context: context);
 
-      String savedToken = responseMap['token'];
-      String savedId = responseMap['userId'];
+      String savedToken = responseMap['accessToken'];
+      String savedId = responseMap['user']['_id'];
 
       if (savedToken.isNotEmpty && savedId.isNotEmpty) {
         await SecureStorage.write('token', savedToken);
@@ -480,135 +481,12 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
         id = savedId;
         log('savedToken: $savedToken');
         log('savedId: $savedId');
-        await ref.read(userProvider.notifier).refreshUser();
-        final asyncUser = ref.watch(userProvider);
-        await asyncUser.when(
-          data: (user) async {
-            if (user.name == null || user.name!.trim().isEmpty) {
-              String? enteredName = await showDialog<String>(
-                context: context,
-                barrierDismissible: false,
-                builder: (context) {
-                  final TextEditingController nameController =
-                      TextEditingController();
-                  return Dialog(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16)),
-                      backgroundColor: kWhite,
-                      child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 24, vertical: 28),
-                          child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Text(
-                                  'Complete Your Profile',
-                                  style: kDisplayTitleSB.copyWith(
-                                      fontSize: 22, color: kPrimaryColor),
-                                  textAlign: TextAlign.center,
-                                ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  'Please enter your full name to continue.',
-                                  style:
-                                      TextStyle(fontSize: 16, color: kGreyDark),
-                                  textAlign: TextAlign.center,
-                                ),
-                                const SizedBox(height: 24),
-                                TextFormField(
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please Enter Your Name';
-                                    }
 
-                                    // Regex to allow only basic English letters and spaces (no emojis or fancy unicode)
-                                    final regex =
-                                        RegExp(r'^[a-zA-Z0-9\s.,-]*$');
-
-                                    if (!regex.hasMatch(value)) {
-                                      return 'Only standard letters, numbers, and basic punctuation allowed';
-                                    }
-
-                                    return null;
-                                  },
-                                  controller: nameController,
-                                  decoration: InputDecoration(
-                                    errorMaxLines: 3,
-                                    hintText: 'Full Name',
-                                    filled: true,
-                                    fillColor: kPrimaryLightColor,
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                          color: kPrimaryColor, width: 1),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                          color: kPrimaryColor, width: 2),
-                                    ),
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 14),
-                                  ),
-                                  style: kDisplayTitleM.copyWith(
-                                      fontSize: 16, color: kBlack),
-                                ),
-                                const SizedBox(height: 24),
-                                customButton(
-                                  label: 'Continue',
-                                  onPressed: () {
-                                    if (nameController.text.trim().isNotEmpty) {
-                                      Navigator.of(context)
-                                          .pop(nameController.text.trim());
-                                    }
-                                  },
-                                  buttonColor: kPrimaryColor,
-                                  fontSize: 18,
-                                ),
-                              ])));
-                },
-              );
-              if (enteredName != null && enteredName.isNotEmpty) {
-                await asyncUser.when(
-                  data: (user) async {
-                    if (user != null) {
-                      final countryCode = ref.watch(countryCodeProvider);
-
-                      await editUser({
-                        'name': enteredName,
-                        "phone": '+$countryCode${widget.phone}'
-                      });
-                      ref
-                          .read(userProvider.notifier)
-                          .updateName(name: enteredName);
-
-                      await ref.read(userProvider.notifier).refreshUser();
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => const EulaAgreementScreen(),
-                      ));
-                    }
-                  },
-                  error: (error, _) {
-                    // Handle error
-                  },
-                  loading: () {
-                    // Handle loading
-                  },
-                );
-              }
-            } else {
               Navigator.of(context).pushReplacement(MaterialPageRoute(
                   builder: (context) => const EulaAgreementScreen()));
-            }
-          },
-          error: (error, _) {
-            // Handle error
-          },
-          loading: () {
-            // Handle loading
-          },
-        );
+       
+        
+    
       } else {
         // CustomSnackbar.showSnackbar(context, 'Wrong OTP');
       }
@@ -621,80 +499,80 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
   }
 }
 
-class ProfileCompletionScreen extends ConsumerWidget {
-  const ProfileCompletionScreen({super.key});
+// class ProfileCompletionScreen extends ConsumerWidget {
+//   const ProfileCompletionScreen({super.key});
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final asyncUser = ref.watch(userProvider);
-    return asyncUser.when(
-      data: (user) {
-        final bool nameMissing = user.name == null || user.name!.trim().isEmpty;
-        return Scaffold(
-          backgroundColor: kWhite,
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SvgPicture.asset('assets/svg/images/letsgetstarted.svg'),
-                SizedBox(
-                  height: 10,
-                ),
-                Text("Let's Get Started,\nComplete your profile",
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.unna(
-                      color: kGreyDark,
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                    )),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.only(left: 25, right: 25, top: 10),
-                  child: SizedBox(
-                      height: 50,
-                      width: double.infinity,
-                      child: customButton(
-                          label: 'Next',
-                          onPressed: () {
-                            Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    settings: const RouteSettings(
-                                        name: 'ProfileCompletion'),
-                                    builder: (context) => const EditUser()));
-                          },
-                          fontSize: 16)),
-                ),
-                if (!nameMissing)
-                  TextButton(
-                    onPressed: () async {
-                      // Check if user has agreed to EULA
-                      final eulaAgreed =
-                          await SecureStorage.read('eula_agreed');
-                      if (eulaAgreed != 'true') {
-                        // Show EULA agreement screen if not agreed
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const EulaAgreementScreen()),
-                        );
-                        return;
-                      }
-                      NavigationService navigationService = NavigationService();
-                      navigationService.pushNamedReplacement('MainPage');
-                    },
-                    child: Text(
-                      'Skip',
-                      style: kSmallTitleB.copyWith(color: kPrimaryColor),
-                    ),
-                  )
-              ],
-            ),
-          ),
-        );
-      },
-      loading: () => const Center(child: LoadingAnimation()),
-      error: (error, stackTrace) =>
-          const Center(child: Text('Error loading user')),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context, WidgetRef ref) {
+//     final asyncUser = ref.watch(userProvider);
+//     return asyncUser.when(
+//       data: (user) {
+//         final bool nameMissing = user.name == null || user.name!.trim().isEmpty;
+//         return Scaffold(
+//           backgroundColor: kWhite,
+//           body: Center(
+//             child: Column(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 SvgPicture.asset('assets/svg/images/letsgetstarted.svg'),
+//                 SizedBox(
+//                   height: 10,
+//                 ),
+//                 Text("Let's Get Started,\nComplete your profile",
+//                     textAlign: TextAlign.center,
+//                     style: GoogleFonts.unna(
+//                       color: kGreyDark,
+//                       fontSize: 25,
+//                       fontWeight: FontWeight.bold,
+//                     )),
+//                 const SizedBox(height: 20),
+//                 Padding(
+//                   padding: const EdgeInsets.only(left: 25, right: 25, top: 10),
+//                   child: SizedBox(
+//                       height: 50,
+//                       width: double.infinity,
+//                       child: customButton(
+//                           label: 'Next',
+//                           onPressed: () {
+//                             // Navigator.of(context).pushReplacement(
+//                             //     MaterialPageRoute(
+//                             //         settings: const RouteSettings(
+//                             //             name: 'ProfileCompletion'),
+//                             //         builder: (context) => const EditUser()));
+//                           },
+//                           fontSize: 16)),
+//                 ),
+//                 if (!nameMissing)
+//                   TextButton(
+//                     onPressed: () async {
+//                       // Check if user has agreed to EULA
+//                       final eulaAgreed =
+//                           await SecureStorage.read('eula_agreed');
+//                       if (eulaAgreed != 'true') {
+//                         // Show EULA agreement screen if not agreed
+//                         Navigator.of(context).pushReplacement(
+//                           MaterialPageRoute(
+//                               builder: (context) =>
+//                                   const EulaAgreementScreen()),
+//                         );
+//                         return;
+//                       }
+//                       NavigationService navigationService = NavigationService();
+//                       navigationService.pushNamedReplacement('MainPage');
+//                     },
+//                     child: Text(
+//                       'Skip',
+//                       style: kSmallTitleB.copyWith(color: kPrimaryColor),
+//                     ),
+//                   )
+//               ],
+//             ),
+//           ),
+//         );
+//       },
+//       loading: () => const Center(child: LoadingAnimation()),
+//       error: (error, stackTrace) =>
+//           const Center(child: Text('Error loading user')),
+//     );
+//   }
+// }

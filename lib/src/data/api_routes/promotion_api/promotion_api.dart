@@ -8,13 +8,13 @@ part 'promotion_api.g.dart';
 
 @riverpod
 Future<List<Promotion>> fetchPromotions(Ref ref) async {
-  final url = Uri.parse('$baseUrl/promotion/user');
+  final url = Uri.parse('$baseUrl/promotions/user');
   print('Requesting URL: $url');
   final response = await http.get(
     url,
     headers: {
       "Content-Type": "application/json",
-      "Authorization": "Bearer $token"
+      // "Authorization": "Bearer $token"
     },
   );
 

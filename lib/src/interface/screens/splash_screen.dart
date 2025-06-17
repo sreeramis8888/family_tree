@@ -27,7 +27,7 @@ class SplashScreen extends ConsumerStatefulWidget {
 
 class _SplashScreenState extends ConsumerState<SplashScreen>
     with WidgetsBindingObserver {
-  bool isAppUpdateRequired = false;
+  // bool isAppUpdateRequired = false;
   String isFirstLaunch = 'false';
   bool openedAppSettings = false;
   bool hasVersionCheckError = false;
@@ -174,11 +174,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   }
 
   void proceedWithAppFlow() {
-    checkAppVersion(context).then((_) {
-      if (!isAppUpdateRequired && !hasVersionCheckError) {
+    // checkAppVersion(context).then((_) {
+      // if (!isAppUpdateRequired && !hasVersionCheckError) {
         initialize();
-      }
-    });
+      // }
+    // });
   }
 
   Future<void> checkAppVersion(context) async {
@@ -214,7 +214,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     log('New version: ${response.version}');
 
     if (currentVersion < response.version && response.force) {
-      isAppUpdateRequired = true;
+      // isAppUpdateRequired = true;
       showUpdateDialog(response, context);
     }
   }
@@ -251,7 +251,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     NavigationService navigationService = NavigationService();
     await checktoken();
     Timer(Duration(seconds: 2), () async {
-      if (!isAppUpdateRequired) {
+      // if (!isAppUpdateRequired) {
         print('Logged in : $LoggedIn');
         if (LoggedIn) {
           final container = ProviderContainer();
@@ -284,7 +284,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         } else {
           navigationService.pushNamedReplacement('PhoneNumber');
         }
-      }
+      // }
     });
   }
 

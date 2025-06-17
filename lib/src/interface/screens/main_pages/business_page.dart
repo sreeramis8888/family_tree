@@ -13,17 +13,17 @@ class BusinessPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userAsync = ref.watch(userProvider);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      userAsync.whenOrNull(data: (user) {
-        if (user.status == 'trial') {
-          showDialog(
-            context: context,
-            builder: (_) => const PremiumDialog(),
-          );
-        }
-      });
-    });
+    // final userAsync = ref.watch(userProvider);
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   userAsync.whenOrNull(data: (user) {
+    //     if (user.status == 'trial') {
+    //       showDialog(
+    //         context: context,
+    //         builder: (_) => const PremiumDialog(),
+    //       );
+    //     }
+    //   });
+    // });
     return DefaultTabController(
         length: 2, // Number of tabs
         child: Scaffold(

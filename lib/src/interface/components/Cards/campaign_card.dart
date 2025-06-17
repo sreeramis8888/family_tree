@@ -8,15 +8,19 @@ import 'package:intl/intl.dart';
 class CampaignCard extends StatelessWidget {
   final ActivityModel campaign;
   final String tag;
-  final VoidCallback onDonate;
-  final VoidCallback? onLearnMore;
+  final String leftButtonLabel;
+  final String rightButtonLabel;
+  final VoidCallback? leftButtonAction;
+  final VoidCallback? rightButtonAction;
 
   const CampaignCard({
     Key? key,
     required this.campaign,
     required this.tag,
-    required this.onDonate,
-    this.onLearnMore,
+    required this.leftButtonLabel,
+    required this.rightButtonLabel,
+    this.leftButtonAction,
+    this.rightButtonAction,
   }) : super(key: key);
 
   @override
@@ -151,14 +155,14 @@ class CampaignCard extends StatelessWidget {
                       labelColor: kBlack,
                       sideColor: kSecondaryColor,
                       buttonColor: kSecondaryColor,
-                      label: 'Learn More',
-                      onPressed: () {},
+                      label: leftButtonLabel,
+                      onPressed: leftButtonAction ?? () {},
                     )),
                     const SizedBox(width: 12),
                     Expanded(
                         child: customButton(
-                      label: 'Donate Now',
-                      onPressed: () {},
+                      label: rightButtonLabel,
+                      onPressed: rightButtonAction ?? () {},
                     )),
                   ],
                 ),

@@ -40,7 +40,7 @@ class IDCardScreen extends ConsumerWidget {
         .toList();
 
     String joinedDate = DateFormat('dd/MM/yyyy').format(user.createdAt!);
-    Map<String, String> levelData = extractLevelDetails(user.level ?? '');
+    // Map<String, String> levelData = extractLevelDetails(user.level ?? '');
 
     return Scaffold(
       // Animated AppBar that appears only in normal mode
@@ -182,40 +182,40 @@ class IDCardScreen extends ConsumerWidget {
                                                       ],
                                                     ),
                                                   const SizedBox(height: 10),
-                                                  Wrap(
-                                                    alignment:
-                                                        WrapAlignment.center,
-                                                    children: [
-                                                      Text(
-                                                          '${levelData['stateName']} / ',
-                                                          style:
-                                                              const TextStyle(
-                                                                  color: kWhite,
-                                                                  fontSize:
-                                                                      12)),
-                                                      Text(
-                                                          '${levelData['zoneName']} / ',
-                                                          style:
-                                                              const TextStyle(
-                                                                  color: kWhite,
-                                                                  fontSize:
-                                                                      12)),
-                                                      Text(
-                                                          '${levelData['districtName']} / ',
-                                                          style:
-                                                              const TextStyle(
-                                                                  color: kWhite,
-                                                                  fontSize:
-                                                                      12)),
-                                                      Text(
-                                                          '${levelData['chapterName']}',
-                                                          style:
-                                                              const TextStyle(
-                                                                  color: kWhite,
-                                                                  fontSize:
-                                                                      12)),
-                                                    ],
-                                                  ),
+                                                  // Wrap(
+                                                  //   alignment:
+                                                  //       WrapAlignment.center,
+                                                  //   children: [
+                                                  //     Text(
+                                                  //         '${levelData['stateName']} / ',
+                                                  //         style:
+                                                  //             const TextStyle(
+                                                  //                 color: kWhite,
+                                                  //                 fontSize:
+                                                  //                     12)),
+                                                  //     Text(
+                                                  //         '${levelData['zoneName']} / ',
+                                                  //         style:
+                                                  //             const TextStyle(
+                                                  //                 color: kWhite,
+                                                  //                 fontSize:
+                                                  //                     12)),
+                                                  //     Text(
+                                                  //         '${levelData['districtName']} / ',
+                                                  //         style:
+                                                  //             const TextStyle(
+                                                  //                 color: kWhite,
+                                                  //                 fontSize:
+                                                  //                     12)),
+                                                  //     Text(
+                                                  //         '${levelData['chapterName']}',
+                                                  //         style:
+                                                  //             const TextStyle(
+                                                  //                 color: kWhite,
+                                                  //                 fontSize:
+                                                  //                     12)),
+                                                  //   ],
+                                                  // ),
                                                   const SizedBox(height: 5),
                                                   Text(
                                                     'Joined Date: $joinedDate',

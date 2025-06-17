@@ -1,6 +1,3 @@
-import 'dart:developer';
-
-import 'package:familytree/src/data/globals.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
@@ -8,13 +5,9 @@ import 'package:intl/intl.dart';
 import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/data/constants/style_constants.dart';
 import 'package:familytree/src/data/models/user_model.dart';
-import 'package:familytree/src/data/notifiers/user_notifier.dart';
-import 'package:familytree/src/data/services/extract_level_details.dart';
 import 'package:familytree/src/data/services/navgitor_service.dart';
 import 'package:familytree/src/data/services/share_qr.dart';
-import 'package:familytree/src/interface/components/Dialogs/premium_dialog.dart';
 import 'package:familytree/src/interface/components/animations/glowing_profile.dart';
-import 'package:familytree/src/interface/components/custom_widgets/blue_tick_names.dart';
 import 'package:familytree/src/interface/screens/main_pages/profile/idcard.dart';
 
 class ProfilePage extends ConsumerWidget {
@@ -24,17 +17,17 @@ class ProfilePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     NavigationService navigationService = NavigationService();
-    final userAsync = ref.watch(userProvider);
+    // final userAsync = ref.watch(userProvider);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      userAsync.whenOrNull(data: (user) {
-        log(user.status ?? '');
-        if (user.status == 'trial') {
-          showDialog(
-            context: context,
-            builder: (_) => const PremiumDialog(),
-          );
-        }
-      });
+      // userAsync.whenOrNull(data: (user) {
+      //   log(user.status ?? '');
+      //   if (user.status == 'trial') {
+      //     showDialog(
+      //       context: context,
+      //       builder: (_) => const PremiumDialog(),
+      //     );
+      //   }
+      // });
     });
     final designations = user.company!
         .map((i) => i.designation)
@@ -48,7 +41,7 @@ class ProfilePage extends ConsumerWidget {
         .map((n) => n!)
         .toList();
     String joinedDate = DateFormat('dd/MM/yyyy').format(user.createdAt!);
-    Map<String, String> levelData = extractLevelDetails(user.level ?? '');
+    // Map<String, String> levelData = extractLevelDetails(user.level ?? '');
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -175,16 +168,10 @@ class ProfilePage extends ConsumerWidget {
                                                   borderColor: kWhite,
                                                   borderWidth: 3.0,
                                                 ),
-                                                VerifiedName(
-                                                  tickColor:
-                                                      user.parentSub?.color ??
-                                                          '',
-                                                  label: user.name ?? '',
-                                                  textStyle: kHeadTitleSB,
-                                                  labelColor: kBlack,
-                                                  iconSize: 18,
-                                                  showBlueTick:
-                                                      user.blueTick ?? false,
+                                                Text(
+                                        
+                                                 user.name ?? '',
+                                                  style: kHeadTitleSB,
                                                 ),
                                                 const SizedBox(height: 5),
                                                 Column(
@@ -227,56 +214,56 @@ class ProfilePage extends ConsumerWidget {
                                                             ),
                                                         ],
                                                       ),
-                                                    if (levelData[
-                                                            'chapterName'] !=
-                                                        'undefined')
-                                                      const SizedBox(
-                                                          height: 10),
-                                                    if (levelData[
-                                                            'chapterName'] !=
-                                                        'undefined')
-                                                      Wrap(
-                                                        alignment: WrapAlignment
-                                                            .center,
-                                                        children: [
-                                                          Text(
-                                                            '${levelData['stateName']} / ',
-                                                            style:
-                                                                const TextStyle(
-                                                                    color:
-                                                                        kBlack,
-                                                                    fontSize:
-                                                                        12),
-                                                          ),
-                                                          Text(
-                                                            '${levelData['zoneName']} / ',
-                                                            style:
-                                                                const TextStyle(
-                                                                    color:
-                                                                        kBlack,
-                                                                    fontSize:
-                                                                        12),
-                                                          ),
-                                                          Text(
-                                                            '${levelData['districtName']} / ',
-                                                            style:
-                                                                const TextStyle(
-                                                                    color:
-                                                                        kBlack,
-                                                                    fontSize:
-                                                                        12),
-                                                          ),
-                                                          Text(
-                                                            '${levelData['chapterName']} ',
-                                                            style:
-                                                                const TextStyle(
-                                                                    color:
-                                                                        kBlack,
-                                                                    fontSize:
-                                                                        12),
-                                                          ),
-                                                        ],
-                                                      ),
+                                                    // if (levelData[
+                                                    //         'chapterName'] !=
+                                                    //     'undefined')
+                                                    //   const SizedBox(
+                                                    //       height: 10),
+                                                    // if (levelData[
+                                                    //         'chapterName'] !=
+                                                    //     'undefined')
+                                                    //   Wrap(
+                                                    //     alignment: WrapAlignment
+                                                    //         .center,
+                                                    //     children: [
+                                                    //       Text(
+                                                    //         '${levelData['stateName']} / ',
+                                                    //         style:
+                                                    //             const TextStyle(
+                                                    //                 color:
+                                                    //                     kBlack,
+                                                    //                 fontSize:
+                                                    //                     12),
+                                                    //       ),
+                                                    //       Text(
+                                                    //         '${levelData['zoneName']} / ',
+                                                    //         style:
+                                                    //             const TextStyle(
+                                                    //                 color:
+                                                    //                     kBlack,
+                                                    //                 fontSize:
+                                                    //                     12),
+                                                    //       ),
+                                                    //       Text(
+                                                    //         '${levelData['districtName']} / ',
+                                                    //         style:
+                                                    //             const TextStyle(
+                                                    //                 color:
+                                                    //                     kBlack,
+                                                    //                 fontSize:
+                                                    //                     12),
+                                                    //       ),
+                                                    //       Text(
+                                                    //         '${levelData['chapterName']} ',
+                                                    //         style:
+                                                    //             const TextStyle(
+                                                    //                 color:
+                                                    //                     kBlack,
+                                                    //                 fontSize:
+                                                    //                     12),
+                                                    //       ),
+                                                    //     ],
+                                                    //   ),
                                                     const SizedBox(height: 5),
                                                     Text(
                                                       'Joined Date: $joinedDate',

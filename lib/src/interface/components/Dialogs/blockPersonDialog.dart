@@ -37,20 +37,20 @@ class _BlockPersonDialogState extends ConsumerState<BlockPersonDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final asyncUser = ref.watch(userProvider);
+    // final asyncUser = ref.watch(userProvider);
 
     // Determine block status dynamically
-    return asyncUser.when(
-        loading: () => const LoadingAnimation(),
-        error: (error, stackTrace) {
-          return const Center(
-            child: LoadingAnimation(),
-          );
-        },
-        data: (user) {
-          bool isBlocked = user.blockedUsers
-                  ?.any((blockedUser) => blockedUser.id == widget.userId) ??
-              false;
+    // return asyncUser.when(
+    //     loading: () => const LoadingAnimation(),
+    //     error: (error, stackTrace) {
+    //       return const Center(
+    //         child: LoadingAnimation(),
+    //       );
+    //     },
+    //     data: (user) {
+          // bool isBlocked = user.blockedUsers
+          //         ?.any((blockedUser) => blockedUser.id == widget.userId) ??
+          //     false;
           return Dialog(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16.0),
@@ -65,16 +65,17 @@ class _BlockPersonDialogState extends ConsumerState<BlockPersonDialog> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  if (asyncUser.isLoading)
-                    LoadingAnimation()
-                  else
+                  // if (asyncUser.isLoading)
+                  //   LoadingAnimation()
+                  // else
                     Column(
                       children: [
                         Text(
-                          isBlocked
-                              ? 'Are you sure you want to unblock this person?'
-                              : 'Are you sure you want to block this person?',
-                          textAlign: TextAlign.center,
+                          // isBlocked
+                              // ?
+                               'Are you sure you want to unblock this person?'
+                              // : 'Are you sure you want to block this person?',
+                        , textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 18.0,
                             fontWeight: FontWeight.w600,
@@ -82,7 +83,7 @@ class _BlockPersonDialogState extends ConsumerState<BlockPersonDialog> {
                           ),
                         ),
                         const SizedBox(height: 30.0),
-                        if (!isBlocked)
+                        // if (!isBlocked)
                           Form(
                             key: _formKey,
                             child: TextFormField(
@@ -126,14 +127,14 @@ class _BlockPersonDialogState extends ConsumerState<BlockPersonDialog> {
                             ),
                           ),
                         const SizedBox(height: 20.0),
-                        _buildActions(context, isBlocked),
+                        // _buildActions(context, isBlocked),
                       ],
                     ),
                 ],
               ),
             ),
           );
-        });
+        // });
   }
 
   Widget _buildActions(BuildContext context, bool isBlocked) {
@@ -174,7 +175,7 @@ class _BlockPersonDialogState extends ConsumerState<BlockPersonDialog> {
 
             try {
               await _toggleBlockStatus(context, isBlocked);
-              ref.read(userProvider.notifier).refreshUser();
+              // ref.read(userProvider.notifier).refreshUser();
             } finally {
               // Hide loading dialog
               Navigator.of(context).pop(); // Close the loading dialog

@@ -62,12 +62,12 @@ class UserInactivePage extends StatelessWidget {
                   await SecureStorage.delete('token');
                   await SecureStorage.delete('id');
 
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PhoneNumberScreen(),
-                    ),
-                  );
+                  // Navigator.pushReplacement(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => PhoneNumberScreen(),
+                  //   ),
+                  // );
                 },
                 child: Text(
                   'Logout',

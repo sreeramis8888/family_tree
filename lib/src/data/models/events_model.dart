@@ -5,7 +5,7 @@ class Event {
   final String? type;
   final String? image;
 
-  final DateTime? eventDate;
+  final DateTime? eventStartDate;
   final String? platform;
   final String? link;
   final String? venue;
@@ -18,43 +18,43 @@ class Event {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final int? limit;
-  Event( {this.eventDate,
-    this.id,
-    this.eventName,
-    this.description,
-    this.type,
-    this.image,
-
-    this.platform,
-    this.link,
-    this.venue,
-    this.organiserName,
-    this.coordinator,
-    this.speakers,
-    this.status,
-    this.rsvp,
-    this.attended,
-    this.createdAt,
-    this.updatedAt,this.limit
-  });
+  Event(
+      {this.eventStartDate,
+      this.id,
+      this.eventName,
+      this.description,
+      this.type,
+      this.image,
+      this.platform,
+      this.link,
+      this.venue,
+      this.organiserName,
+      this.coordinator,
+      this.speakers,
+      this.status,
+      this.rsvp,
+      this.attended,
+      this.createdAt,
+      this.updatedAt,
+      this.limit});
 
   factory Event.fromJson(Map<String, dynamic> json) {
     return Event(
       id: json['_id'] as String?,
-      eventName: json['eventName'] as String?,
+      eventName: json['event_name'] as String?,
       description: json['description'] as String?,
       type: json['type'] as String?,
       image: json['image'] as String?,
-   
-      eventDate: json['eventDate'] != null
-          ? DateTime.tryParse(json['eventDate'])
+      eventStartDate: json['event_start_date'] != null
+          ? DateTime.tryParse(json['event_start_date'])
           : null,
-  
       platform: json['platform'] as String?,
       link: json['link'] as String?,
       venue: json['venue'] as String?,
       organiserName: json['organiserName'] as String?,
-      coordinator:  (json['coordinator'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      coordinator: (json['coordinator'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
       speakers: (json['speakers'] as List<dynamic>?)
           ?.map((e) => Speaker.fromJson(e))
           .toList(),
@@ -69,7 +69,7 @@ class Event {
       updatedAt: json['updatedAt'] != null
           ? DateTime.tryParse(json['updatedAt'])
           : null,
-                limit: json['limit'] as int?,
+      limit: json['limit'] as int?,
     );
   }
 
@@ -80,7 +80,7 @@ class Event {
       'description': description,
       'type': type,
       'image': image,
-      'eventDate': eventDate?.toIso8601String(),
+      'event_start_date': eventStartDate?.toIso8601String(),
       'platform': platform,
       'link': link,
       'venue': venue,
@@ -92,11 +92,10 @@ class Event {
       'attended': attended,
       'createdAt': createdAt?.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
-      'limit':limit
+      'limit': limit
     };
   }
 }
-
 
 class Speaker {
   final String? name;

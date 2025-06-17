@@ -1,3 +1,4 @@
+import 'package:familytree/src/data/api_routes/news_api/news_api.dart';
 import 'package:familytree/src/interface/screens/main_pages/notification_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,175 +13,133 @@ import 'bookmark_page.dart';
 class NewsListPage extends ConsumerWidget {
   const NewsListPage({super.key});
 
-  static List<News> getMockNews() {
-    return [
-      News(
-        id: '1',
-        title: 'Rahim Electronics Crosses 500 Orders!',
-        content:
-            'The annual family reunion was a great success with over 100 members attending...',
-        category: 'Electronics',
-        media: 'https://picsum.photos/id/10/800/450',
-        updatedAt: DateTime.now().subtract(Duration(hours: 11)),
-      ),
-      News(
-        id: '2',
-        title: 'Homemade Pickles By Fatima Now Available!',
-        content: 'Welcome to our newest family member, born on May 15th...',
-        category: 'Food',
-        media: 'https://picsum.photos/id/20/800/450',
-        updatedAt: DateTime.now().subtract(Duration(hours: 11)),
-      ),
-      News(
-        id: '3',
-        title: 'Rahim Electronics Crosses 500 Orders!',
-        content: 'Our family history project has reached a new milestone...',
-        category: 'Electronics',
-        media: 'https://picsum.photos/id/30/800/450',
-        updatedAt: DateTime.now().subtract(Duration(hours: 11)),
-      ),
-      News(
-        id: '4',
-        title: 'Rahim Electronics Crosses 500 Orders!',
-        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        category: 'Electronics',
-        media: 'https://picsum.photos/id/40/800/450',
-        updatedAt: DateTime.now().subtract(Duration(hours: 11)),
-      ),
-      News(
-        id: '5',
-        title: 'Rahim Electronics Crosses 500 Orders!',
-        content:
-            'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-        category: 'Electronics',
-        media: 'https://picsum.photos/id/50/800/450',
-        updatedAt: DateTime.now().subtract(Duration(hours: 11)),
-      ),
-      News(
-        id: '6',
-        title: 'Rahim Electronics Crosses 500 Orders!',
-        content:
-            'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.',
-        category: 'Electronics',
-        media: 'https://picsum.photos/id/60/800/450',
-        updatedAt: DateTime.now().subtract(Duration(hours: 11)),
-      ),
-    ];
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mockNews = NewsListPage.getMockNews();
+    final asyncNews = ref.watch(fetchNewsProvider);
 
     return Scaffold(
-      backgroundColor: kWhite,
-      appBar: AppBar(
         backgroundColor: kWhite,
-        scrolledUnderElevation: 0,
-        titleSpacing: 0,
-        title: Padding(
-          padding: const EdgeInsets.only(left: 16.0),
-          child: Row(
-            children: [
-              Icon(Icons.feed_outlined, color: kPrimaryColor, size: 22),
-              SizedBox(width: 8),
-              Text(
-                "News",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          Stack(
-            children: [
-              IconButton(
-                icon: Icon(Icons.bookmark, color: kPrimaryColor, size: 22),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => BookmarkPage()),
-                  );
-                },
-              ),
-              Positioned(
-                right: 5,
-                top: 5,
-                child: Container(
-                  padding: EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  constraints: BoxConstraints(
-                    minWidth: 14,
-                    minHeight: 14,
-                  ),
-                  child: Text(
-                    '3', // Placeholder for bookmark count
-                    style: TextStyle(
-                      color: kWhite,
-                      fontSize: 10,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
+        appBar: AppBar(
+          backgroundColor: kWhite,
+          scrolledUnderElevation: 0,
+          titleSpacing: 0,
+          title: Padding(
+            padding: const EdgeInsets.only(left: 16.0),
+            child: Row(
+              children: [
+                Icon(Icons.feed_outlined, color: kPrimaryColor, size: 22),
+                SizedBox(width: 8),
+                Text(
+                  "News",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-              )
-            ],
+              ],
+            ),
           ),
-          SizedBox(width: 16),
-        ],
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Search News',
-                hintStyle: TextStyle(color: Colors.grey[600]),
-                prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    Icons.filter_alt_outlined,
-                    color: Colors.red[400],
-                    size: 22,
-                  ),
+          actions: [
+            Stack(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.bookmark, color: kPrimaryColor, size: 22),
                   onPressed: () {
-                    // Filter action
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => BookmarkPage()),
+                    );
                   },
                 ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(25),
-                  borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(25),
-                  borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(25),
-                  borderSide: BorderSide(color: Colors.red[400]!, width: 1.5),
-                ),
-                filled: true,
-                fillColor: kWhite,
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-              ),
+                Positioned(
+                  right: 5,
+                  top: 5,
+                  child: Container(
+                    padding: EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    constraints: BoxConstraints(
+                      minWidth: 14,
+                      minHeight: 14,
+                    ),
+                    child: Text(
+                      '3', // Placeholder for bookmark count
+                      style: TextStyle(
+                        color: kWhite,
+                        fontSize: 10,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                )
+              ],
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: mockNews.length,
-              itemBuilder: (context, index) {
-                return NewsCard(news: mockNews[index], allNews: mockNews);
-              },
-            ),
-          ),
-        ],
-      ),
-    );
+            SizedBox(width: 16),
+          ],
+        ),
+        body: asyncNews.when(
+          data: (news) {
+            if (news.isNotEmpty) {
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    child: TextField(
+                      decoration: InputDecoration(
+                        hintText: 'Search News',
+                        hintStyle: TextStyle(color: Colors.grey[600]),
+                        prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            Icons.filter_alt_outlined,
+                            color: Colors.red[400],
+                            size: 22,
+                          ),
+                          onPressed: () {
+                            // Filter action
+                          },
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide:
+                              BorderSide(color: Colors.grey[300]!, width: 1),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide:
+                              BorderSide(color: Colors.grey[300]!, width: 1),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide:
+                              BorderSide(color: Colors.red[400]!, width: 1.5),
+                        ),
+                        filled: true,
+                        fillColor: kWhite,
+                        contentPadding:
+                            EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: news.length,
+                      itemBuilder: (context, index) {
+                        return NewsCard(news: news[index], allNews: news);
+                      },
+                    ),
+                  ),
+                ],
+              );
+            } else {
+              return Center(
+                child: Text('No News'),
+              );
+            }
+          },
+          loading: () => const Center(child: LoadingAnimation()),
+          error: (error, stackTrace) => const Text('No News'),
+        ));
   }
 }
 

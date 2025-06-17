@@ -29,7 +29,7 @@ Widget customButton({
         backgroundColor: WidgetStateProperty.all<Color>(buttonColor),
         shape: WidgetStateProperty.all<RoundedRectangleBorder>(
           RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(3),
+            borderRadius: BorderRadius.circular(8),
             side: BorderSide(color: sideColor),
           ),
         ),

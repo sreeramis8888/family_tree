@@ -1,5 +1,6 @@
 import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/data/constants/style_constants.dart';
+import 'package:familytree/src/data/services/navgitor_service.dart';
 import 'package:familytree/src/interface/components/Buttons/primary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -15,9 +16,9 @@ Widget eventWidget({
   String formattedDate = 'TBA';
   String timeRange = '';
 
-  if (event.eventDate != null) {
+  if (event.eventStartDate != null) {
     try {
-      DateTime date = event.eventDate!.toLocal();
+      DateTime date = event.eventStartDate!.toLocal();
       formattedDate = DateFormat('MMM dd').format(date);
       // timeRange =
       //     '${DateFormat('hh:mm a').format(date)} - ${DateFormat('hh:mm a').format(date.add(const Duration(hours: 2)))}';
@@ -67,7 +68,7 @@ Widget eventWidget({
         Padding(
           padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
           child: Text(
-            '${event.eventName}',
+            '${event.description}',
             style: kSmallerTitleR,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -106,7 +107,11 @@ Widget eventWidget({
                   Expanded(
                       child: customButton(
                     label: 'Register Now',
-                    onPressed: () {},
+                    onPressed: () {
+                      NavigationService navigationService = NavigationService();
+                      navigationService.pushNamed('ViewMoreEvent',
+                          arguments: event);
+                    },
                   )),
                   const SizedBox(width: 10),
                   Container(

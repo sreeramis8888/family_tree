@@ -173,13 +173,13 @@ class _SubscriptionCard extends StatelessWidget {
             customButton(
               label: 'Select This Plan',
               onPressed: () async {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => RazorpayScreen(
-                            parentSubId: subscription.id,
-                            amount: subscription.price.toDouble(),
-                            category: 'membership')));
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (context) => RazorpayScreen(
+                //             parentSubId: subscription.id,
+                //             amount: subscription.price.toDouble(),
+                //             category: 'membership')));
               },
               buttonColor: kPrimaryColor,
               fontSize: 16,

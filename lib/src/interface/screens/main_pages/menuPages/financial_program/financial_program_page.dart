@@ -1,4 +1,10 @@
+import 'package:familytree/src/data/constants/color_constants.dart';
+import 'package:familytree/src/data/constants/style_constants.dart';
+import 'package:familytree/src/data/models/transaction_model.dart';
+import 'package:familytree/src/interface/components/Buttons/primary_button.dart';
+import 'package:familytree/src/interface/components/custom_widgets/custom_choicechip.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class FinancialProgramPage extends StatefulWidget {
   const FinancialProgramPage({Key? key}) : super(key: key);
@@ -7,7 +13,8 @@ class FinancialProgramPage extends StatefulWidget {
   State<FinancialProgramPage> createState() => _FinancialProgramPageState();
 }
 
-class _FinancialProgramPageState extends State<FinancialProgramPage> with SingleTickerProviderStateMixin {
+class _FinancialProgramPageState extends State<FinancialProgramPage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -25,12 +32,21 @@ class _FinancialProgramPageState extends State<FinancialProgramPage> with Single
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: kWhite,
       appBar: AppBar(
+        scrolledUnderElevation: 0,
+        backgroundColor: kWhite,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(
+            Icons.arrow_back_ios,
+            size: 15,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text('Financial Assistance Program'),
+        title: const Text(
+          'Financial Assistance Program',
+          style: kBodyTitleR,
+        ),
         centerTitle: true,
         elevation: 0,
       ),
@@ -73,29 +89,30 @@ class _BalanceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 35),
+      decoration: BoxDecoration(
+          border: Border.all(color: kTertiary),
+          color: kSecondaryColor,
+          borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
-            const Text('Current Balance', style: TextStyle(fontSize: 16)),
+            const Text('Current Balance', style: kSmallTitleR),
             const SizedBox(height: 8),
-            const Text('₹2500', style: TextStyle(fontSize: 36, color: Colors.red, fontWeight: FontWeight.bold)),
+            const Text('₹2500',
+                style: TextStyle(
+                    fontSize: 36,
+                    color: kPrimaryColor,
+                    fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
             SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                onPressed: () {},
-                child: const Text('+  Top Up Wallet', style: TextStyle(fontSize: 18)),
-              ),
-            ),
+                width: double.infinity,
+                child: customButton(
+                  label: '+ Top Up Wallet',
+                  onPressed: () {},
+                )),
           ],
         ),
       ),
@@ -114,16 +131,26 @@ class _LowBalanceAlert extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.yellow[100],
         borderRadius: BorderRadius.circular(8),
-        border: Border(left: BorderSide(color: Colors.amber, width: 4)),
+        border: Border(left: BorderSide(color: Color(0xFFA96409), width: 4)),
       ),
       child: Row(
         children: [
-          const Icon(Icons.warning, color: Colors.amber),
+          const Icon(Icons.warning, color: Color(0xFFA96409)),
           const SizedBox(width: 8),
-          const Expanded(
-            child: Text(
-              'Low Balance Alert\nYour wallet balance is low. Please top up to continue accessing benefits.',
-              style: TextStyle(color: Colors.black87),
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Low Balance Alert.',
+                  style: kSmallerTitleM.copyWith(color: Color(0xFFA96409)),
+                ),
+                Text(
+                  'Your wallet balance is low. Please top up to continue accessing benefits.',
+                  style: kSmallerTitleR.copyWith(color: Color(0xFFCF811B)),
+                ),
+              ],
             ),
           ),
           IconButton(
@@ -141,35 +168,55 @@ class _MembershipTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
+    return Align(
+      alignment: Alignment.topCenter, // Keep it top-aligned if needed
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Container(
+          decoration: BoxDecoration(
+            color: kWhite,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: kTertiary),
+          ),
           padding: const EdgeInsets.all(24),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  const Text('Membership status:', style: TextStyle(fontSize: 16)),
-                  const SizedBox(width: 8),
+                  const Text('Membership status:', style: kSmallTitleM),
+                  Spacer(),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.green,
+                      color: Color(0xFF2E7D32),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: const Text('Active', style: TextStyle(color: Colors.white)),
+                    child: const Text('Active',
+                        style: TextStyle(color: Colors.white, fontSize: 13)),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
-              const Text('Last renewed on:', style: TextStyle(fontSize: 16)),
-              const Text('20 July 2024', style: TextStyle(color: Colors.red)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Last renewed on:', style: kSmallTitleM),
+                  Text('19 July 2025',
+                      style: kSmallTitleB.copyWith(color: kPrimaryColor)),
+                ],
+              ),
               const SizedBox(height: 8),
-              const Text('Next renewal on:', style: TextStyle(fontSize: 16)),
-              const Text('19 July 2025', style: TextStyle(color: Colors.red)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Next renewal on:', style: kSmallTitleM),
+                  Text('19 July 2025',
+                      style: kSmallTitleM.copyWith(color: kPrimaryColor)),
+                ],
+              ),
             ],
           ),
         ),
@@ -178,112 +225,198 @@ class _MembershipTab extends StatelessWidget {
   }
 }
 
-class _TransactionsTab extends StatelessWidget {
+class _TransactionsTab extends StatefulWidget {
   const _TransactionsTab();
 
   @override
+  State<_TransactionsTab> createState() => _TransactionsTabState();
+}
+
+class _TransactionsTabState extends State<_TransactionsTab> {
+  String selectedStatus = 'All';
+
+  @override
   Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(16),
+    return Column(
       children: [
-        _TransactionCard(
-          id: 'VCRU65789900',
-          type: 'Wallet Recharge',
-          date: '18th May 2025, 10:45 am',
-          amount: '₹1500',
-          status: 'Pending',
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Row(
+            children: [
+              _buildChoiceChip('All'),
+              _buildChoiceChip('Pending'),
+              _buildChoiceChip('Approved'),
+              _buildChoiceChip('Rejected'),
+            ],
+          ),
         ),
-        const SizedBox(height: 16),
-        _TransactionCard(
-          id: 'VCRU65789900',
-          type: 'Financial Assistance',
-          date: '12th July 2025, 12:20 pm',
-          amount: '₹200',
-          status: 'Rejected',
-          reason: 'Reason',
-          description: 'Lorem ipsum dolor sit amet consectetur. Sem aliquet odio bibendum non ultrices. Quis gravida fames tempor enim.',
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              _transactionCard(
+                  id: 'VCRU65789900',
+                  category: 'Wallet Recharge',
+                  date: DateTime(2025, 5, 18, 10, 45),
+                  amount: 1500,
+                  status: 'Pending'),
+            ],
+          ),
         ),
       ],
     );
   }
-}
 
-class _TransactionCard extends StatelessWidget {
-  final String id, type, date, amount, status;
-  final String? reason, description;
-  const _TransactionCard({
-    required this.id,
-    required this.type,
-    required this.date,
-    required this.amount,
-    required this.status,
-    this.reason,
-    this.description,
-  });
+  Widget _buildChoiceChip(String label) {
+    return CustomChoiceChip(
+      label: label,
+      selected: selectedStatus == label,
+      onTap: () {
+        setState(() {
+          selectedStatus = label;
+        });
+      },
+    );
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    final isRejected = status == 'Rejected';
-    final isPending = status == 'Pending';
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Transaction ID: $id', style: const TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Text('Type: $type'),
-            Text('date & time: $date'),
-            Text('Amount paid: $amount'),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Text('Status: '),
-                if (isPending)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.orange[100],
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: const Text('Pending', style: TextStyle(color: Colors.orange)),
-                  ),
-                if (isRejected)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.red[100],
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: const Text('Rejected', style: TextStyle(color: Colors.red)),
-                  ),
-              ],
-            ),
-            if (isRejected) ...[
+  Widget _transactionCard( {required String id,required String category,required DateTime date,required int amount, required String status}) {
+    String formattedDate = '';
+    if (date != null) {
+      formattedDate =
+          DateFormat('d\'th\' MMMM y, h:mm a').format(date!);
+    }
+
+    Color statusColor = status == 'approved'
+        ? Colors.green
+        : status == 'pending'
+            ? Colors.orange
+            : Colors.red;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.white,
+          border: Border.all(color: const Color.fromARGB(255, 225, 217, 217)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Transaction ID: ${id}',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 8),
-              const Text('Reason for rejection'),
-              Text(reason ?? ''),
-              const SizedBox(height: 8),
-              const Text('Description'),
-              Text(description ?? ''),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Status',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Color(0xFF616161),
+                    ),
                   ),
-                  onPressed: () {},
-                  child: const Text('Re Upload'),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: statusColor),
+                    ),
+                    child: Text(
+                      status?.toUpperCase() ?? '',
+                      style: TextStyle(
+                        color: statusColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              _detailRow('Type', category ?? ''),
+              if (date != null)
+                _detailRow('Date & time', formattedDate),
+              _detailRow('Amount paid',
+                  '${amount ?? ''}'), // Placeholder for now
+              // if (transaction.status == 'rejected')
+              //   Column(
+              //     crossAxisAlignment: CrossAxisAlignment.start,
+              //     children: [
+              //       const SizedBox(height: 8),
+              //       const Text(
+              //         'Reason for rejection:',
+              //         style: TextStyle(fontWeight: FontWeight.bold),
+              //       ),
+              //       const Text(
+              //         'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+              //         style: TextStyle(fontSize: 12),
+              //       ),
+              //       const SizedBox(height: 8),
+              //       Center(
+              //         child: ElevatedButton(
+              //           style: ElevatedButton.styleFrom(
+              //             backgroundColor: const Color(0xFF004797),
+              //             foregroundColor: Colors.white,
+              //             shape: RoundedRectangleBorder(
+              //               borderRadius: BorderRadius.circular(5),
+              //             ),
+              //           ),
+              //           onPressed: () {
+              //             // Implement re-upload logic
+              //           },
+              //           child: const Text('RE-UPLOAD'),
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _detailRow(String label, String value) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF616161),
+                ),
+              ),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
-          ],
+          ),
         ),
-      ),
+        const Divider(
+          height: 1,
+          thickness: 1,
+          color: Color(0xFFE0E0E0),
+        ),
+      ],
     );
   }
 }
@@ -302,25 +435,30 @@ class _MembersTab extends StatelessWidget {
       {'name': 'Céline Wolf', 'role': 'Event Manager', 'image': null},
     ];
     return ListView.separated(
-      padding: const EdgeInsets.all(16),
       itemCount: members.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
+      separatorBuilder: (_, __) => const Divider(),
       itemBuilder: (context, index) {
         final member = members[index];
-        return Card(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundImage: member['image'] == null ? null : NetworkImage(member['image']!),
-              child: member['image'] == null ? const Icon(Icons.person) : null,
+        return Column(
+          children: [
+            Container(
+              child: ListTile(
+                leading: CircleAvatar(
+                  backgroundImage: member['image'] == null
+                      ? null
+                      : NetworkImage(member['image']!),
+                  child:
+                      member['image'] == null ? const Icon(Icons.person) : null,
+                ),
+                title: Text(member['name']!),
+                subtitle: Text(member['role']!),
+                trailing: const Icon(Icons.chat_bubble_outline),
+                onTap: () {},
+              ),
             ),
-            title: Text(member['name']!),
-            subtitle: Text(member['role']!),
-            trailing: const Icon(Icons.chat_bubble_outline),
-            onTap: () {},
-          ),
+          ],
         );
       },
     );
   }
-} 
+}

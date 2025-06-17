@@ -15,7 +15,7 @@ Future<List<Business>> fetchBusiness(FetchBusinessRef ref,
     Uri.parse('$baseUrl/feeds/list?pageNo=$pageNo&limit=$limit'),
     headers: {
       "Content-Type": "application/json",
-      "Authorization": "Bearer $token"
+      // "Authorization": "Bearer $token"
     },
   );
   log(

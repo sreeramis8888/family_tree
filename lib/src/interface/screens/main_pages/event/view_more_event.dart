@@ -100,7 +100,7 @@ class _ViewMoreEventPageState extends ConsumerState<ViewMoreEventPage>
   @override
   Widget build(BuildContext context) {
     DateTime dateTime =
-        DateTime.parse(widget.event.eventDate.toString()).toLocal();
+        DateTime.parse(widget.event.eventStartDate.toString()).toLocal();
     String formattedDate = DateFormat('dd MMM yyyy').format(dateTime);
 
     return Scaffold(
@@ -110,13 +110,26 @@ class _ViewMoreEventPageState extends ConsumerState<ViewMoreEventPage>
           return [
             SliverAppBar(
               scrolledUnderElevation: 0,
-              expandedHeight: widget.event.image != null ? 300.0 : 0.0,
+              expandedHeight: widget.event.image != null ? 205.0 : 0.0,
               floating: false,
               pinned: true,
               backgroundColor: kWhite,
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () => Navigator.pop(context),
+              leading: Padding(
+                padding: const EdgeInsets.only(
+                    left: 8), // Optional: adjust spacing from screen edge
+                child: Material(
+                  color: kWhite,
+                  shape: const CircleBorder(),
+                  child: InkWell(
+                    customBorder: const CircleBorder(),
+                    onTap: () => Navigator.pop(context),
+                    child: Padding(
+                      padding: const EdgeInsets.all(
+                          6), // controls the spacing around the icon
+                      child: Icon(Icons.arrow_back, size: 20), // smaller icon
+                    ),
+                  ),
+                ),
               ),
               flexibleSpace: FlexibleSpaceBar(
                 background: widget.event.image != null
@@ -264,47 +277,48 @@ class _ViewMoreEventPageState extends ConsumerState<ViewMoreEventPage>
                       if (widget.event.limit != null)
                         _buildInfoSection(
                             'Registration', _getRegistrationCountText()),
-                      if (widget.event.coordinator!.contains(id))
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: kWhite,
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.1),
-                                  spreadRadius: .1,
-                                  offset: Offset(0, 1),
-                                ),
-                              ],
-                            ),
-                            child: ListTile(
-                              leading: CircleAvatar(
-                                backgroundColor: kWhite,
-                                child: Icon(Icons.map_outlined,
-                                    color: kPrimaryColor),
+                      if (widget.event.coordinator != null)
+                        if (widget.event.coordinator!.contains(id))
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: kWhite,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.1),
+                                    spreadRadius: .1,
+                                    offset: Offset(0, 1),
+                                  ),
+                                ],
                               ),
-                              title: Text(
-                                'Member List',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.black,
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  backgroundColor: kWhite,
+                                  child: Icon(Icons.map_outlined,
+                                      color: kPrimaryColor),
                                 ),
+                                title: Text(
+                                  'Member List',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                trailing: Icon(Icons.arrow_forward_ios,
+                                    size: 16, color: Colors.grey),
+                                onTap: () {
+                                  NavigationService navigationService =
+                                      NavigationService();
+                                  navigationService.pushNamed('EventMemberList',
+                                      arguments: widget.event);
+                                },
                               ),
-                              trailing: Icon(Icons.arrow_forward_ios,
-                                  size: 16, color: Colors.grey),
-                              onTap: () {
-                                NavigationService navigationService =
-                                    NavigationService();
-                                navigationService.pushNamed('EventMemberList',
-                                    arguments: widget.event);
-                              },
                             ),
                           ),
-                        ),
                       const SizedBox(
                           height: 80), // Bottom padding for the register button
                     ]),

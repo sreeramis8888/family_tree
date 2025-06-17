@@ -18,7 +18,7 @@ Future<List<ReviewModel>> fetchReviews(FetchReviewsRef ref,
     url,
     headers: {
       "Content-Type": "application/json",
-      "Authorization": "Bearer $token"
+      // "Authorization": "Bearer $token"
     },
   );
   print('hello');

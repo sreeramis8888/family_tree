@@ -542,3 +542,93 @@ class Award {
   @override
   int get hashCode => Object.hash(image, name, authority);
 }
+
+
+final user = UserModel(
+  name: "John Doe",
+  id: "user123",
+  memberId: "M123456",
+  bloodgroup: "O+",
+  isAdmin: true,
+  blueTick: true,
+  chapter: UserChapterModel(
+    id: "ch1",
+    name: "Central Chapter",
+    shortCode: "CC",
+    district: UserDistrictModel(
+      id: "d1",
+      name: "Springfield District",
+      zone: UserZoneModel(
+        id: "z1",
+        name: "North Zone",
+        state: UserStateModel(
+          id: "s1",
+          name: "California",
+        ),
+      ),
+    ),
+  ),
+  parentSub: ParentSubModel(
+    id: "ps1",
+    name: "Parent SubGroup",
+    color: "#FF5733",
+  ),
+  image: "https://example.com/profile.jpg",
+  email: "johndoe@example.com",
+  phone: "9876543210",
+  secondaryPhone: SecondaryPhone(
+    whatsapp: "9876543211",
+    business: "0221234567",
+  ),
+  bio: "Entrepreneur and community leader.",
+  status: "active",
+  address: "1234 Elm Street, Springfield",
+  company: [
+    Company(
+      name: "Doe Enterprises",
+      designation: "CEO",
+      email: "contact@doeenterprises.com",
+      websites: "https://doeenterprises.com",
+      phone: "9876500000",
+      logo: "https://example.com/logo.png",
+    ),
+  ],
+  businessCategory: "Technology",
+  businessSubCategory: "Software",
+  file: ["doc1.pdf", "profile.png"],
+  social: [
+    Link(name: "LinkedIn", link: "https://linkedin.com/in/johndoe"),
+    Link(name: "Twitter", link: "https://twitter.com/johndoe"),
+  ],
+  websites: [
+    Link(name: "Portfolio", link: "https://johndoe.dev"),
+  ],
+  awards: [
+    Award(
+      image: "https://example.com/award1.png",
+      name: "Best Innovator 2024",
+      authority: "Tech Council",
+    ),
+  ],
+  videos: [
+    Link(name: "Intro Video", link: "https://youtube.com/watch?v=dQw4w9WgXcQ"),
+  ],
+  certificates: [
+    Link(name: "Flutter Certified", link: "https://certs.com/flutter123"),
+  ],
+  otp: 123456,
+  blockedUsers: [],
+  feedCount: 25,
+  productCount: 12,
+  subscription: "Pro",
+  fcm: "fcm_token_xyz",
+  createdAt: DateTime.now().subtract(Duration(days: 120)),
+  freeTrialEndDate: DateTime.now().add(Duration(days: 30)),
+  level: "Gold",
+  levelName: "Gold Member",
+  levelId: "level123",
+  adminType: "SuperAdmin",
+  businessTags: ["startup", "app", "B2B"],
+);
+
+

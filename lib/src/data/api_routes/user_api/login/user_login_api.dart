@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:familytree/src/data/globals.dart';
 
+
 Future<Map<String, String>> submitPhoneNumber(
     String countryCode, BuildContext context, String phone) async {
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -33,7 +34,7 @@ Future<Map<String, String>> submitPhoneNumber(
     },
     codeAutoRetrievalTimeout: (String verificationID) {
       if (!verificationIdcompleter.isCompleted) {
-        verificationIdcompleter.complete(''); // Timeout without sending code
+        verificationIdcompleter.complete(''); 
       }
     },
   );
@@ -68,7 +69,7 @@ void resendOTP(String phoneNumber, String verificationId, String resendToken) {
 }
 
 Future<Map<String, dynamic>> verifyOTP(
-    {required String verificationId,
+    {required String verificationId,required String phone,
     required String fcmToken,
     required String smsCode,
     required BuildContext context}) async {
@@ -88,7 +89,7 @@ Future<Map<String, dynamic>> verifyOTP(
       log("fcm token:$fcmToken");
       log("Verification ID:$verificationId");
       final Map<String, dynamic> tokenMap =
-          await verifyUserDB(idToken!, fcmToken, context);
+          await verifyUserDB(firebaseToken:  idToken??'',firebaseUid: user.uid,phone: phone,fcmToken:  fcmToken,context:  context);
       log(tokenMap.toString());
       return tokenMap;
     } else {
@@ -102,13 +103,23 @@ Future<Map<String, dynamic>> verifyOTP(
   }
 }
 
-Future<Map<String, dynamic>> verifyUserDB(
-    String idToken, String fcmToken, BuildContext context) async {
+Future<Map<String, dynamic>> verifyUserDB({
+  required String phone,
+  required String firebaseToken,
+  required String fcmToken,
+  required String firebaseUid,
+  required BuildContext context,
+}) async {
   SnackbarService snackbarService = SnackbarService();
 
-  final Uri url = Uri.parse('$baseUrl/user/login');
+  final Uri url = Uri.parse('$baseUrl/auth/check-mobile');
   final Map<String, String> headers = {"Content-Type": "application/json"};
-  final Map<String, dynamic> body = {"clientToken": idToken, "fcm": fcmToken};
+  final Map<String, dynamic> body = {
+    "phone": phone,
+    "firebaseToken": firebaseToken,
+    "fcmToken": fcmToken,
+    "firebaseUid": firebaseUid,
+  };
 
   try {
     log('Sending POST request to $url', name: 'VERIFY_USER_DB');
@@ -127,23 +138,38 @@ Future<Map<String, dynamic>> verifyUserDB(
     log('Response body: $responseBody', name: 'VERIFY_USER_DB');
 
     if (response.statusCode == 200) {
-      snackbarService
-          .showSnackBar(responseBody['message'] ?? 'Login successful');
-      return responseBody['data'] ?? {};
+      final data = responseBody['data'] ?? {};
+      final message = responseBody['message'] ?? 'Login successful';
+      snackbarService.showSnackBar(message);
+      
+      return {
+        'isRegistered': data['isRegistered'] ?? false,
+        'accessToken': data['accessToken'],
+        'refreshToken': data['refreshToken'],
+        'user': data['user'],
+        'action': data['action'],
+        'message': message,
+      };
     } else if (response.statusCode == 400) {
-      snackbarService
-          .showSnackBar(responseBody['message'] ?? 'Invalid request');
-      return {};
+      snackbarService.showSnackBar(responseBody['message'] ?? 'Invalid request');
+      return {
+        'isRegistered': false,
+        'message': responseBody['message'] ?? 'Invalid request',
+      };
     } else {
-      snackbarService
-          .showSnackBar(responseBody['message'] ?? 'Something went wrong');
-      return {};
+      snackbarService.showSnackBar(responseBody['message'] ?? 'Something went wrong');
+      return {
+        'isRegistered': false,
+        'message': responseBody['message'] ?? 'Something went wrong',
+      };
     }
   } catch (e, stackTrace) {
     log('Exception during verifyUserDB: $e',
         name: 'VERIFY_USER_DB', error: e, stackTrace: stackTrace);
-    snackbarService
-        .showSnackBar('Unexpected error occurred. Please try again.');
-    return {};
+    snackbarService.showSnackBar('Unexpected error occurred. Please try again.');
+    return {
+      'isRegistered': false,
+      'message': 'Unexpected error occurred. Please try again.',
+    };
   }
 }

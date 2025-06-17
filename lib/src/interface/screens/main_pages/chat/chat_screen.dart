@@ -1,3 +1,4 @@
+import 'package:familytree/src/data/models/user_model.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -56,17 +57,17 @@ class _IndividualPageState extends ConsumerState<IndividualPage> {
   }
 
   Future<void> _loadBlockStatus() async {
-    final asyncUser = ref.watch(userProvider);
-    asyncUser.whenData(
-      (user) {
-        setState(() {
-          if (user.blockedUsers != null) {
-            isBlocked = user.blockedUsers!
-                .any((blockedUser) => blockedUser == widget.receiver.id);
-          }
-        });
-      },
-    );
+    // final asyncUser = ref.watch(userProvider);
+    // asyncUser.whenData(
+    //   (user) {
+    setState(() {
+      if (user.blockedUsers != null) {
+        isBlocked = user.blockedUsers!
+            .any((blockedUser) => blockedUser == widget.receiver.id);
+      }
+    });
+    //   },
+    // );
   }
 
   @override
@@ -244,16 +245,13 @@ class _IndividualPageState extends ConsumerState<IndividualPage> {
                                 ),
                               );
                             },
-                            child: VerifiedName(
-                              tickColor: user.parentSub?.color ?? '',
-                              label: user.name ?? '',
-                              iconSize: 18,
-                              showBlueTick: user.blueTick ?? false,
+                            child: Text(
+                              user.name ?? '',
                             ),
                           );
                         },
                         loading: () => Text(
-                          '${widget.receiver.name ?? ''}',
+                          widget.receiver.name ?? '',
                           style: const TextStyle(fontSize: 18),
                         ),
                         error: (error, stackTrace) {

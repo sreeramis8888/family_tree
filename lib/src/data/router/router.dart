@@ -44,9 +44,9 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       return MaterialPageRoute(builder: (context) => PhoneNumberScreen());
     case 'MainPage':
       return MaterialPageRoute(builder: (context) => const MainPage());
-    case 'ProfileCompletion':
-      return MaterialPageRoute(
-          builder: (context) => const ProfileCompletionScreen());
+    // case 'ProfileCompletion':
+    //   return MaterialPageRoute(
+    //       builder: (context) => const ProfileCompletionScreen());
     case 'Card':
       UserModel user = settings?.arguments as UserModel;
       return MaterialPageRoute(
@@ -83,8 +83,8 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
           builder: (context) => EventMemberList(
                 event: event,
               ));
-    case 'EditUser':
-      return MaterialPageRoute(builder: (context) => EditUser());
+    // case 'EditUser':
+    //   return MaterialPageRoute(builder: (context) => EditUser());
     case 'IndividualPage':
       final args = settings?.arguments as Map<String, dynamic>?;
       Participant sender = args?['sender'];

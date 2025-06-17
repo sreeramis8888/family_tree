@@ -147,9 +147,9 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                     .toList();
                 String joinedDate =
                     DateFormat('dd/MM/yyyy').format(user.createdAt!);
-                Map<String, String> levelData =
-                    extractLevelDetails(user.level ?? '');
-                log(levelData.toString());
+                // Map<String, String> levelData =
+                //     extractLevelDetails(user.level ?? '');
+                // log(levelData.toString());
                 return Stack(
                   children: [
                     SingleChildScrollView(
@@ -174,13 +174,10 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                     borderColor: kWhite,
                                     borderWidth: 3.0,
                                   ),
-                                  VerifiedName(
-                                    tickColor: user.parentSub?.color ?? '',
-                                    label: user.name ?? '',
-                                    textStyle: kHeadTitleSB,
-                                    labelColor: kBlack,
-                                    iconSize: 18,
-                                    showBlueTick: user.blueTick ?? false,
+                                  Text(
+                          
+                                user.name ?? '',
+                                    style: kHeadTitleSB,
                                   ),
                                   const SizedBox(height: 5),
                                   Padding(

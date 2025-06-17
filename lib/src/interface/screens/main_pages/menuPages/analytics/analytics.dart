@@ -352,20 +352,21 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage>
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          final userAsync = ref.watch(userProvider);
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            userAsync.whenOrNull(data: (user) {
-              if (user.status == 'trial') {
-                showDialog(
-                  context: context,
-                  builder: (_) => const PremiumDialog(),
-                );
-              } else {
+          // final userAsync = ref.watch(userProvider);
+          // WidgetsBinding.instance.addPostFrameCallback((_) {
+          //   userAsync.whenOrNull(data: (user) {
+          //     if (user.status == 'trial') {
+          //       showDialog(
+          //         context: context,
+          //         builder: (_) => const PremiumDialog(),
+          //       );
+          //     }
+          //     else {
                 NavigationService navigationService = NavigationService();
                 navigationService.pushNamed('SendAnalyticRequest');
-              }
-            });
-          });
+              // }
+          //   });
+          // });
         },
         backgroundColor: kPrimaryColor,
         child: const Icon(

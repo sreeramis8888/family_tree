@@ -689,10 +689,10 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                                 ),
                               ),
                             ),
-                            title: VerifiedName(
-                              tickColor: user.parentSub?.color ?? '',
-                              label: user.name ?? '',
-                              showBlueTick: user.blueTick ?? false,
+                            title: Text(
+                    
+                        user.name ?? '',
+                    
                             ),
                             subtitle: Text('${user.chapter?.name ?? ''}',
                                 style:

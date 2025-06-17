@@ -60,7 +60,7 @@ class MyEventsPage extends StatelessWidget {
   }
 
   Widget eventCard({required BuildContext context, required Event event}) {
-    DateTime dateTime = DateTime.parse(event.eventDate.toString()).toLocal();
+    DateTime dateTime = DateTime.parse(event.eventStartDate.toString()).toLocal();
 
     String formattedDate = DateFormat('yyyy-MM-dd').format(dateTime);
     return Card(

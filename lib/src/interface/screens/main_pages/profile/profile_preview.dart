@@ -71,8 +71,8 @@ class ProfilePreview extends ConsumerWidget {
         .map((n) => n!)
         .toList();
     String joinedDate = DateFormat('dd/MM/yyyy').format(user.createdAt!);
-    Map<String, String> levelData = extractLevelDetails(user.level ?? '');
-    log(levelData.toString());
+    // Map<String, String> levelData = extractLevelDetails(user.level ?? '');
+
     final reviewsToShow = ref.watch(reviewsProvider);
     PageController _videoCountController = PageController();
 
@@ -169,14 +169,11 @@ class ProfilePreview extends ConsumerWidget {
                                           borderColor: kWhite,
                                           borderWidth: 3.0,
                                         ),
-                                        VerifiedName(
-                                          tickColor:
-                                              user.parentSub?.color ?? '',
-                                          label: user.name ?? '',
-                                          textStyle: kHeadTitleSB,
-                                          labelColor: kWhite,
-                                          iconSize: 18,
-                                          showBlueTick: user.blueTick ?? false,
+                                        Text(
+                                    
+                                      user.name ?? '',
+                                          style: kHeadTitleSB,
+                                    
                                         ),
                                         const SizedBox(height: 5),
                                         Padding(
@@ -214,41 +211,41 @@ class ProfilePreview extends ConsumerWidget {
                                                       ),
                                                   ],
                                                 ),
-                                              if (levelData['chapterName'] !=
-                                                  'undefined')
-                                                const SizedBox(height: 10),
-                                              if (levelData['chapterName'] !=
-                                                  'undefined')
-                                                Wrap(
-                                                  alignment:
-                                                      WrapAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                      '${levelData['stateName']} / ',
-                                                      style: const TextStyle(
-                                                          color: kWhite,
-                                                          fontSize: 12),
-                                                    ),
-                                                    Text(
-                                                      '${levelData['zoneName']} / ',
-                                                      style: const TextStyle(
-                                                          color: kWhite,
-                                                          fontSize: 12),
-                                                    ),
-                                                    Text(
-                                                      '${levelData['districtName']} / ',
-                                                      style: const TextStyle(
-                                                          color: kWhite,
-                                                          fontSize: 12),
-                                                    ),
-                                                    Text(
-                                                      '${levelData['chapterName']} ',
-                                                      style: const TextStyle(
-                                                          color: kWhite,
-                                                          fontSize: 12),
-                                                    ),
-                                                  ],
-                                                ),
+                                              // if (levelData['chapterName'] !=
+                                              //     'undefined')
+                                              //   const SizedBox(height: 10),
+                                              // if (levelData['chapterName'] !=
+                                              //     'undefined')
+                                              //   Wrap(
+                                              //     alignment:
+                                              //         WrapAlignment.center,
+                                              //     children: [
+                                              //       Text(
+                                              //         '${levelData['stateName']} / ',
+                                              //         style: const TextStyle(
+                                              //             color: kWhite,
+                                              //             fontSize: 12),
+                                              //       ),
+                                              //       Text(
+                                              //         '${levelData['zoneName']} / ',
+                                              //         style: const TextStyle(
+                                              //             color: kWhite,
+                                              //             fontSize: 12),
+                                              //       ),
+                                              //       Text(
+                                              //         '${levelData['districtName']} / ',
+                                              //         style: const TextStyle(
+                                              //             color: kWhite,
+                                              //             fontSize: 12),
+                                              //       ),
+                                              //       Text(
+                                              //         '${levelData['chapterName']} ',
+                                              //         style: const TextStyle(
+                                              //             color: kWhite,
+                                              //             fontSize: 12),
+                                              //       ),
+                                              //     ],
+                                              //   ),
                                               const SizedBox(height: 5),
                                               Text(
                                                 'Joined Date: $joinedDate',

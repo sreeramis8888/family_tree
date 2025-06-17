@@ -12,7 +12,7 @@ Future<String> editUser(Map<String, dynamic> profileData) async {
     url,
     headers: {
       'Content-type': 'application/json',
-      'Authorization': 'Bearer $token',
+      // 'Authorization': 'Bearer $token',
     },
     body: jsonEncode(profileData),
   );

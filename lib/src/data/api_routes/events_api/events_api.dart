@@ -11,13 +11,13 @@ part 'events_api.g.dart';
 
 @riverpod
 Future<List<Event>> fetchEvents(Ref ref) async {
-  final url = Uri.parse('$baseUrl/event/list');
+  final url = Uri.parse('$baseUrl/events');
   print('Requesting URL: $url');
   final response = await http.get(
     url,
     headers: {
       "Content-Type": "application/json",
-      "Authorization": "Bearer $token"
+      // "Authorization": "Bearer $token"
     },
   );
   print('hello');
