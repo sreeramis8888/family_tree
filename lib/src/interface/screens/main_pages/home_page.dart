@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:familytree/src/interface/screens/main_pages/menuPages/campaigns/campaign_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -1314,10 +1315,22 @@ class _CampaignsTabSectionState extends State<_CampaignsTabSection>
                       leftButtonLabel: 'Learn More',
                       rightButtonLabel: 'Donate Now',
                       leftButtonAction: () {
-                        // TODO: Navigate to campaign detail page
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                CampaignDetailPage(campaign: campaign),
+                          ),
+                        );
                       },
                       rightButtonAction: () {
-                        // TODO: Navigate to campaign detail page
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                CampaignDetailPage(campaign: campaign),
+                          ),
+                        );
                       },
                     );
                   },

@@ -10,9 +10,15 @@ class TransactionsListPage extends StatefulWidget {
   State<TransactionsListPage> createState() => _TransactionsListPageState();
 }
 
-class _TransactionsListPageState extends State<TransactionsListPage> with TickerProviderStateMixin {
+class _TransactionsListPageState extends State<TransactionsListPage>
+    with TickerProviderStateMixin {
   late TabController _subTabController;
-  final List<String> _transactionSubTabs = ['All Transactions', 'Approved', 'Pending', 'Rejected'];
+  final List<String> _transactionSubTabs = [
+    'All Transactions',
+    'Approved',
+    'Pending',
+    'Rejected'
+  ];
 
   // Mock data for demonstration
   final List<TransactionModel> allTransactions = [
@@ -30,7 +36,8 @@ class _TransactionsListPageState extends State<TransactionsListPage> with Ticker
       amountPaid: 200,
       status: 'rejected',
       reasonForRejection: 'Reason',
-      description: 'Lorem ipsum dolor sit amet consectetur. Sem aliquet odio bibendum non ultrices. Quis gravida fames tempor enim.',
+      description:
+          'Lorem ipsum dolor sit amet consectetur. Sem aliquet odio bibendum non ultrices. Quis gravida fames tempor enim.',
     ),
     TransactionModel(
       id: 'VCRU65789902',
@@ -51,7 +58,8 @@ class _TransactionsListPageState extends State<TransactionsListPage> with Ticker
   @override
   void initState() {
     super.initState();
-    _subTabController = TabController(length: _transactionSubTabs.length, vsync: this);
+    _subTabController =
+        TabController(length: _transactionSubTabs.length, vsync: this);
 
     _subTabController.addListener(() {
       setState(() {});
@@ -82,6 +90,9 @@ class _TransactionsListPageState extends State<TransactionsListPage> with Ticker
   Widget build(BuildContext context) {
     return Column(
       children: [
+        SizedBox(
+          height: 20,
+        ),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
@@ -97,6 +108,9 @@ class _TransactionsListPageState extends State<TransactionsListPage> with Ticker
               );
             }).toList(),
           ),
+        ),
+        SizedBox(
+          height: 20,
         ),
         Expanded(
           child: TabBarView(
@@ -115,7 +129,9 @@ class _TransactionsListPageState extends State<TransactionsListPage> with Ticker
                     onReUpload: () {
                       // TODO: Implement re-upload logic
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Re-uploading transaction ${transaction.id}')),
+                        SnackBar(
+                            content: Text(
+                                'Re-uploading transaction ${transaction.id}')),
                       );
                     },
                   );
@@ -127,4 +143,4 @@ class _TransactionsListPageState extends State<TransactionsListPage> with Ticker
       ],
     );
   }
-} 
+}

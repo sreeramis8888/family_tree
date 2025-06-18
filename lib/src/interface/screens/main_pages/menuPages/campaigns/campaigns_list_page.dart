@@ -1,8 +1,12 @@
+import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:familytree/src/interface/components/Cards/campaign_card.dart';
 import 'package:familytree/src/data/models/activity_model.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/campaigns/transactions_list_page.dart';
 import 'package:familytree/src/interface/components/custom_widgets/custom_choicechip.dart';
+import 'package:familytree/src/interface/screens/main_pages/menuPages/campaigns/campaign_detail_page.dart';
+
+import '../../../../../data/constants/style_constants.dart';
 
 class CampaignsMainScreen extends StatefulWidget {
   const CampaignsMainScreen({Key? key}) : super(key: key);
@@ -11,18 +15,28 @@ class CampaignsMainScreen extends StatefulWidget {
   State<CampaignsMainScreen> createState() => _CampaignsMainScreenState();
 }
 
-class _CampaignsMainScreenState extends State<CampaignsMainScreen> with TickerProviderStateMixin {
+class _CampaignsMainScreenState extends State<CampaignsMainScreen>
+    with TickerProviderStateMixin {
   late TabController _tabController;
   late TabController _subTabController;
 
-  final List<String> _topLevelTabs = ['Campaigns', 'Transactions', 'My Campaigns'];
-  final List<String> _campaignSubTabs = ['All Campaigns', 'CSR Campaigns', 'Zakath Campaigns'];
+  final List<String> _topLevelTabs = [
+    'Campaigns',
+    'Transactions',
+    'My Campaigns'
+  ];
+  final List<String> _campaignSubTabs = [
+    'All Campaigns',
+    'CSR Campaigns',
+    'Zakath Campaigns'
+  ];
 
   // Mock data for demonstration
   final List<ActivityModel> allCampaigns = [
     ActivityModel(
       title: 'Back to School Drive',
-      description: 'Help provide school supplies and educational resources to underprivileged children for the new academic year.',
+      description:
+          'Help provide school supplies and educational resources to underprivileged children for the new academic year.',
       amount: 2500,
       date: '2023-01-02',
       type: 'csr',
@@ -54,7 +68,8 @@ class _CampaignsMainScreenState extends State<CampaignsMainScreen> with TickerPr
   void initState() {
     super.initState();
     _tabController = TabController(length: _topLevelTabs.length, vsync: this);
-    _subTabController = TabController(length: _campaignSubTabs.length, vsync: this);
+    _subTabController =
+        TabController(length: _campaignSubTabs.length, vsync: this);
 
     _subTabController.addListener(() {
       setState(() {});
@@ -80,19 +95,59 @@ class _CampaignsMainScreenState extends State<CampaignsMainScreen> with TickerPr
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: kWhite,
       appBar: AppBar(
-        title: const Text('Campaigns'),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: _topLevelTabs.map((t) => Tab(text: t)).toList(),
+        backgroundColor: kWhite,
+        centerTitle: true,
+        leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: Icon(Icons.arrow_back_ios)),
+        title: const Text('Campaigns', style: kBodyTitleM),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: Container(
+            decoration: const BoxDecoration(
+              color: kWhite,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12,
+                  offset: Offset(0, 4),
+                  blurRadius: 6,
+                  spreadRadius: 0,
+                ),
+              ],
+            ),
+            child: TabBar(
+              dividerColor: kWhite,
+              indicatorColor: kPrimaryColor,
+              indicatorSize: TabBarIndicatorSize.tab,
+              enableFeedback: true,
+              indicatorWeight: 3,
+              isScrollable: false,
+              labelColor: kPrimaryColor,
+              unselectedLabelColor: Colors.grey,
+              labelStyle: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+              unselectedLabelStyle: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+              controller: _tabController,
+              tabs: _topLevelTabs.map((t) => Tab(text: t)).toList(),
+            ),
+          ),
         ),
       ),
       body: TabBarView(
         controller: _tabController,
         children: [
-          // Campaigns Tab Content (Existing functionality)
           Column(
             children: [
+              SizedBox(
+                height: 20,
+              ),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -108,6 +163,9 @@ class _CampaignsMainScreenState extends State<CampaignsMainScreen> with TickerPr
                     );
                   }).toList(),
                 ),
+              ),
+              SizedBox(
+                height: 20,
               ),
               Expanded(
                 child: TabBarView(
@@ -121,27 +179,34 @@ class _CampaignsMainScreenState extends State<CampaignsMainScreen> with TickerPr
                       itemCount: campaigns.length,
                       itemBuilder: (context, index) {
                         final campaign = campaigns[index];
-                        final isMyCampaign = false; // TODO: Replace with actual ownership logic
-                        return CampaignCard(
-                          campaign: campaign,
-                          tag: campaign.type ?? '',
-                          leftButtonLabel: isMyCampaign ? '' : 'Learn More',
-                          rightButtonLabel: isMyCampaign ? 'View Details' : 'Donate Now',
-                          leftButtonAction: isMyCampaign
-                              ? null
-                              : () {
-                                  // TODO: Navigate to campaign detail page
-                                  Navigator.push(context, MaterialPageRoute(builder: (_) => Placeholder()));
-                                },
-                          rightButtonAction: () {
-                            if (isMyCampaign) {
-                              // TODO: Navigate to view details page
-                              Navigator.push(context, MaterialPageRoute(builder: (_) => Placeholder()));
-                            } else {
-                              // TODO: Navigate to campaign detail page
-                              Navigator.push(context, MaterialPageRoute(builder: (_) => Placeholder()));
-                            }
-                          },
+                        final isMyCampaign = false;
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: CampaignCard(
+                            campaign: campaign,
+                            tag: campaign.type ?? '',
+                            leftButtonLabel: isMyCampaign ? '' : 'Learn More',
+                            rightButtonLabel:
+                                isMyCampaign ? 'View Details' : 'Donate Now',
+                            leftButtonAction: isMyCampaign
+                                ? null
+                                : () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => CampaignDetailPage(campaign: campaign),
+                                      ),
+                                    );
+                                  },
+                            rightButtonAction: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => CampaignDetailPage(campaign: campaign),
+                                ),
+                              );
+                            },
+                          ),
                         );
                       },
                     );
@@ -155,6 +220,9 @@ class _CampaignsMainScreenState extends State<CampaignsMainScreen> with TickerPr
           // My Campaigns Tab Content
           Column(
             children: [
+              SizedBox(
+                height: 20,
+              ),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -170,6 +238,9 @@ class _CampaignsMainScreenState extends State<CampaignsMainScreen> with TickerPr
                     );
                   }).toList(),
                 ),
+              ),
+              SizedBox(
+                height: 20,
               ),
               Expanded(
                 child: TabBarView(
@@ -185,24 +256,35 @@ class _CampaignsMainScreenState extends State<CampaignsMainScreen> with TickerPr
                       itemCount: campaigns.length,
                       itemBuilder: (context, index) {
                         final campaign = campaigns[index];
-                        final isMyCampaign = true; // Hardcoded true for 'My Campaigns' tab for demonstration
-                        return CampaignCard(
-                          campaign: campaign,
-                          tag: campaign.type ?? '',
-                          leftButtonLabel: isMyCampaign ? '' : 'Learn More',
-                          rightButtonLabel: isMyCampaign ? 'View Details' : 'Donate Now',
-                          leftButtonAction: isMyCampaign
-                              ? null
-                              : () {
-                                  Navigator.push(context, MaterialPageRoute(builder: (_) => Placeholder()));
-                                },
-                          rightButtonAction: () {
-                            if (isMyCampaign) {
-                              Navigator.push(context, MaterialPageRoute(builder: (_) => Placeholder()));
-                            } else {
-                              Navigator.push(context, MaterialPageRoute(builder: (_) => Placeholder()));
-                            }
-                          },
+                        final isMyCampaign =
+                            true; // Hardcoded true for 'My Campaigns' tab for demonstration
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: CampaignCard(
+                            campaign: campaign,
+                            tag: campaign.type ?? '',
+                            leftButtonLabel: isMyCampaign ? '' : 'Learn More',
+                            rightButtonLabel:
+                                isMyCampaign ? 'View Details' : 'Donate Now',
+                            leftButtonAction: isMyCampaign
+                                ? null
+                                : () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => CampaignDetailPage(campaign: campaign),
+                                      ),
+                                    );
+                                  },
+                            rightButtonAction: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => CampaignDetailPage(campaign: campaign),
+                                ),
+                              );
+                            },
+                          ),
                         );
                       },
                     );
@@ -215,4 +297,4 @@ class _CampaignsMainScreenState extends State<CampaignsMainScreen> with TickerPr
       ),
     );
   }
-} 
+}

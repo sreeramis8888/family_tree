@@ -150,15 +150,17 @@ class CampaignCard extends StatelessWidget {
                 const SizedBox(height: 14),
                 Row(
                   children: [
-                    Expanded(
-                        child: customButton(
-                      labelColor: kBlack,
-                      sideColor: kSecondaryColor,
-                      buttonColor: kSecondaryColor,
-                      label: leftButtonLabel,
-                      onPressed: leftButtonAction ?? () {},
-                    )),
-                    const SizedBox(width: 12),
+                    if (rightButtonLabel != 'View Details')
+                      Expanded(
+                          child: customButton(
+                        labelColor: kBlack,
+                        sideColor: kSecondaryColor,
+                        buttonColor: kSecondaryColor,
+                        label: leftButtonLabel,
+                        onPressed: leftButtonAction ?? () {},
+                      )),
+                    if (rightButtonLabel != 'View Details')
+                      const SizedBox(width: 12),
                     Expanded(
                         child: customButton(
                       label: rightButtonLabel,
