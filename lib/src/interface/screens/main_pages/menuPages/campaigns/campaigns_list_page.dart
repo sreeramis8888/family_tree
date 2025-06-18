@@ -5,6 +5,7 @@ import 'package:familytree/src/data/models/activity_model.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/campaigns/transactions_list_page.dart';
 import 'package:familytree/src/interface/components/custom_widgets/custom_choicechip.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/campaigns/campaign_detail_page.dart';
+import 'package:familytree/src/interface/screens/main_pages/menuPages/campaigns/campaign_create_page.dart';
 
 import '../../../../../data/constants/style_constants.dart';
 
@@ -294,6 +295,19 @@ class _CampaignsMainScreenState extends State<CampaignsMainScreen>
             ],
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const CampaignCreatePage(),
+            ),
+          );
+        },
+        backgroundColor: kPrimaryColor,
+        child: const Icon(Icons.add, color: Colors.white),
+        tooltip: 'Add Campaign',
       ),
     );
   }

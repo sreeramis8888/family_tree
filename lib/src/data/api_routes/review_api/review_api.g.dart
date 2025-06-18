@@ -6,7 +6,7 @@ part of 'review_api.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$fetchReviewsHash() => r'f1294165a915cfc3a1022e95965e861a9eff7749';
+String _$fetchReviewsHash() => r'efdbd4a7a8f8c9c71261e4711c822f8c832eac3e';
 
 /// Copied from Dart SDK
 class _SystemHash {

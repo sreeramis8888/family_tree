@@ -9,7 +9,7 @@ import 'package:familytree/src/interface/screens/main_pages/admin/member_creatio
 import 'package:familytree/src/interface/screens/main_pages/chat/chat_screen.dart';
 import 'package:familytree/src/interface/screens/main_pages/event/event_member_list.dart';
 import 'package:familytree/src/interface/screens/main_pages/event/view_more_event.dart';
-import 'package:familytree/src/interface/screens/main_pages/login_page.dart';
+import 'package:familytree/src/interface/screens/onboarding/login_page.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/about_us.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/add_product.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/analytics/analytics.dart';

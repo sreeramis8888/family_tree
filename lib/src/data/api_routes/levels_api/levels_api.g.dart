@@ -6,7 +6,7 @@ part of 'levels_api.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$fetchStatesHash() => r'40daaabdbb8ad91f2aba464dee208be398869688';
+String _$fetchStatesHash() => r'c287d545398284d38d73276aa7a41adc454371c4';
 
 /// See also [fetchStates].
 @ProviderFor(fetchStates)

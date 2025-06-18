@@ -19,6 +19,14 @@ class SecureStorage {
   static Future<void> deleteAll() async {
     await _storage.deleteAll();
   }
+
+  static Future<void> savePhoneNumber(String phone) async {
+    await _storage.write(key: 'phone', value: phone);
+  }
+
+  static Future<String?> getPhoneNumber() async {
+    return await _storage.read(key: 'phone');
+  }
 }
 
 Future<void> loadSecureData() async {

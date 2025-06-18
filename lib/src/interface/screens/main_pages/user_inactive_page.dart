@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/data/utils/secure_storage.dart';
-import 'package:familytree/src/interface/screens/main_pages/login_page.dart';
+import 'package:familytree/src/interface/screens/onboarding/login_page.dart';
 
 class UserInactivePage extends StatelessWidget {
   const UserInactivePage({Key? key}) : super(key: key);

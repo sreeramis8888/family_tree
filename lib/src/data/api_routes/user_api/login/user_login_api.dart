@@ -105,9 +105,9 @@ Future<Map<String, dynamic>> verifyOTP(
 
 Future<Map<String, dynamic>> verifyUserDB({
   required String phone,
-  required String firebaseToken,
+   String firebaseToken='',
   required String fcmToken,
-  required String firebaseUid,
+   String firebaseUid='',
   required BuildContext context,
 }) async {
   SnackbarService snackbarService = SnackbarService();

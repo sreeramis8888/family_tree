@@ -19,6 +19,9 @@ import 'package:familytree/src/data/utils/secure_storage.dart';
 import 'package:familytree/src/data/services/getFcmToken.dart';
 import 'package:familytree/src/data/services/navgitor_service.dart';
 import 'package:familytree/src/data/globals.dart';
+import 'package:familytree/src/interface/screens/onboarding/registration_page.dart';
+import 'package:familytree/src/interface/screens/main_pages/profile/approval_waiting_page.dart';
+import 'package:familytree/src/data/api_routes/user_api/login/user_login_api.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   @override
@@ -282,7 +285,48 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             navigationService.pushNamedReplacement('MainPage');
           }
         } else {
-          navigationService.pushNamedReplacement('PhoneNumber');
+          // Check for pending registration
+          String? phone = await SecureStorage.getPhoneNumber();
+          if (phone != null && phone.isNotEmpty) {
+            // Call verifyOtp API to check status
+            try {
+              Map<String, dynamic> responseMap = await verifyUserDB(
+                phone: phone,
+     
+                fcmToken: fcmToken,
+           
+                context: context,
+              );
+              final message = responseMap['message'] ?? '';
+              final isRegistered = responseMap['isRegistered'];
+              final user = responseMap['user'];
+              if (isRegistered == false && user == null && message.toString().toLowerCase().contains('phone verified')) {
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (context) => RegistrationPage(phone: phone),
+                ));
+              } else if (message.toString().toLowerCase().contains('pending')) {
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (context) => const ApprovalWaitingPage(),
+                ));
+              } else if (isRegistered == true && user != null && responseMap['accessToken'] != null) {
+                String savedToken = responseMap['accessToken'];
+                String savedId = user['id'];
+                if (savedToken.isNotEmpty && savedId.isNotEmpty) {
+                  await SecureStorage.write('token', savedToken);
+                  await SecureStorage.write('id', savedId);
+                  token = savedToken;
+                  id = savedId;
+                  Navigator.of(context).pushReplacementNamed('MainPage');
+                }
+              } else {
+                Navigator.of(context).pushReplacementNamed('PhoneNumber');
+              }
+            } catch (e) {
+              Navigator.of(context).pushReplacementNamed('PhoneNumber');
+            }
+          } else {
+            Navigator.of(context).pushReplacementNamed('PhoneNumber');
+          }
         }
       // }
     });

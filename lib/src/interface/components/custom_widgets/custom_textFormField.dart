@@ -201,7 +201,7 @@ class CustomTextFormField extends StatelessWidget {
               validator: validator,
               decoration: InputDecoration(
                 errorMaxLines: 2,
-                hintStyle: TextStyle(color: kGreyLight),
+                hintStyle: TextStyle(color: Color(0xFF979797)),
                 hintText: labelText,
                 labelStyle: const TextStyle(color: Colors.grey),
                 floatingLabelBehavior: FloatingLabelBehavior.never,

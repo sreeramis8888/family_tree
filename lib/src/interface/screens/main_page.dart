@@ -26,7 +26,7 @@ import 'package:familytree/src/interface/screens/main_pages/profile_page.dart';
 import 'package:familytree/src/interface/screens/main_pages/business_page.dart';
 import 'package:familytree/src/interface/screens/main_pages/chat_page.dart';
 import 'package:familytree/src/interface/screens/main_pages/home_page.dart';
-import 'package:familytree/src/interface/screens/main_pages/login_page.dart';
+import 'package:familytree/src/interface/screens/onboarding/login_page.dart';
 import 'package:familytree/src/interface/screens/main_pages/news_bookmark/news_list_page.dart';
 import 'package:familytree/src/interface/screens/main_pages/news_bookmark/news_page.dart';
 import 'package:familytree/src/interface/screens/main_pages/user_inactive_page.dart';

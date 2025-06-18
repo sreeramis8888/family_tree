@@ -38,7 +38,7 @@ class MyApp extends ConsumerWidget {
       navigatorKey: NavigationService.navigatorKey,
       scaffoldMessengerKey: SnackbarService.scaffoldMessengerKey,
       onGenerateRoute: router.generateRoute,
-      initialRoute: 'MainPage',
+      initialRoute: 'Splash',
       title: 'familytree',
       theme: ThemeData(
         fontFamily: kFamilyName,

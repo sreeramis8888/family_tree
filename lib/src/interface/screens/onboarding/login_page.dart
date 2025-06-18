@@ -28,6 +28,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:familytree/src/data/notifiers/loading_notifier.dart';
 import 'package:keyboard_avoider/keyboard_avoider.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:familytree/src/interface/screens/onboarding/registration_page.dart';
+import 'package:familytree/src/interface/screens/main_pages/profile/approval_waiting_page.dart';
 
 TextEditingController _mobileController = TextEditingController();
 TextEditingController _otpController = TextEditingController();
@@ -73,23 +75,8 @@ class PhoneNumberScreen extends ConsumerWidget {
                 ),
               ],
             ),
-            // Login form section
             Container(
               width: double.infinity,
-              decoration: const BoxDecoration(
-                color: kWhite,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(32),
-                  topRight: Radius.circular(32),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0x11000000),
-                    blurRadius: 10,
-                    offset: Offset(0, -2),
-                  ),
-                ],
-              ),
               child: Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
@@ -471,22 +458,41 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
           smsCode: _otpController.text,
           context: context);
 
-      String savedToken = responseMap['accessToken'];
-      String savedId = responseMap['user']['_id'];
+      final message = responseMap['message'] ?? '';
+      final isRegistered = responseMap['isRegistered'];
+      final user = responseMap['user'];
 
-      if (savedToken.isNotEmpty && savedId.isNotEmpty) {
-        await SecureStorage.write('token', savedToken);
-        await SecureStorage.write('id', savedId);
-        token = savedToken;
-        id = savedId;
-        log('savedToken: $savedToken');
-        log('savedId: $savedId');
+      if (isRegistered == false &&
+          user == null &&
+          message.toString().toLowerCase().contains('phone verified')) {
+        // New user, show registration form
+        await SecureStorage.savePhoneNumber(_mobileController.text);
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => RegistrationPage(phone: _mobileController.text),
+        ));
+      } else if (message.toString().toLowerCase().contains('pending')) {
+        // Request pending, show waiting page
+        await SecureStorage.savePhoneNumber(_mobileController.text);
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => const ApprovalWaitingPage(),
+        ));
+      } else if (isRegistered == true &&
+          user != null &&
+          responseMap['accessToken'] != null) {
+        // Login successful
+        String savedToken = responseMap['accessToken'];
+        String savedId = user['id'];
+        if (savedToken.isNotEmpty && savedId.isNotEmpty) {
+          await SecureStorage.write('token', savedToken);
+          await SecureStorage.write('id', savedId);
+          token = savedToken;
+          id = savedId;
+          log('savedToken: $savedToken');
+          log('savedId: $savedId');
 
-              Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => const EulaAgreementScreen()));
-       
-        
-    
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+              builder: (context) => const EulaAgreementScreen()));
+        }
       } else {
         // CustomSnackbar.showSnackbar(context, 'Wrong OTP');
       }
