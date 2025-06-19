@@ -29,7 +29,7 @@ import 'package:familytree/src/data/notifiers/loading_notifier.dart';
 import 'package:keyboard_avoider/keyboard_avoider.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:familytree/src/interface/screens/onboarding/registration_page.dart';
-import 'package:familytree/src/interface/screens/main_pages/profile/approval_waiting_page.dart';
+import 'package:familytree/src/interface/screens/onboarding/approval_waiting_page.dart';
 
 TextEditingController _mobileController = TextEditingController();
 TextEditingController _otpController = TextEditingController();
@@ -466,13 +466,15 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
           user == null &&
           message.toString().toLowerCase().contains('phone verified')) {
         // New user, show registration form
-        await SecureStorage.savePhoneNumber(_mobileController.text);
+        await SecureStorage.savePhoneNumber(
+            '+${countryCode}${_mobileController.text}');
         Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => RegistrationPage(phone: _mobileController.text),
         ));
       } else if (message.toString().toLowerCase().contains('pending')) {
         // Request pending, show waiting page
-        await SecureStorage.savePhoneNumber(_mobileController.text);
+        await SecureStorage.savePhoneNumber(
+            '+${countryCode}${_mobileController.text}');
         Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => const ApprovalWaitingPage(),
         ));

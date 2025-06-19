@@ -1,6 +1,9 @@
+import 'package:familytree/src/data/constants/style_constants.dart';
+import 'package:familytree/src/data/services/navgitor_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+
 import 'package:familytree/src/data/constants/color_constants.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class ApprovalWaitingPage extends StatelessWidget {
   const ApprovalWaitingPage({super.key});
@@ -8,12 +11,42 @@ class ApprovalWaitingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        scrolledUnderElevation: 0,
+        backgroundColor: kWhite,
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.black),
+        leading: InkWell(
+          onTap: () {
+            NavigationService navigationService = NavigationService();
+            navigationService.pushNamedReplacement('PhoneNumber');
+          },
+          child: Row(
+            children: [
+              SizedBox(
+                width: 10,
+              ),
+              Icon(
+                Icons.logout,
+                color: kPrimaryColor,
+              ),
+              Text(
+                'Logout',
+                style: kSmallTitleB.copyWith(
+                  color: kPrimaryColor,
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
       backgroundColor: kWhite,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SvgPicture.asset('assets/svg/images/approval_waiting.svg', height: 120),
+            LoadingAnimationWidget.fourRotatingDots(
+                color: kPrimaryColor, size: 130),
             const SizedBox(height: 32),
             const Text(
               'Your request to join has been sent',

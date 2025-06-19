@@ -1,6 +1,14 @@
+import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:familytree/src/data/api_routes/family_api.dart/family_api.dart';
+import 'package:familytree/src/data/api_routes/user_api/login/user_login_api.dart';
+import 'package:familytree/src/data/services/navgitor_service.dart';
+import 'package:familytree/src/data/utils/secure_storage.dart';
+import 'package:familytree/src/interface/components/loading_indicator/loading_indicator.dart';
+import 'package:familytree/src/interface/screens/onboarding/approval_waiting_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/interface/components/custom_widgets/custom_textFormField.dart';
@@ -23,16 +31,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
   String? _gender;
   String _status = 'Alive';
   String? _family;
+  String? _parentFamily;
   String? _linkedMember;
   String? _relationship;
   List<Map<String, String?>> _relations = [];
   Uint8List? _profileImage;
 
-  // Example data for dropdowns
   final List<String> _genders = ['Male', 'Female', 'Other'];
-  final List<String> _families = ['Family A', 'Family B'];
-  final List<String> _members = ['Member 1', 'Member 2'];
-  final List<String> _relationships = ['Father', 'Mother', 'Sibling'];
+  final List<String> _relationships = ["spouse", "parent", "sibling", "child"];
 
   @override
   void initState() {
@@ -85,9 +91,31 @@ class _RegistrationPageState extends State<RegistrationPage> {
     }
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
-      // TODO: Submit registration data
+      String? phone = await SecureStorage.getPhoneNumber();
+      Map<String, dynamic> formData = {
+        "fullName": _nameController.text,
+        "gender": _gender,
+        "parentFamilyId": _parentFamily,
+        "isAlive": _status == 'Alive' ? true : false,
+        "familyId": _family,
+        "phone": phone,
+        "media": [
+          {"url": "profile.png", "metadata": "image"}
+        ],
+        "relationships": [
+          {"personId": _linkedMember, "type": _relationship}
+        ]
+      };
+      log(formData.toString());
+      final responseStatuscode =
+          await sendRequest(formData: formData, context: context);
+      if (responseStatuscode == 200) {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => const ApprovalWaitingPage(),
+        ));
+      }
     }
   }
 
@@ -103,7 +131,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.of(context).popUntil((route) => route.isFirst);
+            NavigationService navigationService = NavigationService();
+            navigationService.pushNamedReplacement('PhoneNumber');
           },
         ),
       ),
@@ -195,38 +224,115 @@ class _RegistrationPageState extends State<RegistrationPage> {
               ),
               const SizedBox(height: 16),
               Text('Family *', style: TextStyle(fontWeight: FontWeight.bold)),
-              SelectionDropDown(
-                label: null,
-                hintText: 'Select family',
-                value: _family,
-                items: _families
-                    .map((f) => DropdownMenuItem(value: f, child: Text(f)))
-                    .toList(),
-                onChanged: (val) => setState(() => _family = val),
-                validator: (val) => val == null ? 'Required' : null,
+              const SizedBox(height: 16),
+              Consumer(
+                builder: (context, ref, child) {
+                  final asyncFamilies = ref.watch(fetchAllFamilyProvider);
+                  return asyncFamilies.when(
+                    data: (families) {
+                      return SelectionDropDown(
+                        label: null,
+                        hintText: 'Select family',
+                        value: _family,
+                        items: families
+                            .map((f) => DropdownMenuItem<String>(
+                                  value: f.id ?? '',
+                                  child: Text(f.name ?? ''),
+                                ))
+                            .toList(),
+                        onChanged: (val) => setState(() => _family = val),
+                        validator: (val) => val == null ? 'Required' : null,
+                      );
+                    },
+                    loading: () => const Center(child: LoadingAnimation()),
+                    error: (error, stackTrace) {
+                      log(error.toString());
+                      return const Center(child: SizedBox.shrink());
+                    },
+                  );
+                },
               ),
               const SizedBox(height: 16),
-              Text('Link to Family Member 1 *',
+              Text('Parent Family',
                   style: TextStyle(fontWeight: FontWeight.bold)),
-              SelectionDropDown(
-                label: null,
-                hintText: 'Select existing family member',
-                value: _linkedMember,
-                items: _members
-                    .map((m) => DropdownMenuItem(value: m, child: Text(m)))
-                    .toList(),
-                onChanged: (val) => setState(() => _linkedMember = val),
-                validator: (val) => val == null ? 'Required' : null,
+              const SizedBox(height: 16),
+
+              Consumer(
+                builder: (context, ref, child) {
+                  final asyncFamilies = ref.watch(fetchAllFamilyProvider);
+                  return asyncFamilies.when(
+                    data: (families) {
+                      return SelectionDropDown(
+                        label: null,
+                        hintText: 'Select parent family',
+                        value: _parentFamily,
+                        items: families
+                            .map((f) => DropdownMenuItem<String>(
+                                  value: f.id ?? '',
+                                  child: Text(f.name ?? ''),
+                                ))
+                            .toList(),
+                        onChanged: (val) => setState(() => _parentFamily = val),
+                        validator: (val) => val == null ? 'Required' : null,
+                      );
+                    },
+                    loading: () => const Center(child: LoadingAnimation()),
+                    error: (error, stackTrace) {
+                      log(error.toString());
+                      return const Center(child: SizedBox.shrink());
+                    },
+                  );
+                },
               ),
+              const SizedBox(height: 16),
+              if (_family != null)
+                Text('Link to Family Member 1 *',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              if (_family != null)
+                Consumer(
+                  builder: (context, ref, child) {
+                    final asyncFamily = ref.watch(
+                        fetchSingleFamilyProvider(familyId: _family ?? ''));
+                    return asyncFamily.when(
+                      data: (family) {
+                        if (family.members != null) {
+                          return SelectionDropDown(
+                            label: null,
+                            hintText: 'Select existing family member',
+                            value: _linkedMember,
+                            items: family.members!
+                                .map((m) => DropdownMenuItem(
+                                    value: m.personId,
+                                    child: Text(m.fullName ?? '')))
+                                .toList(),
+                            onChanged: (val) =>
+                                setState(() => _linkedMember = val),
+                            validator: (val) => val == null ? 'Required' : null,
+                          );
+                        } else {
+                          return Text('No Members exists in this family');
+                        }
+                      },
+                      loading: () => const Center(child: LoadingAnimation()),
+                      error: (error, stackTrace) {
+                        log(error.toString());
+                        return const Center(child: SizedBox.shrink());
+                      },
+                    );
+                  },
+                ),
               const SizedBox(height: 16),
               Text('Relationship *',
                   style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
               SelectionDropDown(
                 label: null,
                 hintText: 'Select Relationship',
                 value: _relationship,
                 items: _relationships
-                    .map((r) => DropdownMenuItem(value: r, child: Text(r)))
+                    .map((r) => DropdownMenuItem(
+                        value: r, child: Text(r.toUpperCase())))
                     .toList(),
                 onChanged: (val) => setState(() => _relationship = val),
                 validator: (val) => val == null ? 'Required' : null,

@@ -1,12 +1,13 @@
 class FamilyModel {
   final String? id;
   final String? name;
-  final List<FamilyMember>? members;
-  final List<String>? parentFamilyId;
+  final List<Member>? members;
+  final List<dynamic>? parentFamilyId;
   final String? location;
   final int? generation;
   final bool? status;
   final bool? isPrivate;
+
   final List<dynamic>? media;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -21,7 +22,6 @@ class FamilyModel {
     this.generation,
     this.status,
     this.isPrivate,
-
     this.media,
     this.createdAt,
     this.updatedAt,
@@ -30,26 +30,22 @@ class FamilyModel {
 
   factory FamilyModel.fromJson(Map<String, dynamic> json) {
     return FamilyModel(
-      id: json['_id'] as String?,
-      name: json['name'] as String?,
+      id: json['_id'],
+      name: json['name'],
       members: (json['members'] as List<dynamic>?)
-          ?.map((e) => FamilyMember.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => Member.fromJson(e))
           .toList(),
-      parentFamilyId: (json['parentFamilyId'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
-      location: json['location'] as String?,
-      generation: json['generation'] as int?,
-      status: json['status'] as bool?,
-      isPrivate: json['isPrivate'] as bool?,
-      media: json['media'] as List<dynamic>?,
-      createdAt: json['createdAt'] != null
-          ? DateTime.tryParse(json['createdAt'])
-          : null,
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.tryParse(json['updatedAt'])
-          : null,
-      v: json['__v'] as int?,
+      parentFamilyId: json['parentFamilyId'],
+      location: json['location'],
+      generation: json['generation'],
+      status: json['status'],
+      isPrivate: json['isPrivate'],
+      media: json['media'],
+      createdAt:
+          json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
+      updatedAt:
+          json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      v: json['__v'],
     );
   }
 
@@ -57,6 +53,7 @@ class FamilyModel {
     return {
       '_id': id,
       'name': name,
+      'members': members?.map((e) => e.toJson()).toList(),
       'parentFamilyId': parentFamilyId,
       'location': location,
       'generation': generation,
@@ -69,37 +66,42 @@ class FamilyModel {
     };
   }
 }
-class FamilyMember {
-  final String? personId;
+
+class Member {
+  final String? id;
   final String? role;
   final DateTime? joinDate;
-  final String? id;
+  final String? personId;
+  final String? fullName;
 
-  FamilyMember({
-    this.personId,
+  Member({
+    this.id,
     this.role,
     this.joinDate,
-    this.id,
+    this.personId,
+    this.fullName,
   });
 
-  factory FamilyMember.fromJson(Map<String, dynamic> json) {
-    return FamilyMember(
-      personId: json['person']['_id'] as String,
-     
-      role: json['role'] as String?,
-      joinDate: json['joinDate'] != null
-          ? DateTime.tryParse(json['joinDate'])
-          : null,
-      id: json['_id'] as String?,
+  factory Member.fromJson(Map<String, dynamic> json) {
+    return Member(
+      id: json['_id'],
+      role: json['role'],
+      joinDate:
+          json['joinDate'] != null ? DateTime.parse(json['joinDate']) : null,
+      personId: json['person']?['_id'],
+      fullName: json['person']?['fullName'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'personId': personId,
+      '_id': id,
       'role': role,
       'joinDate': joinDate?.toIso8601String(),
-      '_id': id,
+      'person': {
+        '_id': personId,
+        'fullName': fullName,
+      },
     };
   }
 }

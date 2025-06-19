@@ -6,7 +6,25 @@ part of 'family_api.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$fetchAllFamilyHash() => r'1b5b14717eb310bd5952b8e759a99e7bc57d1ba0';
+String _$fetchAllFamilyHash() => r'455598ddac82952831633906c0343b1f9228cb0b';
+
+/// See also [fetchAllFamily].
+@ProviderFor(fetchAllFamily)
+final fetchAllFamilyProvider =
+    AutoDisposeFutureProvider<List<FamilyModel>>.internal(
+  fetchAllFamily,
+  name: r'fetchAllFamilyProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$fetchAllFamilyHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef FetchAllFamilyRef = AutoDisposeFutureProviderRef<List<FamilyModel>>;
+String _$fetchSingleFamilyHash() => r'8b52a71708acd5e73279043a183425231d6fd0e3';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -29,30 +47,30 @@ class _SystemHash {
   }
 }
 
-/// See also [fetchAllFamily].
-@ProviderFor(fetchAllFamily)
-const fetchAllFamilyProvider = FetchAllFamilyFamily();
+/// See also [fetchSingleFamily].
+@ProviderFor(fetchSingleFamily)
+const fetchSingleFamilyProvider = FetchSingleFamilyFamily();
 
-/// See also [fetchAllFamily].
-class FetchAllFamilyFamily extends Family<AsyncValue<List<FamilyModel>>> {
-  /// See also [fetchAllFamily].
-  const FetchAllFamilyFamily();
+/// See also [fetchSingleFamily].
+class FetchSingleFamilyFamily extends Family<AsyncValue<FamilyModel>> {
+  /// See also [fetchSingleFamily].
+  const FetchSingleFamilyFamily();
 
-  /// See also [fetchAllFamily].
-  FetchAllFamilyProvider call({
-    required String? chapterId,
+  /// See also [fetchSingleFamily].
+  FetchSingleFamilyProvider call({
+    required String familyId,
   }) {
-    return FetchAllFamilyProvider(
-      chapterId: chapterId,
+    return FetchSingleFamilyProvider(
+      familyId: familyId,
     );
   }
 
   @override
-  FetchAllFamilyProvider getProviderOverride(
-    covariant FetchAllFamilyProvider provider,
+  FetchSingleFamilyProvider getProviderOverride(
+    covariant FetchSingleFamilyProvider provider,
   ) {
     return call(
-      chapterId: provider.chapterId,
+      familyId: provider.familyId,
     );
   }
 
@@ -68,76 +86,75 @@ class FetchAllFamilyFamily extends Family<AsyncValue<List<FamilyModel>>> {
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'fetchAllFamilyProvider';
+  String? get name => r'fetchSingleFamilyProvider';
 }
 
-/// See also [fetchAllFamily].
-class FetchAllFamilyProvider
-    extends AutoDisposeFutureProvider<List<FamilyModel>> {
-  /// See also [fetchAllFamily].
-  FetchAllFamilyProvider({
-    required String? chapterId,
+/// See also [fetchSingleFamily].
+class FetchSingleFamilyProvider extends AutoDisposeFutureProvider<FamilyModel> {
+  /// See also [fetchSingleFamily].
+  FetchSingleFamilyProvider({
+    required String familyId,
   }) : this._internal(
-          (ref) => fetchAllFamily(
-            ref as FetchAllFamilyRef,
-            chapterId: chapterId,
+          (ref) => fetchSingleFamily(
+            ref as FetchSingleFamilyRef,
+            familyId: familyId,
           ),
-          from: fetchAllFamilyProvider,
-          name: r'fetchAllFamilyProvider',
+          from: fetchSingleFamilyProvider,
+          name: r'fetchSingleFamilyProvider',
           debugGetCreateSourceHash:
               const bool.fromEnvironment('dart.vm.product')
                   ? null
-                  : _$fetchAllFamilyHash,
-          dependencies: FetchAllFamilyFamily._dependencies,
+                  : _$fetchSingleFamilyHash,
+          dependencies: FetchSingleFamilyFamily._dependencies,
           allTransitiveDependencies:
-              FetchAllFamilyFamily._allTransitiveDependencies,
-          chapterId: chapterId,
+              FetchSingleFamilyFamily._allTransitiveDependencies,
+          familyId: familyId,
         );
 
-  FetchAllFamilyProvider._internal(
+  FetchSingleFamilyProvider._internal(
     super._createNotifier, {
     required super.name,
     required super.dependencies,
     required super.allTransitiveDependencies,
     required super.debugGetCreateSourceHash,
     required super.from,
-    required this.chapterId,
+    required this.familyId,
   }) : super.internal();
 
-  final String? chapterId;
+  final String familyId;
 
   @override
   Override overrideWith(
-    FutureOr<List<FamilyModel>> Function(FetchAllFamilyRef provider) create,
+    FutureOr<FamilyModel> Function(FetchSingleFamilyRef provider) create,
   ) {
     return ProviderOverride(
       origin: this,
-      override: FetchAllFamilyProvider._internal(
-        (ref) => create(ref as FetchAllFamilyRef),
+      override: FetchSingleFamilyProvider._internal(
+        (ref) => create(ref as FetchSingleFamilyRef),
         from: from,
         name: null,
         dependencies: null,
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
-        chapterId: chapterId,
+        familyId: familyId,
       ),
     );
   }
 
   @override
-  AutoDisposeFutureProviderElement<List<FamilyModel>> createElement() {
-    return _FetchAllFamilyProviderElement(this);
+  AutoDisposeFutureProviderElement<FamilyModel> createElement() {
+    return _FetchSingleFamilyProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is FetchAllFamilyProvider && other.chapterId == chapterId;
+    return other is FetchSingleFamilyProvider && other.familyId == familyId;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, chapterId.hashCode);
+    hash = _SystemHash.combine(hash, familyId.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -145,18 +162,18 @@ class FetchAllFamilyProvider
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin FetchAllFamilyRef on AutoDisposeFutureProviderRef<List<FamilyModel>> {
-  /// The parameter `chapterId` of this provider.
-  String? get chapterId;
+mixin FetchSingleFamilyRef on AutoDisposeFutureProviderRef<FamilyModel> {
+  /// The parameter `familyId` of this provider.
+  String get familyId;
 }
 
-class _FetchAllFamilyProviderElement
-    extends AutoDisposeFutureProviderElement<List<FamilyModel>>
-    with FetchAllFamilyRef {
-  _FetchAllFamilyProviderElement(super.provider);
+class _FetchSingleFamilyProviderElement
+    extends AutoDisposeFutureProviderElement<FamilyModel>
+    with FetchSingleFamilyRef {
+  _FetchSingleFamilyProviderElement(super.provider);
 
   @override
-  String? get chapterId => (origin as FetchAllFamilyProvider).chapterId;
+  String get familyId => (origin as FetchSingleFamilyProvider).familyId;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

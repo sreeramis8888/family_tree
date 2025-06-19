@@ -20,7 +20,7 @@ import 'package:familytree/src/interface/components/loading_indicator/loading_in
 import 'package:familytree/src/interface/components/shimmers/promotion_shimmers.dart';
 import 'package:familytree/src/interface/screens/main_pages/admin/allocate_member.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/my_subscription_commented.dart';
-import 'package:familytree/src/interface/screens/main_pages/profile/approval_waiting_page.dart';
+import 'package:familytree/src/interface/screens/onboarding/approval_waiting_page.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/my_subscription.dart';
 import 'package:familytree/src/interface/screens/main_pages/profile_page.dart';
 import 'package:familytree/src/interface/screens/main_pages/business_page.dart';

@@ -9,7 +9,6 @@ import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:familytree/src/data/globals.dart';
 
-
 Future<Map<String, String>> submitPhoneNumber(
     String countryCode, BuildContext context, String phone) async {
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -34,7 +33,7 @@ Future<Map<String, String>> submitPhoneNumber(
     },
     codeAutoRetrievalTimeout: (String verificationID) {
       if (!verificationIdcompleter.isCompleted) {
-        verificationIdcompleter.complete(''); 
+        verificationIdcompleter.complete('');
       }
     },
   );
@@ -69,7 +68,8 @@ void resendOTP(String phoneNumber, String verificationId, String resendToken) {
 }
 
 Future<Map<String, dynamic>> verifyOTP(
-    {required String verificationId,required String phone,
+    {required String verificationId,
+    required String phone,
     required String fcmToken,
     required String smsCode,
     required BuildContext context}) async {
@@ -88,8 +88,12 @@ Future<Map<String, dynamic>> verifyOTP(
       log("ID Token: $idToken");
       log("fcm token:$fcmToken");
       log("Verification ID:$verificationId");
-      final Map<String, dynamic> tokenMap =
-          await verifyUserDB(firebaseToken:  idToken??'',firebaseUid: user.uid,phone: phone,fcmToken:  fcmToken,context:  context);
+      final Map<String, dynamic> tokenMap = await verifyUserDB(
+          firebaseToken: idToken ?? '',
+          firebaseUid: user.uid,
+          phone: phone,
+          fcmToken: fcmToken,
+          context: context);
       log(tokenMap.toString());
       return tokenMap;
     } else {
@@ -105,9 +109,9 @@ Future<Map<String, dynamic>> verifyOTP(
 
 Future<Map<String, dynamic>> verifyUserDB({
   required String phone,
-   String firebaseToken='',
+  String firebaseToken = '',
   required String fcmToken,
-   String firebaseUid='',
+  String firebaseUid = '',
   required BuildContext context,
 }) async {
   SnackbarService snackbarService = SnackbarService();
@@ -141,7 +145,7 @@ Future<Map<String, dynamic>> verifyUserDB({
       final data = responseBody['data'] ?? {};
       final message = responseBody['message'] ?? 'Login successful';
       snackbarService.showSnackBar(message);
-      
+
       return {
         'isRegistered': data['isRegistered'] ?? false,
         'accessToken': data['accessToken'],
@@ -151,13 +155,15 @@ Future<Map<String, dynamic>> verifyUserDB({
         'message': message,
       };
     } else if (response.statusCode == 400) {
-      snackbarService.showSnackBar(responseBody['message'] ?? 'Invalid request');
+      snackbarService
+          .showSnackBar(responseBody['message'] ?? 'Invalid request');
       return {
         'isRegistered': false,
         'message': responseBody['message'] ?? 'Invalid request',
       };
     } else {
-      snackbarService.showSnackBar(responseBody['message'] ?? 'Something went wrong');
+      snackbarService
+          .showSnackBar(responseBody['message'] ?? 'Something went wrong');
       return {
         'isRegistered': false,
         'message': responseBody['message'] ?? 'Something went wrong',
@@ -166,10 +172,60 @@ Future<Map<String, dynamic>> verifyUserDB({
   } catch (e, stackTrace) {
     log('Exception during verifyUserDB: $e',
         name: 'VERIFY_USER_DB', error: e, stackTrace: stackTrace);
-    snackbarService.showSnackBar('Unexpected error occurred. Please try again.');
+    snackbarService
+        .showSnackBar('Unexpected error occurred. Please try again.');
     return {
       'isRegistered': false,
       'message': 'Unexpected error occurred. Please try again.',
     };
+  }
+}
+
+Future<int> sendRequest({
+  required Map<String, dynamic> formData,
+  required BuildContext context,
+}) async {
+  SnackbarService snackbarService = SnackbarService();
+
+  final Uri url = Uri.parse('$baseUrl/auth/send-request-for-registration');
+  final Map<String, String> headers = {"Content-Type": "application/json"};
+
+  try {
+    log('Sending POST request to $url', name: 'SEND_REQ');
+    log('Request headers: $headers', name: 'SEND_REQ');
+    log('Request body: ${jsonEncode(formData)}', name: 'SEND_REQ');
+
+    final response = await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(formData),
+    );
+
+    log('Received response: ${response.statusCode}', name: 'SEND_REQ');
+
+    final Map<String, dynamic> responseBody = jsonDecode(response.body);
+    log('Response body: $responseBody', name: 'VERIFY_USER_DB');
+
+    if (response.statusCode == 200) {
+      final data = responseBody['data'] ?? {};
+      final message = responseBody['message'] ?? 'Login successful';
+      snackbarService.showSnackBar(message);
+
+      return response.statusCode;
+    } else if (response.statusCode == 400) {
+      snackbarService
+          .showSnackBar(responseBody['message'] ?? 'Invalid request');
+      return response.statusCode;
+    } else {
+      snackbarService
+          .showSnackBar(responseBody['message'] ?? 'Something went wrong');
+      return response.statusCode;
+    }
+  } catch (e, stackTrace) {
+    log('Exception during verifyUserDB: $e',
+        name: 'VERIFY_USER_DB', error: e, stackTrace: stackTrace);
+    snackbarService
+        .showSnackBar('Unexpected error occurred. Please try again.');
+    return 0;
   }
 }

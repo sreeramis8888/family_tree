@@ -20,7 +20,7 @@ import 'package:familytree/src/data/services/getFcmToken.dart';
 import 'package:familytree/src/data/services/navgitor_service.dart';
 import 'package:familytree/src/data/globals.dart';
 import 'package:familytree/src/interface/screens/onboarding/registration_page.dart';
-import 'package:familytree/src/interface/screens/main_pages/profile/approval_waiting_page.dart';
+import 'package:familytree/src/interface/screens/onboarding/approval_waiting_page.dart';
 import 'package:familytree/src/data/api_routes/user_api/login/user_login_api.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
