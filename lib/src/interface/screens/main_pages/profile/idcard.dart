@@ -27,19 +27,9 @@ class IDCardScreen extends ConsumerWidget {
     ScreenshotController screenshotController = ScreenshotController();
 
     final isFullScreen = ref.watch(isFullScreenProvider);
-    final designations = user.company!
-        .map((i) => i.designation)
-        .where((d) => d != null && d.isNotEmpty)
-        .map((d) => d!)
-        .toList();
 
-    final companyNames = user.company!
-        .map((i) => i.name)
-        .where((n) => n != null && n.isNotEmpty)
-        .map((n) => n!)
-        .toList();
 
-    String joinedDate = DateFormat('dd/MM/yyyy').format(user.createdAt!);
+    // String joinedDate = DateFormat('dd/MM/yyyy').format(user.!);
     // Map<String, String> levelData = extractLevelDetails(user.level ?? '');
 
     return Scaffold(
@@ -131,7 +121,7 @@ class IDCardScreen extends ConsumerWidget {
                                       foregroundColor: Colors.white,
                                     ),
                                     const SizedBox(height: 12),
-                                    Text(user.name ?? '',
+                                    Text(user.fullName ?? '',
                                         style: kLargeTitleB.copyWith(
                                             color: kWhite),
                                         textAlign: TextAlign.center),
@@ -147,40 +137,41 @@ class IDCardScreen extends ConsumerWidget {
                                         child: isFullScreen
                                             ? Column(
                                                 children: [
-                                                  if (designations.isNotEmpty ||
-                                                      companyNames.isNotEmpty)
-                                                    Column(
-                                                      children: [
-                                                        if (designations
-                                                            .isNotEmpty)
-                                                          Text(
-                                                            designations
-                                                                .join(' | '),
-                                                            style:
-                                                                const TextStyle(
-                                                                    fontSize:
-                                                                        12,
-                                                                    color: Colors
-                                                                        .white),
-                                                            textAlign: TextAlign
-                                                                .center,
-                                                          ),
-                                                        if (companyNames
-                                                            .isNotEmpty)
-                                                          Text(
-                                                            companyNames
-                                                                .join(' | '),
-                                                            style:
-                                                                const TextStyle(
-                                                                    fontSize:
-                                                                        12,
-                                                                    color: Colors
-                                                                        .white),
-                                                            textAlign: TextAlign
-                                                                .center,
-                                                          ),
-                                                      ],
-                                                    ),
+                                                  // if (designations.isNotEmpty ||
+                                                  //     companyNames.isNotEmpty)
+                                                  //   Column(
+                                                  //     children: [
+                                                  //       if (designations
+                                                  //           .isNotEmpty)
+                                                  //         Text(
+                                                  //           designations
+                                                  //               .join(' | '),
+                                                  //           style:
+                                                  //               const TextStyle(
+                                                  //                   fontSize:
+                                                  //                       12,
+                                                  //                   color: Colors
+                                                  //                       .white),
+                                                  //           textAlign: TextAlign
+                                                  //               .center,
+                                                  //         ),
+                                                  //       if (companyNames
+                                                  //           .isNotEmpty)
+                                                  //         Text(
+                                                  //           companyNames
+                                                  //               .join(' | '),
+                                                  //           style:
+                                                  //               const TextStyle(
+                                                  //                   fontSize:
+                                                  //                       12,
+                                                  //                   color: Colors
+                                                  //                       .white),
+                                                  //           textAlign: TextAlign
+                                                  //               .center,
+                                                  //         ),
+                                                  //     ],
+                                                  //   ),
+                                                  Text('${user.occupation}'),
                                                   const SizedBox(height: 10),
                                                   // Wrap(
                                                   //   alignment:
@@ -216,14 +207,14 @@ class IDCardScreen extends ConsumerWidget {
                                                   //                     12)),
                                                   //   ],
                                                   // ),
-                                                  const SizedBox(height: 5),
-                                                  Text(
-                                                    'Joined Date: $joinedDate',
-                                                    style: const TextStyle(
-                                                        fontSize: 11,
-                                                        color: Colors.white),
-                                                    textAlign: TextAlign.center,
-                                                  ),
+                                                  // const SizedBox(height: 5),
+                                                  // Text(
+                                                  //   'Joined Date: $joinedDate',
+                                                  //   style: const TextStyle(
+                                                  //       fontSize: 11,
+                                                  //       color: Colors.white),
+                                                  //   textAlign: TextAlign.center,
+                                                  // ),
                                                   const SizedBox(height: 20),
                                                   Center(
                                                     child: Container(
@@ -257,7 +248,7 @@ class IDCardScreen extends ConsumerWidget {
                                                             const SizedBox(
                                                                 width: 10),
                                                             Text(
-                                                                'Member ID: ${user.memberId}',
+                                                                'Member ID: ${user.email}',
                                                                 style: kSmallerTitleB
                                                                     .copyWith(
                                                                         color:

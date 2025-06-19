@@ -26,34 +26,34 @@ class _AllocateMemberState extends State<AllocateMember> {
   String? selectedChapter;
 
   Future<void> _createUser() async {
-    final Map<String, dynamic> profileData = {
-      "name": widget.newUser.name,
-      "bloodgroup": widget.newUser.bloodgroup,
-      "chapter": selectedChapter,
-      "image": widget.newUser.image,
-      "email": widget.newUser.email,
-      "phone": widget.newUser.phone!.startsWith('+91')
-          ? widget.newUser.phone
-          : '+91${widget.newUser.phone}',
-      "bio": widget.newUser.bio,
-      "status": widget.newUser.status,
-      "address": widget.newUser.address,
-      "businessCatogary": widget.newUser.businessCategory,
-      "businessSubCatogary": widget.newUser.businessSubCategory,
-      "company": [
-        {
-          "name": widget.newUser.company?[0].name ?? '',
-          "designation": widget.newUser.company?[0].designation ?? '',
-          "email": widget.newUser.company?[0].email ?? '',
-          "websites": widget.newUser.company?[0].websites ?? '',
-          "phone": widget.newUser.company?[0].phone ?? '',
-        }
-      ]
-    };
-    String response = await createUser(data: profileData);
-    if (response.contains('success')) {
-      Navigator.popUntil(context, (route) => route.isFirst);
-    }
+    // final Map<String, dynamic> profileData = {
+    //   "name": widget.newUser.fullName,
+    //   "bloodgroup": widget.newUser.bloodgroup,
+    //   "chapter": selectedChapter,
+    //   "image": widget.newUser.image,
+    //   "email": widget.newUser.email,
+    //   "phone": widget.newUser.phone!.startsWith('+91')
+    //       ? widget.newUser.phone
+    //       : '+91${widget.newUser.phone}',
+    //   "bio": widget.newUser.bio,
+    //   "status": widget.newUser.status,
+    //   "address": widget.newUser.address,
+    //   "businessCatogary": widget.newUser.businessCategory,
+    //   "businessSubCatogary": widget.newUser.businessSubCategory,
+    //   "company": [
+    //     {
+    //       "name": widget.newUser.company?[0].name ?? '',
+    //       "designation": widget.newUser.company?[0].designation ?? '',
+    //       "email": widget.newUser.company?[0].email ?? '',
+    //       "websites": widget.newUser.company?[0].websites ?? '',
+    //       "phone": widget.newUser.company?[0].phone ?? '',
+    //     }
+    //   ]
+    // };
+    // String response = await createUser(data: profileData);
+    // if (response.contains('success')) {
+    //   Navigator.popUntil(context, (route) => route.isFirst);
+    // }
   }
 
   @override

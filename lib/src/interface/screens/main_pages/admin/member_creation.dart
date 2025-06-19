@@ -317,46 +317,46 @@ class _MemberCreationPageState extends State<MemberCreationPage> {
                     child: customButton(
                       label: 'Save',
                       onPressed: () async {
-                        if (_formKey.currentState!.validate() &&
-                            _profileImage != null &&
-                            selectedBusinessCategory != null &&
-                            selectedSubCategory != null &&
-                            selectedStatus != null) {
-                          String profileImageUrl =
-                              await imageUpload(_profileImage!.path);
-                          navigationService.pushNamed('MemberAllocation',
-                              arguments: UserModel(
-                                  name: nameController.text,
-                                  bloodgroup: bloodController.text,
-                                  image: profileImageUrl,
-                                  bio: bioController.text,
-                                  email: emailController.text,
-                                  phone:
-                                      '${phoneCountryController.text}${phoneController.text}',
-                                  address: adressController.text,
-                                  company: [
-                                    Company(
-                                        name: companyNameController.text,
-                                        designation:
-                                            companyDesignationController.text,
-                                        email: companyEmailController.text,
-                                        phone:
-                                            '+${companyPhoneCountryController.text}${companyPhoneController.text}',
-                                        websites:
-                                            companyWebsiteController.text),
-                                  ],
-                                  businessCategory: selectedBusinessCategory,
-                                  businessSubCategory: selectedSubCategory,
-                                  status: selectedStatus));
-                        } else {
-                          // Show error for missing fields
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Please fill all fields'),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        }
+                        // if (_formKey.currentState!.validate() &&
+                        //     _profileImage != null &&
+                        //     selectedBusinessCategory != null &&
+                        //     selectedSubCategory != null &&
+                        //     selectedStatus != null) {
+                        //   String profileImageUrl =
+                        //       await imageUpload(_profileImage!.path);
+                        //   navigationService.pushNamed('MemberAllocation',
+                        //       arguments: UserModel(
+                        //           fullName: nameController.text,
+
+                        //           image: profileImageUrl,
+                        //           biography: bioController.text,
+                        //           email: emailController.text,
+                        //           phone:
+                        //               '${phoneCountryController.text}${phoneController.text}',
+                        //           address: adressController.text,
+                        //           company: [
+                        //             Company(
+                        //                 name: companyNameController.text,
+                        //                 designation:
+                        //                     companyDesignationController.text,
+                        //                 email: companyEmailController.text,
+                        //                 phone:
+                        //                     '+${companyPhoneCountryController.text}${companyPhoneController.text}',
+                        //                 websites:
+                        //                     companyWebsiteController.text),
+                        //           ],
+                        //           businessCategory: selectedBusinessCategory,
+                        //           businessSubCategory: selectedSubCategory,
+                        //           status: selectedStatus));
+                        // } else {
+                        //   // Show error for missing fields
+                        //   ScaffoldMessenger.of(context).showSnackBar(
+                        //     const SnackBar(
+                        //       content: Text('Please fill all fields'),
+                        //       backgroundColor: Colors.red,
+                        //     ),
+                        //   );
+                        // }
                       },
                     ),
                   ),

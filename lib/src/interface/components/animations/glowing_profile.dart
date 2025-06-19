@@ -98,7 +98,7 @@ class _GlowingAnimatedAvatarState extends State<GlowingAnimatedAvatar>
       animation: _controller,
       builder: (context, child) {
         double progress = (_controller.value + delay) % 1.0;
-        double scale = 1.0 + (progress * 0.2); // subtle scale: 1.0 to 1.2
+        double scale = 1.0 + (progress * 0.2);
         double opacity = (1 - progress).clamp(0.0, 1.0);
 
         return Transform.scale(

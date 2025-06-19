@@ -138,8 +138,8 @@ class _LevelMembersState extends ConsumerState<LevelMembers> {
                                   backgroundImage:
                                       NetworkImage(member.image ?? ''),
                                 ),
-                                title: Text(member.name ?? ''),
-                                subtitle: Text(member.name ?? ''),
+                                title: Text(member.fullName ?? ''),
+                                subtitle: Text(member.fullName ?? ''),
                                 trailing: Icon(Icons.arrow_forward_ios),
                                 onTap: () {
                                   navigationService.pushNamed(

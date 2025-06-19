@@ -73,8 +73,7 @@ class _ProductDetailsModalState extends ConsumerState<ProductDetailsModal> {
       builder: (context, ref, child) {
         final asyncUser =
             ref.watch(fetchUserDetailsProvider(widget.product.seller!));
-        final asyncReviews = ref
-            .watch(fetchReviewsProvider(userId: widget.product.seller ?? ''));
+ 
         return Padding(
           padding:
               EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -200,7 +199,7 @@ class _ProductDetailsModalState extends ConsumerState<ProductDetailsModal> {
                 const SizedBox(height: 16),
                 asyncUser.when(
                   data: (user) {
-                    log('${user.name}', name: 'Product UserNAme');
+                    log('${user.fullName}', name: 'Product UserNAme');
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
@@ -220,57 +219,18 @@ class _ProductDetailsModalState extends ConsumerState<ProductDetailsModal> {
                             ),
                           ),
                           const SizedBox(width: 8),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                              user.parentSub?.color ?? '',
-                       
-                                  style: kSmallerTitleM,
-                            
-                           
-                             
-                                ),
-                                if (user.company != null)
-                                  if (user.company!.isNotEmpty)
-                                    Text('${user.company?[0].name ?? ''}'),
-                              ],
-                            ),
-                          ),
-                          Consumer(
-                            builder: (context, ref, child) {
-                              return asyncReviews.when(
-                                data: (reviews) {
-                                  final averageRating =
-                                      getAverageRating(reviews);
-                                  final totalReviews = reviews.length;
-                                  return Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.star,
-                                        color: Colors.orange,
-                                        size: 15,
-                                      ),
-                                      Text(
-                                        averageRating.toStringAsFixed(2),
-                                        style: const TextStyle(fontSize: 12),
-                                      ),
-                                      Text('($totalReviews)',
-                                          style: const TextStyle(fontSize: 12)),
-                                    ],
-                                  );
-                                },
-                                loading: () =>
-                                    const Center(child: LoadingAnimation()),
-                                error: (error, stackTrace) {
-                                  return Center(
-                                    child: SizedBox.shrink(),
-                                  );
-                                },
-                              );
-                            },
-                          )
+                          // Expanded(
+                          //   child: Column(
+                          //     crossAxisAlignment: CrossAxisAlignment.start,
+                          //     children: [
+                        
+                          //       if (user.company != null)
+                          //         if (user.company!.isNotEmpty)
+                          //           Text('${user.company?[0].name ?? ''}'),
+                          //     ],
+                          //   ),
+                          // ),
+        
                         ],
                       ),
                     );

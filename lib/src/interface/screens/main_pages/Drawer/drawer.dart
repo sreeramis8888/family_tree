@@ -58,7 +58,7 @@ Widget customDrawer({required UserModel user, required BuildContext context}) {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            user.name ?? '',
+                            user.fullName ?? '',
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,

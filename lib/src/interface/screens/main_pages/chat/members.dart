@@ -634,7 +634,7 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                           participants: [
                             Participant(
                               id: user.id,
-                              name: user.name ?? '',
+                              name: user.fullName ?? '',
                               image: user.image ?? '',
                             ),
                             Participant(id: id),
@@ -646,7 +646,7 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                         (p) => p.id != id,
                         orElse: () => Participant(
                           id: user.id,
-                          name: user.name ?? '',
+                          name: user.fullName ?? '',
                           image: user.image,
                         ),
                       );
@@ -691,12 +691,12 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                             ),
                             title: Text(
                     
-                        user.name ?? '',
+                        user.fullName ?? '',
                     
                             ),
-                            subtitle: Text('${user.chapter?.name ?? ''}',
-                                style:
-                                    kSmallerTitleB.copyWith(color: kGreyDark)),
+                            // subtitle: Text('${user.chapter?.name ?? ''}',
+                            //     style:
+                            //         kSmallerTitleB.copyWith(color: kGreyDark)),
                             trailing: SizedBox(
                               width: 40,
                               height: 40,

@@ -60,12 +60,12 @@ class _IndividualPageState extends ConsumerState<IndividualPage> {
     // final asyncUser = ref.watch(userProvider);
     // asyncUser.whenData(
     //   (user) {
-    setState(() {
-      if (user.blockedUsers != null) {
-        isBlocked = user.blockedUsers!
-            .any((blockedUser) => blockedUser == widget.receiver.id);
-      }
-    });
+    // setState(() {
+    //   if (user.blockedUsers != null) {
+    //     isBlocked = user.blockedUsers!
+    //         .any((blockedUser) => blockedUser == widget.receiver.id);
+    //   }
+    // });
     //   },
     // );
   }
@@ -246,7 +246,7 @@ class _IndividualPageState extends ConsumerState<IndividualPage> {
                               );
                             },
                             child: Text(
-                              user.name ?? '',
+                              user.fullName ?? '',
                             ),
                           );
                         },

@@ -17,26 +17,26 @@ Future<void> createUser({required UserModel user}) async {
 
   final body = jsonEncode({
     {
-      "name": user.name,
-      "memberId": user.name,
-      "bloodgroup": user.name,
-      "role": user.name,
-      "chapter": user.name,
-      "image": user.name,
-      "email": user.name,
-      "phone": user.name,
-      "bio": user.name,
-      "status": user.name,
-      "address": user.name,
-      "businessCatogary": user.name,
-      "businessSubCatogary": user.name,
-      "company": {
-        "name": user.company?[0].name,
-        "designation": user.company?[0].designation,
-        "email": user.company?[0].email,
-        "websites": user.company?[0].websites,
-        "phone": user.company?[0].phone,
-      }
+      // "name": user.name,
+      // "memberId": user.name,
+      // "bloodgroup": user.name,
+      // "role": user.name,
+      // "chapter": user.name,
+      // "image": user.name,
+      // "email": user.name,
+      // "phone": user.name,
+      // "bio": user.name,
+      // "status": user.name,
+      // "address": user.name,
+      // "businessCatogary": user.name,
+      // "businessSubCatogary": user.name,
+      // "company": {
+      //   "name": user.company?[0].name,
+      //   "designation": user.company?[0].designation,
+      //   "email": user.company?[0].email,
+      //   "websites": user.company?[0].websites,
+      //   "phone": user.company?[0].phone,
+      // }
     }
   });
 

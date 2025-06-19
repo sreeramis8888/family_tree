@@ -386,7 +386,7 @@ class _MainPageState extends ConsumerState<MainPage> {
                       await SecureStorage.delete('token');
                       await SecureStorage.delete('id');
                       await editUser(
-                          {"fcm": "", "name": user.name, "phone": user.phone});
+                          {"fcm": "", "name": user.fullName, "phone": user.phone});
                       // Navigator.pushReplacement(
                       //   context,
                       //   MaterialPageRoute(
@@ -444,29 +444,29 @@ class _MainPageState extends ConsumerState<MainPage> {
   Widget build(BuildContext context) {
     return Consumer(builder: (context, ref, child) {
       final selectedIndex = ref.watch(selectedIndexProvider);
-      // final asyncUser = ref.watch(userProvider);
+      final asyncUser = ref.watch(userProvider);
 
-      // return asyncUser.when(
-        // loading: () {
-        //   log('im inside details main page loading');
-        //   return Scaffold(
-        //       backgroundColor: kWhite,
-        //       body: buildShimmerPromotionsColumn(context: context));
-        // },
-        // error: (error, stackTrace) {
-        //   log('im inside details main page error $error $stackTrace');
-        //   return PhoneNumberScreen();
-        // },
-        // data: (user) {
-          if (user.fcm == null || user.fcm == '') {
-            editUser({"fcm": fcmToken, "name": user.name, "phone": user.phone});
-          }
-          // Force name completion before anything else
-          if (user.name == null || user.name!.trim().isEmpty) {
-            // Show the non-skippable profile completion screen
-            // return const ProfileCompletionScreen();
-          }
-          subscriptionType = user.subscription ?? 'free';
+      return asyncUser.when(
+        loading: () {
+          log('im inside details main page loading');
+          return Scaffold(
+              backgroundColor: kWhite,
+              body: buildShimmerPromotionsColumn(context: context));
+        },
+        error: (error, stackTrace) {
+          log('im inside details main page error $error $stackTrace');
+          return PhoneNumberScreen();
+        },
+        data: (user) {
+          // if (user.fcm == null || user.fcm == '') {
+          //   editUser({"fcm": fcmToken, "name": user.name, "phone": user.phone});
+          // }
+          // // Force name completion before anything else
+          // if (user.name == null || user.name!.trim().isEmpty) {
+          //   // Show the non-skippable profile completion screen
+          //   // return const ProfileCompletionScreen();
+          // }
+          // subscriptionType = user.subscription ?? 'free';
           _initialize(user: user);
           return PopScope(
             canPop: selectedIndex != 0 ? false : true,
@@ -478,8 +478,8 @@ class _MainPageState extends ConsumerState<MainPage> {
             },
             child: _buildStatusPage(user.status ?? 'unknown', user),
           );
-        // },
-      // );
+        },
+      );
     });
   }
 }

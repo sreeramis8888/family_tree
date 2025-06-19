@@ -29,18 +29,18 @@ class ProfilePage extends ConsumerWidget {
       //   }
       // });
     });
-    final designations = user.company!
-        .map((i) => i.designation)
-        .where((d) => d != null && d.isNotEmpty)
-        .map((d) => d!)
-        .toList();
+    // final designations = user.company!
+    //     .map((i) => i.designation)
+    //     .where((d) => d != null && d.isNotEmpty)
+    //     .map((d) => d!)
+    //     .toList();
 
-    final companyNames = user.company!
-        .map((i) => i.name)
-        .where((n) => n != null && n.isNotEmpty)
-        .map((n) => n!)
-        .toList();
-    String joinedDate = DateFormat('dd/MM/yyyy').format(user.createdAt!);
+    // final companyNames = user.company!
+    //     .map((i) => i.name)
+    //     .where((n) => n != null && n.isNotEmpty)
+    //     .map((n) => n!)
+    //     .toList();
+    // String joinedDate = DateFormat('dd/MM/yyyy').format(user.createdAt!);
     // Map<String, String> levelData = extractLevelDetails(user.level ?? '');
     return Scaffold(
       appBar: AppBar(
@@ -169,51 +169,50 @@ class ProfilePage extends ConsumerWidget {
                                                   borderWidth: 3.0,
                                                 ),
                                                 Text(
-                                        
-                                                 user.name ?? '',
+                                                  user.fullName ?? '',
                                                   style: kHeadTitleSB,
                                                 ),
                                                 const SizedBox(height: 5),
                                                 Column(
                                                   children: [
-                                                    if (designations
-                                                            .isNotEmpty ||
-                                                        companyNames.isNotEmpty)
-                                                      Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          if (designations
-                                                              .isNotEmpty)
-                                                            Text(
-                                                              designations
-                                                                  .join(' | '),
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .center,
-                                                              style:
-                                                                  const TextStyle(
-                                                                fontSize: 12,
-                                                                color: kBlack,
-                                                              ),
-                                                            ),
-                                                          if (companyNames
-                                                              .isNotEmpty)
-                                                            Text(
-                                                              companyNames
-                                                                  .join(' | '),
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .center,
-                                                              style:
-                                                                  const TextStyle(
-                                                                fontSize: 12,
-                                                                color: kBlack,
-                                                              ),
-                                                            ),
-                                                        ],
-                                                      ),
+                                                    // if (designations
+                                                    //         .isNotEmpty ||
+                                                    //     companyNames.isNotEmpty)
+                                                    //   Column(
+                                                    //     crossAxisAlignment:
+                                                    //         CrossAxisAlignment
+                                                    //             .center,
+                                                    //     children: [
+                                                    //       if (designations
+                                                    //           .isNotEmpty)
+                                                    //         Text(
+                                                    //           designations
+                                                    //               .join(' | '),
+                                                    //           textAlign:
+                                                    //               TextAlign
+                                                    //                   .center,
+                                                    //           style:
+                                                    //               const TextStyle(
+                                                    //             fontSize: 12,
+                                                    //             color: kBlack,
+                                                    //           ),
+                                                    //         ),
+                                                    //       if (companyNames
+                                                    //           .isNotEmpty)
+                                                    //         Text(
+                                                    //           companyNames
+                                                    //               .join(' | '),
+                                                    //           textAlign:
+                                                    //               TextAlign
+                                                    //                   .center,
+                                                    //           style:
+                                                    //               const TextStyle(
+                                                    //             fontSize: 12,
+                                                    //             color: kBlack,
+                                                    //           ),
+                                                    //         ),
+                                                    //     ],
+                                                    //   ),
                                                     // if (levelData[
                                                     //         'chapterName'] !=
                                                     //     'undefined')
@@ -264,14 +263,18 @@ class ProfilePage extends ConsumerWidget {
                                                     //       ),
                                                     //     ],
                                                     //   ),
-                                                    const SizedBox(height: 5),
-                                                    Text(
-                                                      'Joined Date: $joinedDate',
-                                                      style: const TextStyle(
-                                                        fontSize: 11,
-                                                        color: kBlack,
-                                                      ),
-                                                    ),
+
+                                                    if (user.occupation != null)
+                                                      Text(
+                                                          '${user.occupation}'),
+                                                    // const SizedBox(height: 5),
+                                                    // Text(
+                                                    //   'Joined Date: $joinedDate',
+                                                    //   style: const TextStyle(
+                                                    //     fontSize: 11,
+                                                    //     color: kBlack,
+                                                    //   ),
+                                                    // ),
                                                     SizedBox(height: 20),
                                                     Container(
                                                       padding: const EdgeInsets
@@ -304,7 +307,7 @@ class ProfilePage extends ConsumerWidget {
                                                             const SizedBox(
                                                                 width: 10),
                                                             Text(
-                                                                'Member ID: ${user.memberId}',
+                                                                'Member ID: ${user.email}',
                                                                 style: kSmallerTitleB
                                                                     .copyWith(
                                                                         color:

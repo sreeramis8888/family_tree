@@ -34,8 +34,7 @@ class BusinessDetailsModalSheet extends StatelessWidget {
       builder: (context, ref, child) {
         final asyncUser =
             ref.watch(fetchUserDetailsProvider(business.author ?? ''));
-        final asyncReviews =
-            ref.watch(fetchReviewsProvider(userId: business.author ?? ''));
+
         return Container(
           decoration: const BoxDecoration(
             borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
@@ -88,35 +87,12 @@ class BusinessDetailsModalSheet extends StatelessWidget {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('${user?.name ?? ''}'),
-                              Text('${user.company?[0].name ?? ''}'),
+                              Text('${user?.fullName ?? ''}'),
+                              // Text('${user.company?[0].name ?? ''}'),
                             ],
                           ),
-                          const Spacer(),
-                          Consumer(
-                            builder: (context, ref, child) {
-                              return asyncReviews.when(
-                                data: (reviews) {
-                                  final averageRating =
-                                      getAverageRating(reviews);
-                                  final totalReviews = reviews.length;
-                                  return Row(
-                                    children: [
-                                      const Icon(Icons.star,
-                                          color: Colors.orange),
-                                      Text(averageRating.toStringAsFixed(2)),
-                                      Text('($totalReviews)'),
-                                    ],
-                                  );
-                                },
-                                loading: () =>
-                                    const Center(child: LoadingAnimation()),
-                                error: (error, stackTrace) {
-                                  return const Center(child: SizedBox.shrink());
-                                },
-                              );
-                            },
-                          )
+                 
+         
                         ],
                       ),
                     );

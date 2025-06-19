@@ -22,7 +22,6 @@ import 'package:familytree/src/interface/screens/main_pages/menuPages/my_busines
 import 'package:familytree/src/interface/screens/main_pages/menuPages/my_enquiries.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/my_events.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/my_products.dart';
-import 'package:familytree/src/interface/screens/main_pages/menuPages/my_reviews.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/privacy_policy.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/request_nfc.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/terms.dart';
@@ -119,8 +118,7 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
 
     case 'RequestNFC':
       return MaterialPageRoute(builder: (context) => RequestNFCPage());
-    case 'MyReviews':
-      return MaterialPageRoute(builder: (context) => MyReviewsPage());
+
     case 'States':
       return MaterialPageRoute(builder: (context) => StatesPage());
 
@@ -133,12 +131,12 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
     case 'PrivacyPolicy':
       return MaterialPageRoute(builder: (context) => PrivacyPolicyPage());
 
-    case 'ProfileAnalytics':
-      UserModel user = settings?.arguments as UserModel;
-      return MaterialPageRoute(
-          builder: (context) => ProfileAnalyticsPage(
-                user: user,
-              ));
+    // case 'ProfileAnalytics':
+    //   UserModel user = settings?.arguments as UserModel;
+    //   return MaterialPageRoute(
+    //       builder: (context) => ProfileAnalyticsPage(
+    //             user: user,
+    //           ));
     case 'ActivityPage':
       String chapterId = settings?.arguments as String;
       return MaterialPageRoute(

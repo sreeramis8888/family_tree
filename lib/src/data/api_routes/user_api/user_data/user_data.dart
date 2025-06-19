@@ -21,7 +21,7 @@ class UserService {
       };
 
   static Future<UserModel> fetchUserDetails(String userId) async {
-    final url = Uri.parse('$baseUrl/person/$userId');
+    final url = Uri.parse('$baseUrl/people/$userId');
     final response = await http.get(url, headers: _headers());
     log(response.body);
 
@@ -55,24 +55,24 @@ class UserService {
     return userList;
   }
 
-  static Future<UserDashboard> fetchDashboard(
-      {String? startDate, String? endDate}) async {
-    Uri url = Uri.parse('$baseUrl/user/dashboard');
+  // static Future<UserDashboard> fetchDashboard(
+  //     {String? startDate, String? endDate}) async {
+  //   Uri url = Uri.parse('$baseUrl/user/dashboard');
 
-    if (startDate != null && endDate != null) {
-      url = Uri.parse(
-          '$baseUrl/user/dashboard?startDate=$startDate&endDate=$endDate');
-    }
+  //   if (startDate != null && endDate != null) {
+  //     url = Uri.parse(
+  //         '$baseUrl/user/dashboard?startDate=$startDate&endDate=$endDate');
+  //   }
 
-    final response = await http.get(url, headers: _headers());
-    log(response.body);
+  //   final response = await http.get(url, headers: _headers());
+  //   log(response.body);
 
-    if (response.statusCode == 200) {
-      return UserDashboard.fromJson(json.decode(response.body)['data']);
-    } else {
-      throw Exception(json.decode(response.body)['message']);
-    }
-  }
+  //   if (response.statusCode == 200) {
+  //     return UserDashboard.fromJson(json.decode(response.body)['data']);
+  //   } else {
+  //     throw Exception(json.decode(response.body)['message']);
+  //   }
+  // }
 
   static Future<void> createReport(
       {required String reportedItemId,
@@ -227,14 +227,14 @@ Future<List<UserModel>> getMultipleUsers(Ref ref, List<String> userIds) {
   return UserService.fetchMultipleUsers(userIds);
 }
 
-@riverpod
-Future<UserDashboard> getUserDashboard(
-  Ref ref, {
-  String? startDate,
-  String? endDate,
-}) {
-  return UserService.fetchDashboard(startDate: startDate, endDate: endDate);
-}
+// @riverpod
+// Future<UserDashboard> getUserDashboard(
+//   Ref ref, {
+//   String? startDate,
+//   String? endDate,
+// }) {
+//   return UserService.fetchDashboard(startDate: startDate, endDate: endDate);
+// }
 
 @riverpod
 Future<List<PaymentYearModel>> getPaymentYears(Ref ref) {

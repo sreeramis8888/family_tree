@@ -90,7 +90,7 @@ class DeepLinkService {
                 'sender': Participant(id: id),
                 'receiver': Participant(
                   id: user.id,
-                  name: user.name,
+                  name: user.fullName,
                   image: user.image,
                 ),
               });

@@ -125,8 +125,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         final asyncPromotions = ref.watch(fetchPromotionsProvider);
         final asyncEvents = ref.watch(fetchEventsProvider);
         final asyncNews = ref.watch(fetchNewsProvider);
-        final asyncUserDashBoardDetails = ref.watch(
-            getUserDashboardProvider(startDate: startDate, endDate: endDate));
+
         return RefreshIndicator(
           color: kPrimaryColor,
           onRefresh: () async {
@@ -242,7 +241,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                               Padding(
                                 padding:
                                     const EdgeInsets.only(left: 15, top: 10),
-                                child: Text('Welcome, ${widget.user.name} ',
+                                child: Text('Welcome, ${widget.user.fullName} ',
                                     style:
                                         kLargeTitleB.copyWith(color: kBlack)),
                               ),
@@ -811,31 +810,31 @@ class _HomePageState extends ConsumerState<HomePage> {
                             ],
                           ),
                         ),
-                        if (widget.user.isAdmin ?? false)
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Align(
-                              alignment: Alignment.bottomRight,
-                              child: Container(
-                                padding: const EdgeInsets.all(13),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: kPrimaryColor,
-                                ),
-                                child: InkWell(
-                                  onTap: () {
-                                    navigationService
-                                        .pushNamed('MemberCreation');
-                                  },
-                                  child: const Icon(
-                                    Icons.person_add_alt_1_outlined,
-                                    color: kWhite,
-                                    size: 27,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
+                        // if (widget.user. ?? false)
+                        //   Padding(
+                        //     padding: const EdgeInsets.all(16.0),
+                        //     child: Align(
+                        //       alignment: Alignment.bottomRight,
+                        //       child: Container(
+                        //         padding: const EdgeInsets.all(13),
+                        //         decoration: BoxDecoration(
+                        //           borderRadius: BorderRadius.circular(10),
+                        //           color: kPrimaryColor,
+                        //         ),
+                        //         child: InkWell(
+                        //           onTap: () {
+                        //             navigationService
+                        //                 .pushNamed('MemberCreation');
+                        //           },
+                        //           child: const Icon(
+                        //             Icons.person_add_alt_1_outlined,
+                        //             color: kWhite,
+                        //             size: 27,
+                        //           ),
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ),
                       ],
                     ),
                   ),

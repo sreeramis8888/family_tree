@@ -1,22 +1,279 @@
-class Link {
-  final String? name;
-  final String? link;
+class UserModel {
+  final String? id;
+  final String? fullName;
+  final String? gender;
+  final DateTime? birthDate;
+  final DateTime? deathDate;
+  final String? occupation;
+  final String? biography;
+  final List<Media>? media;
+  final List<String>? familyId;
 
-  Link({this.name, this.link});
+  final String? email;
+  final String? phone;
+  final String? secondaryPhone;
+  final List<Link>? social;
+  final String? address;
+  final List<Link>? website;
 
-  factory Link.fromJson(Map<String, dynamic> json) {
-    return Link(
-      name: json['name'] as String?,
-      link: json['link'] as String?,
+  final double? walletBalance;
+  final DateTime? lastRecharge;
+  final String? walletStatus;
+  final double? lastRechargeAmount;
+  final double? totalContribution;
+  final DateTime? lastRenewed;
+  final DateTime? nextRenewal;
+  final int? reminderThreshold;
+  final double? receivedContributions;
+  final double? fixedWalletAmount;
+  final bool? needsRechargeReminder;
+  final bool? isFinanceProgramMember;
+
+  final bool? isAlive;
+  final String? status;
+  final bool? isPrivate;
+  final String? image;
+  final String? location;
+  final bool? isRegistered;
+
+  UserModel({
+    this.id,
+    this.fullName,
+    this.gender,
+    this.birthDate,
+    this.deathDate,
+    this.occupation,
+    this.biography,
+    this.media,
+    this.familyId,
+    this.email,
+    this.phone,
+    this.secondaryPhone,
+    this.social,
+    this.address,
+    this.website,
+    this.walletBalance,
+    this.lastRecharge,
+    this.walletStatus,
+    this.lastRechargeAmount,
+    this.totalContribution,
+    this.lastRenewed,
+    this.nextRenewal,
+    this.reminderThreshold,
+    this.receivedContributions,
+    this.fixedWalletAmount,
+    this.needsRechargeReminder,
+    this.isFinanceProgramMember,
+    this.isAlive,
+    this.status,
+    this.isPrivate,
+    this.image,
+    this.location,
+    this.isRegistered,
+  });
+
+  UserModel copyWith({
+    String? id,
+    String? fullName,
+    String? gender,
+    DateTime? birthDate,
+    DateTime? deathDate,
+    String? occupation,
+    String? biography,
+    List<Media>? media,
+    List<String>? familyId,
+    String? email,
+    String? phone,
+    String? secondaryPhone,
+    List<Link>? social,
+    String? address,
+    List<Link>? website,
+    double? walletBalance,
+    DateTime? lastRecharge,
+    String? walletStatus,
+    double? lastRechargeAmount,
+    double? totalContribution,
+    DateTime? lastRenewed,
+    DateTime? nextRenewal,
+    int? reminderThreshold,
+    double? receivedContributions,
+    double? fixedWalletAmount,
+    bool? needsRechargeReminder,
+    bool? isFinanceProgramMember,
+    bool? isAlive,
+    String? status,
+    bool? isPrivate,
+    String? image,
+    String? location,
+    bool? isRegistered,
+  }) {
+    return UserModel(
+      id: id ?? this.id,
+      fullName: fullName ?? this.fullName,
+      gender: gender ?? this.gender,
+      birthDate: birthDate ?? this.birthDate,
+      deathDate: deathDate ?? this.deathDate,
+      occupation: occupation ?? this.occupation,
+      biography: biography ?? this.biography,
+      media: media ?? this.media,
+      familyId: familyId ?? this.familyId,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      secondaryPhone: secondaryPhone ?? this.secondaryPhone,
+      social: social ?? this.social,
+      address: address ?? this.address,
+      website: website ?? this.website,
+      walletBalance: walletBalance ?? this.walletBalance,
+      lastRecharge: lastRecharge ?? this.lastRecharge,
+      walletStatus: walletStatus ?? this.walletStatus,
+      lastRechargeAmount: lastRechargeAmount ?? this.lastRechargeAmount,
+      totalContribution: totalContribution ?? this.totalContribution,
+      lastRenewed: lastRenewed ?? this.lastRenewed,
+      nextRenewal: nextRenewal ?? this.nextRenewal,
+      reminderThreshold: reminderThreshold ?? this.reminderThreshold,
+      receivedContributions: receivedContributions ?? this.receivedContributions,
+      fixedWalletAmount: fixedWalletAmount ?? this.fixedWalletAmount,
+      needsRechargeReminder: needsRechargeReminder ?? this.needsRechargeReminder,
+      isFinanceProgramMember: isFinanceProgramMember ?? this.isFinanceProgramMember,
+      isAlive: isAlive ?? this.isAlive,
+      status: status ?? this.status,
+      isPrivate: isPrivate ?? this.isPrivate,
+      image: image ?? this.image,
+      location: location ?? this.location,
+      isRegistered: isRegistered ?? this.isRegistered,
+    );
+  }
+
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      id: json['_id'],
+      fullName: json['fullName'],
+      gender: json['gender'],
+      birthDate: json['birthDate'] != null ? DateTime.tryParse(json['birthDate']) : null,
+      deathDate: json['deathDate'] != null ? DateTime.tryParse(json['deathDate']) : null,
+      occupation: json['occupation'],
+      biography: json['biography'],
+      media: (json['media'] as List?)?.map((e) => Media.fromJson(e)).toList(),
+      familyId: (json['familyId'] as List?)?.map((e) => e.toString()).toList(),
+      email: json['email'],
+      phone: json['phone'],
+      secondaryPhone: json['secondaryPhone'],
+      social: (json['social'] as List?)?.map((e) => Link.fromJson(e)).toList(),
+      address: json['address'],
+        website: (json['website'] as List?)?.map((e) => Link.fromJson(e)).toList(),
+      walletBalance: (json['walletBalance'] as num?)?.toDouble(),
+      lastRecharge: json['lastRecharge'] != null ? DateTime.tryParse(json['lastRecharge']) : null,
+      walletStatus: json['walletStatus'],
+      lastRechargeAmount: (json['lastRechargeAmount'] as num?)?.toDouble(),
+      totalContribution: (json['totalContribution'] as num?)?.toDouble(),
+      lastRenewed: json['lastRenewed'] != null ? DateTime.tryParse(json['lastRenewed']) : null,
+      nextRenewal: json['nextRenewal'] != null ? DateTime.tryParse(json['nextRenewal']) : null,
+      reminderThreshold: json['reminderThreshold'],
+      receivedContributions: (json['receivedContributions'] as num?)?.toDouble(),
+      fixedWalletAmount: (json['fixedWalletAmount'] as num?)?.toDouble(),
+      needsRechargeReminder: json['needsRechargeReminder'],
+      isFinanceProgramMember: json['isFinanceProgramMember'],
+      isAlive: json['isAlive'],
+      status: json['status'],
+      isPrivate: json['isPrivate'],
+      image: json['image'],
+      location: json['location'],
+      isRegistered: json['isRegistered'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'name': name,
-      'link': link,
+      '_id': id,
+      'fullName': fullName,
+      'gender': gender,
+      'birthDate': birthDate?.toIso8601String(),
+      'deathDate': deathDate?.toIso8601String(),
+      'occupation': occupation,
+      'biography': biography,
+      'media': media?.map((e) => e.toJson()).toList(),
+      'familyId': familyId,
+      'email': email,
+      'phone': phone,
+      'secondaryPhone': secondaryPhone,
+      'social': social?.map((e) => e.toJson()).toList(),
+      'address': address,
+      'website': website,
+      'walletBalance': walletBalance,
+      'lastRecharge': lastRecharge?.toIso8601String(),
+      'walletStatus': walletStatus,
+      'lastRechargeAmount': lastRechargeAmount,
+      'totalContribution': totalContribution,
+      'lastRenewed': lastRenewed?.toIso8601String(),
+      'nextRenewal': nextRenewal?.toIso8601String(),
+      'reminderThreshold': reminderThreshold,
+      'receivedContributions': receivedContributions,
+      'fixedWalletAmount': fixedWalletAmount,
+      'needsRechargeReminder': needsRechargeReminder,
+      'isFinanceProgramMember': isFinanceProgramMember,
+      'isAlive': isAlive,
+      'status': status,
+      'isPrivate': isPrivate,
+      'image': image,
+      'location': location,
+      'isRegistered': isRegistered,
     };
   }
+}
+class Media {
+  final String? url;
+  final String? caption;
+  final Map<String, dynamic>? notes;
+  final String? metadata;
+  final DateTime? uploadDate;
+
+  Media({
+    this.url,
+    this.caption,
+    this.notes,
+    this.metadata,
+    this.uploadDate,
+  });
+
+  Media copyWith({
+    String? url,
+    String? caption,
+    Map<String, dynamic>? notes,
+    String? metadata,
+    DateTime? uploadDate,
+  }) {
+    return Media(
+      url: url ?? this.url,
+      caption: caption ?? this.caption,
+      notes: notes ?? this.notes,
+      metadata: metadata ?? this.metadata,
+      uploadDate: uploadDate ?? this.uploadDate,
+    );
+  }
+
+  factory Media.fromJson(Map<String, dynamic> json) {
+    return Media(
+      url: json['url'],
+      caption: json['caption'],
+      notes: json['notes'] != null ? Map<String, dynamic>.from(json['notes']) : null,
+      metadata: json['metadata'],
+      uploadDate: json['uploadDate'] != null ? DateTime.tryParse(json['uploadDate']) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'url': url,
+        'caption': caption,
+        'notes': notes,
+        'metadata': metadata,
+        'uploadDate': uploadDate?.toIso8601String(),
+      };
+}
+class Link {
+  final String? name;
+  final String? link;
+
+  Link({this.name, this.link});
 
   Link copyWith({
     String? name,
@@ -27,608 +284,16 @@ class Link {
       link: link ?? this.link,
     );
   }
+
+  factory Link.fromJson(Map<String, dynamic> json) {
+    return Link(
+      name: json['name'],
+      link: json['link'],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'link': link,
+      };
 }
-
-class ParentSubModel {
-  final String? id;
-  final String? name;
-  final String? color;
-
-
-  ParentSubModel( {this.id, this.name, this.color,});
-
-  factory ParentSubModel.fromJson(Map<String, dynamic> json) {
-    return ParentSubModel(
-      id: json['id'] as String?,
-      name: json['name'] as String?,
-    
-          color:json['color'] as String?,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-
-      'name': name,
-      'color': color,
-    };
-  }
-}
-
-class UserChapterModel {
-  final String? id;
-  final String? name;
-  final UserDistrictModel? district;
-  final String? shortCode;
-
-  UserChapterModel( {this.id, this.name, this.district,this.shortCode,});
-
-  factory UserChapterModel.fromJson(Map<String, dynamic> json) {
-    return UserChapterModel(
-      id: json['_id'] as String?,
-      name: json['name'] as String?,
-      district: json['districtId'] != null
-          ? UserDistrictModel.fromJson(json['districtId'])
-          : null,
-          shortCode:json['shortCode'] as String?,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-      'shortCode': shortCode,
-      'name': name,
-      'districtId': district?.toJson(),
-    };
-  }
-}
-
-class UserDistrictModel {
-  final String? id;
-  final String? name;
-  final UserZoneModel? zone;
-
-  UserDistrictModel({this.id, this.name, this.zone});
-
-  factory UserDistrictModel.fromJson(Map<String, dynamic> json) {
-    return UserDistrictModel(
-      id: json['_id'] as String?,
-      name: json['name'] as String?,
-      zone: json['zoneId'] != null
-          ? UserZoneModel.fromJson(json['zoneId'])
-          : null,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-      'name': name,
-      'zoneId': zone?.toJson(),
-    };
-  }
-}
-
-class UserZoneModel {
-  final String? id;
-  final String? name;
-  final UserStateModel? state;
-
-  UserZoneModel({this.id, this.name, this.state});
-
-  factory UserZoneModel.fromJson(Map<String, dynamic> json) {
-    return UserZoneModel(
-      id: json['_id'] as String?,
-      name: json['name'] as String?,
-      state: json['stateId'] != null
-          ? UserStateModel.fromJson(json['stateId'])
-          : null,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-      'name': name,
-      'stateId': state?.toJson(),
-    };
-  }
-}
-
-class UserStateModel {
-  final String? id;
-  final String? name;
-
-  UserStateModel({this.id, this.name});
-
-  factory UserStateModel.fromJson(Map<String, dynamic> json) {
-    return UserStateModel(
-      id: json['_id'] as String?,
-      name: json['name'] as String?,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-      'name': name,
-    };
-  }
-}
-
-class UserModel {
-  final String? name;
-  final String? id;
-  final String? memberId;
-  final String? bloodgroup;
-  final bool? isAdmin;
-  final bool? blueTick;
-  final UserChapterModel? chapter;
-  final ParentSubModel? parentSub;
-  final String? image;
-  final String? email;
-  final String? phone;
-  final SecondaryPhone? secondaryPhone;
-  final String? bio;
-  final String? status;
-  final String? address;
-  final List<Company>? company;
-  final String? businessCategory;
-  final String? businessSubCategory;
-  final List<String>? file;
-  final List<Link>? social;
-  final List<Link>? websites;
-  final List<Award>? awards;
-  final List<Link>? videos;
-  final List<Link>? certificates;
-  final int? otp;
-  final List<UserModel>? blockedUsers;
-  final int? feedCount;
-  final int? productCount;
-  final String? subscription;
-  final String? fcm;
-  final DateTime? createdAt;
-  final DateTime? freeTrialEndDate;
-  final String? level;
-  final String? levelId;
-  final String? levelName;
-  final String? adminType;
-  final List<String>? businessTags;
-
-  UserModel({
-    this.name,
-    this.id,
-    this.memberId,
-    this.bloodgroup,
-    this.isAdmin,
-    this.blueTick,
-    this.chapter,
-    this.parentSub,
-    this.image,
-    this.email,
-    this.phone,
-    this.secondaryPhone,
-    this.bio,
-    this.status,
-    this.address,
-    this.company,
-    this.businessCategory,
-    this.businessSubCategory,
-    this.file,
-    this.social,
-    this.websites,
-    this.awards,
-    this.videos,
-    this.certificates,
-    this.otp,
-    this.blockedUsers,
-    this.feedCount,
-    this.productCount,
-    this.subscription,
-    this.fcm,
-    this.createdAt,
-    this.freeTrialEndDate,
-    this.level,
-    this.levelName,
-    this.adminType,
-    this.levelId,
-    this.businessTags,
-  });
-
-  factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
-      name: json['name'] as String? ?? '',
-      id: json['_id'] as String? ?? '',
-      memberId: json['memberId'] as String? ?? '',
-      bloodgroup: json['bloodgroup'] as String? ?? '',
-      isAdmin: json['isAdmin'] as bool? ?? false,
-      blueTick: json['blueTick'] as bool? ?? false,
-      chapter: json['chapter'] != null
-          ? UserChapterModel.fromJson(json['chapter'])
-          : null,
-      parentSub: json['parentSub'] != null
-          ? ParentSubModel.fromJson(json['parentSub'])
-          : null,
-      image: json['image'] as String? ?? '',
-      email: json['email'] as String? ?? '',
-      phone: json['phone'] as String? ?? '',
-      secondaryPhone: json['secondaryPhone'] != null
-          ? SecondaryPhone.fromJson(json['secondaryPhone'])
-          : null,
-      bio: json['bio'] as String? ?? '',
-      status: json['status'] as String? ?? '',
-      address: json['address'] as String? ?? '',
-      company: (json['company'] as List<dynamic>?)
-              ?.map((e) => Company.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [],
-      businessCategory: json['businessCategory'] as String? ?? '',
-      businessSubCategory: json['businessSubCategory'] as String? ?? '',
-      file:
-          (json['file'] as List<dynamic>?)?.map((e) => e as String).toList() ??
-              [],
-      social: (json['social'] as List<dynamic>?)
-              ?.map((e) => Link.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [],
-      websites: (json['websites'] as List<dynamic>?)
-              ?.map((e) => Link.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [],
-      awards: (json['awards'] as List<dynamic>?)
-              ?.map((e) => Award.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [],
-      videos: (json['videos'] as List<dynamic>?)
-              ?.map((e) => Link.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [],
-      certificates: (json['certificates'] as List<dynamic>?)
-              ?.map((e) => Link.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [],
-      otp: json['otp'] as int? ?? 0,
-      blockedUsers: (json['blockedUsers'] as List<dynamic>?)
-              ?.map((e) => e as UserModel)
-              .toList() ??
-          [],
-      feedCount: json['feedCount'] as int? ?? 0,
-      productCount: json['productCount'] as int? ?? 0,
-      subscription: json['subscription'] as String? ?? '',
-      fcm: json['fcm'] as String? ?? '',
-      createdAt: json['createdAt'] != null
-          ? DateTime.tryParse(json['createdAt'] as String)
-          : null,
-      freeTrialEndDate: json['freeTrialEndDate'] != null
-          ? DateTime.tryParse(json['freeTrialEndDate'] as String)
-          : null,
-      level: json['level'] as String? ?? '',
-      levelName: json['levelName'] as String? ?? '',
-      levelId: json['levelId'] as String? ?? '',
-      adminType: json['adminType'] as String? ?? '',
-      businessTags: (json['businessTags'] as List<dynamic>?)
-              ?.map((e) => e as String)
-              .toList() ??
-          [],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'id': id,
-      'memberId': memberId,
-      'bloodgroup': bloodgroup,
-      'isAdmin': isAdmin,
-      'chapter': chapter?.toJson(),
-      'image': image,
-      'email': email,
-      'phone': phone,
-      'secondaryPhone': secondaryPhone?.toJson(),
-      'bio': bio,
-      'status': status,
-      'address': address,
-      'company': company?.map((e) => e.toJson()).toList(),
-      'businessCategory': businessCategory,
-      'businessSubCategory': businessSubCategory,
-      'file': file,
-      'social': social?.map((e) => e.toJson()).toList(),
-      'websites': websites?.map((e) => e.toJson()).toList(),
-      'awards': awards?.map((e) => e.toJson()).toList(),
-      'videos': videos?.map((e) => e.toJson()).toList(),
-      'certificates': certificates?.map((e) => e.toJson()).toList(),
-      'otp': otp,
-      'blockedUsers': blockedUsers,
-      'feedCount': feedCount,
-      'productCount': productCount,
-      'subscription': subscription,
-      'fcm': fcm,
-      'createdAt': createdAt?.toIso8601String(),
-      'freeTrialEndDate': freeTrialEndDate?.toIso8601String(),
-      'level': level,
-      'levelName': levelName,
-      'adminType': adminType,
-      'levelId': levelId,
-      'businessTags': businessTags,
-    };
-  }
-
-  UserModel copyWith({
-    String? name,
-    String? id,
-    String? role,
-    String? memberId,
-    String? bloodgroup,
-    bool? isAdmin,
-    UserChapterModel? chapter,
-    String? image,
-    String? email,
-    String? phone,
-    SecondaryPhone? secondaryPhone,
-    String? bio,
-    String? status,
-    String? address,
-    List<Company>? company,
-    String? businessCategory,
-    String? businessSubCategory,
-    List<String>? file,
-    List<Link>? social,
-    List<Link>? websites,
-    List<Award>? awards,
-    List<Link>? videos,
-    List<Link>? certificates,
-    int? otp,
-    List<UserModel>? blockedUsers,
-    String? subscription,
-    String? fcm,
-    DateTime? createdAt,
-    DateTime? freeTrialEndDate,
-    String? level,
-    String? levelName,
-    String? levelId,
-    String? adminType,
-    List<String>? businessTags,
-  }) {
-    return UserModel(
-      name: name ?? this.name,
-      id: id ?? this.id,
-      memberId: memberId ?? this.memberId,
-      bloodgroup: bloodgroup ?? this.bloodgroup,
-      isAdmin: isAdmin ?? this.isAdmin,
-      chapter: chapter ?? this.chapter,
-      image: image ?? this.image,
-      email: email ?? this.email,
-      phone: phone ?? this.phone,
-      secondaryPhone: secondaryPhone ?? this.secondaryPhone,
-      bio: bio ?? this.bio,
-      status: status ?? this.status,
-      address: address ?? this.address,
-      company: company ?? this.company,
-      businessCategory: businessCategory ?? this.businessCategory,
-      businessSubCategory: businessSubCategory ?? this.businessSubCategory,
-      file: file ?? this.file,
-      social: social ?? this.social,
-      websites: websites ?? this.websites,
-      awards: awards ?? this.awards,
-      videos: videos ?? this.videos,
-      certificates: certificates ?? this.certificates,
-      otp: otp ?? this.otp,
-      blockedUsers: blockedUsers ?? this.blockedUsers,
-      subscription: subscription ?? this.subscription,
-      fcm: fcm ?? this.fcm,
-      createdAt: createdAt ?? this.createdAt,
-      freeTrialEndDate: freeTrialEndDate ?? this.freeTrialEndDate,
-      level: level ?? this.level,
-      levelName: levelName ?? this.levelName,
-      levelId: levelId ?? this.levelId,
-      adminType: level ?? this.adminType,
-      businessTags: businessTags ?? this.businessTags,
-    );
-  }
-}
-
-class SecondaryPhone {
-  final String? whatsapp;
-  final String? business;
-
-  SecondaryPhone({this.whatsapp, this.business});
-
-  factory SecondaryPhone.fromJson(Map<String, dynamic> json) {
-    return SecondaryPhone(
-      whatsapp: json['whatsapp'] as String?,
-      business: json['business'] as String?,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'whatsapp': whatsapp,
-      'business': business,
-    };
-  }
-}
-
-class Company {
-  final String? name;
-  final String? designation;
-  final String? email;
-  final String? websites;
-  final String? phone;
-  final String? logo;
-
-  Company({
-    this.name,
-    this.designation,
-    this.email,
-    this.websites,
-    this.phone,this.logo, 
-  });
-
-  factory Company.fromJson(Map<String, dynamic> json) {
-    return Company(
-      name: json['name'] as String?,
-      designation: json['designation'] as String?,
-      email: json['email'] as String?,
-      websites: json['websites'] as String?,
-      phone: json['phone'] as String?,
-      logo : json['logo'] as String?,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'designation': designation,
-      'email': email,
-      'websites': websites,
-      'phone': phone,
-      'logo': logo,
-    };
-  }
-
-  Company copyWith({
-    String? name,
-    String? designation,
-    String? email,
-    String? websites,
-    String? phone,
-    String? logo,
-  }) {
-    return Company(
-      name: name ?? this.name,
-      designation: designation ?? this.designation,
-      email: email ?? this.email,
-      websites: websites ?? this.websites,
-      phone: phone ?? this.phone,
-      logo: logo ?? this.logo,
-    );
-  }
-}
-class Award {
-  final String? image;
-  final String? name;
-  final String? authority;
-
-  Award({this.image, this.name, this.authority});
-
-  factory Award.fromJson(Map<String, dynamic> json) {
-    return Award(
-      image: json['image'] as String?,
-      name: json['name'] as String?,
-      authority: json['authority'] as String?,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'image': image,
-      'name': name,
-      'authority': authority,
-    };
-  }
-
-  // Override equality and hashCode
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    return other is Award &&
-        other.image == image &&
-        other.name == name &&
-        other.authority == authority;
-  }
-
-  @override
-  int get hashCode => Object.hash(image, name, authority);
-}
-
-
-final user = UserModel(
-  name: "John Doe",
-  id: "user123",
-  memberId: "M123456",
-  bloodgroup: "O+",
-  isAdmin: true,
-  blueTick: true,
-  chapter: UserChapterModel(
-    id: "ch1",
-    name: "Central Chapter",
-    shortCode: "CC",
-    district: UserDistrictModel(
-      id: "d1",
-      name: "Springfield District",
-      zone: UserZoneModel(
-        id: "z1",
-        name: "North Zone",
-        state: UserStateModel(
-          id: "s1",
-          name: "California",
-        ),
-      ),
-    ),
-  ),
-  parentSub: ParentSubModel(
-    id: "ps1",
-    name: "Parent SubGroup",
-    color: "#FF5733",
-  ),
-  image: "https://example.com/profile.jpg",
-  email: "johndoe@example.com",
-  phone: "9876543210",
-  secondaryPhone: SecondaryPhone(
-    whatsapp: "9876543211",
-    business: "0221234567",
-  ),
-  bio: "Entrepreneur and community leader.",
-  status: "active",
-  address: "1234 Elm Street, Springfield",
-  company: [
-    Company(
-      name: "Doe Enterprises",
-      designation: "CEO",
-      email: "contact@doeenterprises.com",
-      websites: "https://doeenterprises.com",
-      phone: "9876500000",
-      logo: "https://example.com/logo.png",
-    ),
-  ],
-  businessCategory: "Technology",
-  businessSubCategory: "Software",
-  file: ["doc1.pdf", "profile.png"],
-  social: [
-    Link(name: "LinkedIn", link: "https://linkedin.com/in/johndoe"),
-    Link(name: "Twitter", link: "https://twitter.com/johndoe"),
-  ],
-  websites: [
-    Link(name: "Portfolio", link: "https://johndoe.dev"),
-  ],
-  awards: [
-    Award(
-      image: "https://example.com/award1.png",
-      name: "Best Innovator 2024",
-      authority: "Tech Council",
-    ),
-  ],
-  videos: [
-    Link(name: "Intro Video", link: "https://youtube.com/watch?v=dQw4w9WgXcQ"),
-  ],
-  certificates: [
-    Link(name: "Flutter Certified", link: "https://certs.com/flutter123"),
-  ],
-  otp: 123456,
-  blockedUsers: [],
-  feedCount: 25,
-  productCount: 12,
-  subscription: "Pro",
-  fcm: "fcm_token_xyz",
-  createdAt: DateTime.now().subtract(Duration(days: 120)),
-  freeTrialEndDate: DateTime.now().add(Duration(days: 30)),
-  level: "Gold",
-  levelName: "Gold Member",
-  levelId: "level123",
-  adminType: "SuperAdmin",
-  businessTags: ["startup", "app", "B2B"],
-);
-
-

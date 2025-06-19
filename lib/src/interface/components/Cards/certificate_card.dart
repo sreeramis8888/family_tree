@@ -6,11 +6,13 @@ import 'package:familytree/src/interface/components/DropDown/remove_edit_dropdow
 class CertificateCard extends StatelessWidget {
   final VoidCallback? onRemove;
   final VoidCallback? onEdit;
-  final Link certificate;
+  final String name;
+  final String url;
 
   const CertificateCard({
     required this.onRemove,
-    required this.certificate,
+    required this.name,
+    required this.url,
     required this.onEdit,
     super.key,
   });
@@ -38,7 +40,7 @@ class CertificateCard extends StatelessWidget {
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(5), topRight: Radius.circular(5)),
                 image: DecorationImage(
-                  image: NetworkImage(certificate.link!),
+                  image: NetworkImage(url),
                   fit: BoxFit.contain,
                 ),
               ),
@@ -56,7 +58,7 @@ class CertificateCard extends StatelessWidget {
                     children: [
                       Flexible(
                         child: Text(
-                          certificate.name ?? '',
+                        name,
                           style: const TextStyle(
                             fontSize: 20.0,
                             fontWeight: FontWeight.w600,

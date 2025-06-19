@@ -154,7 +154,7 @@ class _ProductViewState extends ConsumerState<ProductView> {
                         return asyncProductOwner.when(
                           data: (productOwner) {
                             final receiver = Participant(
-                                name: productOwner.name ?? '',
+                                name: productOwner.fullName ?? '',
                                 id: productOwner.id,
                                 image: productOwner.image);
                             return GestureDetector(

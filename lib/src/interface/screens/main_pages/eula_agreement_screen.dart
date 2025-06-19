@@ -28,7 +28,7 @@ class EulaAgreementScreen extends StatelessWidget {
                       await SecureStorage.write('eula_agreed', 'true');
 
                       navigationService
-                          .pushNamedReplacement('ProfileCompletion');
+                          .pushNamedReplacement('MainPage');
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: kPrimaryColor,

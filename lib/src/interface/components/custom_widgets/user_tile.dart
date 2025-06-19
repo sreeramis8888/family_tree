@@ -42,21 +42,21 @@ Widget buildUserInfo(UserModel user, Business feed, context) {
                   children: [
                     Text(
              
-                     user.name ?? '',
+                     user.fullName ?? '',
                       style: kSmallTitleR,
                
                
                     ),
-                    if (user.company != null &&
-                        user.company!.isNotEmpty &&
-                        user.company![0].name != null)
-                      Text(
-                        user.company![0].name!,
-                        style:
-                            const TextStyle(color: Colors.grey, fontSize: 12),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
+                    // if (user.company != null &&
+                    //     user.company!.isNotEmpty &&
+                    //     user.company![0].name != null)
+                    //   Text(
+                    //     user.company![0].name!,
+                    //     style:
+                    //         const TextStyle(color: Colors.grey, fontSize: 12),
+                    //     overflow: TextOverflow.ellipsis,
+                    //     maxLines: 1,
+                    //   ),
                   ],
                 ),
               ),

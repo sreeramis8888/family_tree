@@ -483,7 +483,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
           responseMap['accessToken'] != null) {
         // Login successful
         String savedToken = responseMap['accessToken'];
-        String savedId = user['id'];
+     String savedId = user['person']['_id'];
         if (savedToken.isNotEmpty && savedId.isNotEmpty) {
           await SecureStorage.write('token', savedToken);
           await SecureStorage.write('id', savedId);

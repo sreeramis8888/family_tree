@@ -280,7 +280,7 @@ class _BusinessViewState extends ConsumerState<BusinessView> {
           data: (user) {
             var receiver = Participant(
               id: user.id ?? '',
-              name: user.name ?? '',
+              name: user.fullName ?? '',
               image: user.image ?? '',
             );
 
@@ -566,7 +566,7 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.author.name ?? 'Unknown User',
+                        widget.author.fullName ?? 'Unknown User',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,

@@ -16,7 +16,7 @@ import 'package:familytree/src/data/services/save_contact.dart';
 import 'package:familytree/src/interface/components/Buttons/primary_button.dart';
 import 'package:familytree/src/interface/components/Cards/award_card.dart';
 import 'package:familytree/src/interface/components/Cards/certificate_card.dart';
-import 'package:familytree/src/interface/components/ModalSheets/write_review.dart';
+
 import 'package:familytree/src/interface/components/animations/glowing_profile.dart';
 import 'package:familytree/src/interface/components/common/review_barchart.dart';
 import 'package:familytree/src/interface/components/custom_widgets/blue_tick_names.dart';
@@ -59,20 +59,25 @@ class ProfilePreview extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final designations = user.company!
-        .map((i) => i.designation)
-        .where((d) => d != null && d.isNotEmpty)
-        .map((d) => d!)
-        .toList();
+    // final designations = user.company!
+    //     .map((i) => i.designation)
+    //     .where((d) => d != null && d.isNotEmpty)
+    //     .map((d) => d!)
+    //     .toList();
 
-    final companyNames = user.company!
-        .map((i) => i.name)
-        .where((n) => n != null && n.isNotEmpty)
-        .map((n) => n!)
-        .toList();
-    String joinedDate = DateFormat('dd/MM/yyyy').format(user.createdAt!);
+    // final companyNames = user.company!
+    //     .map((i) => i.name)
+    //     .where((n) => n != null && n.isNotEmpty)
+    //     .map((n) => n!)
+    //     .toList();
+    // String joinedDate = DateFormat('dd/MM/yyyy').format(user.createdAt!);
     // Map<String, String> levelData = extractLevelDetails(user.level ?? '');
-
+    List<Media> videos =
+        user.media?.where((m) => m.metadata == 'video').toList() ?? [];
+    List<Media> certificates =
+        user.media?.where((m) => m.metadata == 'certificate').toList() ?? [];
+    List<Media> awards =
+        user.media?.where((m) => m.metadata == 'award').toList() ?? [];
     final reviewsToShow = ref.watch(reviewsProvider);
     PageController _videoCountController = PageController();
 
@@ -170,10 +175,8 @@ class ProfilePreview extends ConsumerWidget {
                                           borderWidth: 3.0,
                                         ),
                                         Text(
-                                    
-                                      user.name ?? '',
+                                          user.fullName ?? '',
                                           style: kHeadTitleSB,
-                                    
                                         ),
                                         const SizedBox(height: 5),
                                         Padding(
@@ -181,36 +184,7 @@ class ProfilePreview extends ConsumerWidget {
                                               horizontal: 16.0),
                                           child: Column(
                                             children: [
-                                              if (designations.isNotEmpty ||
-                                                  companyNames.isNotEmpty)
-                                                Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: [
-                                                    if (designations.isNotEmpty)
-                                                      Text(
-                                                        designations
-                                                            .join(' | '),
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        style: const TextStyle(
-                                                          fontSize: 12,
-                                                          color: kWhite,
-                                                        ),
-                                                      ),
-                                                    if (companyNames.isNotEmpty)
-                                                      Text(
-                                                        companyNames
-                                                            .join(' | '),
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        style: const TextStyle(
-                                                          fontSize: 12,
-                                                          color: kWhite,
-                                                        ),
-                                                      ),
-                                                  ],
-                                                ),
+                                              Text('${user.occupation}'),
                                               // if (levelData['chapterName'] !=
                                               //     'undefined')
                                               //   const SizedBox(height: 10),
@@ -247,13 +221,13 @@ class ProfilePreview extends ConsumerWidget {
                                               //     ],
                                               //   ),
                                               const SizedBox(height: 5),
-                                              Text(
-                                                'Joined Date: $joinedDate',
-                                                style: const TextStyle(
-                                                  fontSize: 11,
-                                                  color: kWhite,
-                                                ),
-                                              ),
+                                              // Text(
+                                              //   'Joined Date: $joinedDate',
+                                              //   style: const TextStyle(
+                                              //     fontSize: 11,
+                                              //     color: kWhite,
+                                              //   ),
+                                              // ),
                                               SizedBox(
                                                 height: 20,
                                               ),
@@ -292,7 +266,7 @@ class ProfilePreview extends ConsumerWidget {
                                                           width:
                                                               10), // Add spacing between elements
                                                       Text(
-                                                          'Member ID: ${user.memberId}',
+                                                          'Member ID: ${user.email}',
                                                           style: kSmallerTitleB
                                                               .copyWith(
                                                                   color:
@@ -320,9 +294,9 @@ class ProfilePreview extends ConsumerWidget {
                       const SizedBox(
                         height: 20,
                       ),
-                      if (user.bio != null &&
-                          user.bio != '' &&
-                          user.bio != 'null')
+                      if (user.biography != null &&
+                          user.biography != '' &&
+                          user.biography != 'null')
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Container(
@@ -345,7 +319,7 @@ class ProfilePreview extends ConsumerWidget {
                                     children: [
                                       Flexible(
                                           child: Text(
-                                        '''${user.bio}''',
+                                        '''${user.biography}''',
                                         style: kSmallTitleR,
                                       )),
                                     ],
@@ -411,47 +385,47 @@ class ProfilePreview extends ConsumerWidget {
                                     ],
                                   ),
                                 const SizedBox(height: 15),
-                                if (user.secondaryPhone?.whatsapp != null &&
-                                    user.secondaryPhone!.whatsapp!.isNotEmpty)
-                                  Row(
-                                    children: [
-                                      CustomIconContainer(
-                                        icon: FontAwesomeIcons.whatsapp,
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Expanded(
-                                        child: Text(
-                                            user.secondaryPhone!.whatsapp!),
-                                      ),
-                                    ],
-                                  ),
-                                const SizedBox(height: 15),
-                                if (user.secondaryPhone?.business != null &&
-                                    user.secondaryPhone!.business!.isNotEmpty)
-                                  Row(
-                                    children: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: kGreyLight,
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(2.0),
-                                          child: SvgPicture.asset(
-                                            color: kPrimaryColor,
-                                            'assets/svg/icons/whatsapp-business.svg',
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Expanded(
-                                        child: Text(
-                                            user.secondaryPhone?.business ??
-                                                ''),
-                                      )
-                                    ],
-                                  ),
+                                // if (user.secondaryPhone?.whatsapp != null &&
+                                //     user.secondaryPhone!.whatsapp!.isNotEmpty)
+                                //   Row(
+                                //     children: [
+                                //       CustomIconContainer(
+                                //         icon: FontAwesomeIcons.whatsapp,
+                                //       ),
+                                //       const SizedBox(width: 10),
+                                //       Expanded(
+                                //         child: Text(
+                                //             user.secondaryPhone!.whatsapp!),
+                                //       ),
+                                //     ],
+                                //   ),
+                                // const SizedBox(height: 15),
+                                // if (user.secondaryPhone?.business != null &&
+                                //     user.secondaryPhone!.business!.isNotEmpty)
+                                //   Row(
+                                //     children: [
+                                //       Container(
+                                //         decoration: BoxDecoration(
+                                //           color: kGreyLight,
+                                //           borderRadius:
+                                //               BorderRadius.circular(5),
+                                //         ),
+                                //         child: Padding(
+                                //           padding: const EdgeInsets.all(2.0),
+                                //           child: SvgPicture.asset(
+                                //             color: kPrimaryColor,
+                                //             'assets/svg/icons/whatsapp-business.svg',
+                                //           ),
+                                //         ),
+                                //       ),
+                                //       const SizedBox(width: 10),
+                                //       Expanded(
+                                //         child: Text(
+                                //             user.secondaryPhone?.business ??
+                                //                 ''),
+                                //       )
+                                //     ],
+                                //   ),
                               ],
                             ),
                           ),
@@ -551,7 +525,7 @@ class ProfilePreview extends ConsumerWidget {
                           ),
                         ),
                       SizedBox(height: 10),
-                      if (user.websites?.isNotEmpty == true)
+                      if (user.website?.isNotEmpty == true)
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Container(
@@ -571,13 +545,13 @@ class ProfilePreview extends ConsumerWidget {
                                               color: kBlack)),
                                     ],
                                   ),
-                                  if (user.websites?.isNotEmpty == true)
+                                  if (user.website?.isNotEmpty == true)
                                     for (int index = 0;
-                                        index < user.websites!.length;
+                                        index < user.website!.length;
                                         index++)
                                       customSocialPreview(index,
                                           isWebsite: true,
-                                          social: user.websites![index]),
+                                          social: user.website![index]),
                                 ],
                               ),
                             ),
@@ -587,7 +561,7 @@ class ProfilePreview extends ConsumerWidget {
                       const SizedBox(
                         height: 30,
                       ),
-                      if (user.videos?.isNotEmpty == true)
+                      if (videos.isNotEmpty == true)
                         Column(
                           children: [
                             SizedBox(
@@ -595,12 +569,11 @@ class ProfilePreview extends ConsumerWidget {
                               height: 260,
                               child: PageView.builder(
                                 controller: _videoCountController,
-                                itemCount: user.videos!.length,
+                                itemCount: videos.length,
                                 physics: const PageScrollPhysics(),
                                 itemBuilder: (context, index) {
                                   return profileVideo(
-                                      context: context,
-                                      video: user.videos![index]);
+                                      context: context, url: videos[index].url??'',name:videos[index].caption??'' );
                                 },
                               ),
                             ),
@@ -609,7 +582,7 @@ class ProfilePreview extends ConsumerWidget {
                               builder: (context, value, child) {
                                 return SmoothPageIndicator(
                                   controller: _videoCountController,
-                                  count: user.videos!.length,
+                                  count: videos.length,
                                   effect: const ExpandingDotsEffect(
                                     dotHeight: 8,
                                     dotWidth: 6,
@@ -621,102 +594,15 @@ class ProfilePreview extends ConsumerWidget {
                             ),
                           ],
                         ),
-                      if (user.videos?.isNotEmpty == true)
+                      if (videos.isNotEmpty == true)
                         const SizedBox(
                           height: 30,
                         ),
-                      Row(
-                        children: [
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text('Reviews',
-                              style: kBodyTitleB.copyWith(color: kBlack)),
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Consumer(
-                          builder: (context, ref, child) {
-                            final asyncReviews = ref.watch(
-                                fetchReviewsProvider(userId: user.id ?? ''));
-                            return asyncReviews.when(
-                              data: (reviews) {
-                                return Column(
-                                  children: [
-                                    ReviewBarChart(
-                                      reviews: reviews ?? [],
-                                    ),
-                                    if (reviews.isNotEmpty)
-                                      ListView.builder(
-                                        shrinkWrap: true,
-                                        physics: NeverScrollableScrollPhysics(),
-                                        itemCount: reviewsToShow,
-                                        itemBuilder: (context, index) {
-                                          final ratingDistribution =
-                                              getRatingDistribution(reviews);
-                                          final averageRating =
-                                              getAverageRating(reviews);
-                                          final totalReviews = reviews.length;
-                                          return ReviewsCard(
-                                            review: reviews[index],
-                                            ratingDistribution:
-                                                ratingDistribution,
-                                            averageRating: averageRating,
-                                            totalReviews: totalReviews,
-                                          );
-                                        },
-                                      ),
-                                    if (reviewsToShow < reviews.length)
-                                      TextButton(
-                                        onPressed: () {
-                                          ref
-                                              .read(reviewsProvider.notifier)
-                                              .showMoreReviews(reviews.length);
-                                        },
-                                        child: Text('View More'),
-                                      ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 5, vertical: 16),
-                                      child: customButton(
-                                          sideColor: kPrimaryColor,
-                                          buttonColor: kWhite,
-                                          labelColor: kPrimaryColor,
-                                          label: 'Write a Review',
-                                          onPressed: () {
-                                            showModalBottomSheet(
-                                              context: context,
-                                              isScrollControlled: true,
-                                              shape:
-                                                  const RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.vertical(
-                                                        top: Radius.circular(
-                                                            20)),
-                                              ),
-                                              builder: (context) =>
-                                                  ShowWriteReviewSheet(
-                                                userId: user.id!,
-                                              ),
-                                            );
-                                          },
-                                          fontSize: 15),
-                                    ),
-                                  ],
-                                );
-                              },
-                              loading: () =>
-                                  const Center(child: LoadingAnimation()),
-                              error: (error, stackTrace) => const SizedBox(),
-                            );
-                          },
-                        ),
-                      ),
+                    
                       SizedBox(
                         height: 20,
                       ),
-                      if (user.certificates?.isNotEmpty == true)
+                      if (certificates.isNotEmpty == true)
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -733,12 +619,12 @@ class ProfilePreview extends ConsumerWidget {
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
                               padding: EdgeInsets
-                                  .zero, // Remove default ListView padding
-                              itemCount: user.certificates!.length,
+                                  .zero, 
+                              itemCount: certificates.length,
                               itemBuilder: (context, index) {
-                                return CertificateCard(
+                                return CertificateCard(url: certificates[index].url??'',
                                   onEdit: null,
-                                  certificate: user.certificates![index],
+                                  name: certificates[index].caption??'',
                                   onRemove: null,
                                 );
                               },
@@ -748,7 +634,7 @@ class ProfilePreview extends ConsumerWidget {
                       SizedBox(
                         height: 10,
                       ),
-                      if (user.awards?.isNotEmpty == true)
+                      if (awards.isNotEmpty == true)
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -776,11 +662,11 @@ class ProfilePreview extends ConsumerWidget {
                                 childAspectRatio:
                                     0.9, // Optional: adjust for better card proportions
                               ),
-                              itemCount: user.awards!.length,
+                              itemCount: awards.length,
                               itemBuilder: (context, index) {
                                 return AwardCard(
                                   onEdit: null,
-                                  award: user.awards![index],
+                                  award: awards[index],
                                   onRemove: null,
                                 );
                               },
@@ -814,7 +700,7 @@ class ProfilePreview extends ConsumerWidget {
                                   final Participant receiver = Participant(
                                     id: user.id,
                                     image: user.image ?? '',
-                                    name: user.name,
+                                    name: user.fullName,
                                   );
                                   final Participant sender =
                                       Participant(id: id);
@@ -841,7 +727,7 @@ class ProfilePreview extends ConsumerWidget {
                                 onPressed: () {
                                   if (user.phone != null) {
                                     saveContact(
-                                        firstName: '${user.name ?? ''}',
+                                        firstName: '${user.fullName ?? ''}',
                                         number: user.phone ?? '',
                                         email: user.email ?? '',
                                         context: context);
@@ -854,11 +740,10 @@ class ProfilePreview extends ConsumerWidget {
         ));
   }
 
-  Widget profileVideo({required BuildContext context, required Link video}) {
-    final videoUrl = video.link;
+  Widget profileVideo({required BuildContext context, required String url,required String name}) {
 
     final ytController = YoutubePlayerController.fromVideoId(
-      videoId: YoutubePlayerController.convertUrlToId(videoUrl ?? '')!,
+      videoId: YoutubePlayerController.convertUrlToId(url ?? '')!,
       autoPlay: false,
       params: const YoutubePlayerParams(
         enableJavaScript: true,
@@ -879,7 +764,7 @@ class ProfilePreview extends ConsumerWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.only(top: 10),
-                child: Text(video.name!,
+                child: Text(name,
                     style: const TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 18)),
               ),
