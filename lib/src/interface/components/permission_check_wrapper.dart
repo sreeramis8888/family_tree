@@ -17,16 +17,16 @@ class PermissionCheckWrapper extends StatelessWidget {
   }) : super(key: key);
 
   Future<void> _handleTap(BuildContext context) async {
-    final hasPermission = await permissionCheck();
-    if (!hasPermission) {
-      if (context.mounted) {
-        PermissionDeniedDialog.show(
-          context,
-          message: permissionDeniedMessage,
-        );
-      }
-      return;
-    }
+    // final hasPermission = await permissionCheck();
+    // if (!hasPermission) {
+    //   if (context.mounted) {
+    //     PermissionDeniedDialog.show(
+    //       context,
+    //       message: permissionDeniedMessage,
+    //     );
+    //   }
+    //   return;
+    // }
     onTap();
   }
 

@@ -40,14 +40,14 @@ class _LevelMembersState extends ConsumerState<LevelMembers> {
   }
 
   void _showNotificationDialog() {
-    if (!_canSendNotification) {
-      PermissionDeniedDialog.show(
-        context,
-        message:
-            'You do not have permission to manage members. Please contact your administrator for access.',
-      );
-      return;
-    }
+  //   if (!_canSendNotification) {
+  //     PermissionDeniedDialog.show(
+  //       context,
+  //       message:
+  //           'You do not have permission to manage members. Please contact your administrator for access.',
+  //     );
+  //     return;
+  //   }
 
     navigationService.pushNamed('MemberCreation');
   }

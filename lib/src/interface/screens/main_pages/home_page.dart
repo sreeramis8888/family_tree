@@ -39,9 +39,10 @@ import 'package:familytree/src/interface/screens/main_pages/menuPages/analytics/
 import 'package:familytree/src/interface/screens/web_view_screen.dart';
 import 'package:familytree/src/interface/components/custom_widgets/circle_icon_button.dart';
 import 'package:familytree/src/interface/components/Cards/campaign_card.dart';
-import 'package:familytree/src/data/api_routes/activity_api/activity_api.dart';
-import 'package:familytree/src/data/models/activity_model.dart';
+
 import 'package:familytree/src/interface/screens/main_pages/menuPages/campaigns/campaigns_list_page.dart';
+import 'package:familytree/src/data/models/campaign_model.dart';
+import 'package:familytree/src/data/api_routes/campain_api/campaign_api.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   final UserModel user;
@@ -1148,12 +1149,13 @@ Widget customNotice({
   );
 }
 
-class _CampaignsTabSection extends StatefulWidget {
+class _CampaignsTabSection extends ConsumerStatefulWidget {
   @override
-  State<_CampaignsTabSection> createState() => _CampaignsTabSectionState();
+  ConsumerState<_CampaignsTabSection> createState() =>
+      _CampaignsTabSectionState();
 }
 
-class _CampaignsTabSectionState extends State<_CampaignsTabSection>
+class _CampaignsTabSectionState extends ConsumerState<_CampaignsTabSection>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final List<String> _tabs = ['Zakath', 'CSR Campaigns'];
@@ -1161,41 +1163,6 @@ class _CampaignsTabSectionState extends State<_CampaignsTabSection>
   int _currentIndex = 0;
   late PageController _pageController;
   Timer? _autoScrollTimer;
-
-  // Mock data for demonstration
-  final List<ActivityModel> zakathCampaigns = [
-    ActivityModel(
-      title: 'Back to School Drive',
-      description:
-          'Help provide school supplies and educational resources to underprivileged children for the new academic year.',
-      amount: 2500,
-      date: '2023-01-02',
-      type: 'zakath',
-    ),
-    ActivityModel(
-      title: 'Medical Aid Fund',
-      description: 'Support medical expenses for families in need.',
-      amount: 1200,
-      date: '2023-02-15',
-      type: 'zakath',
-    ),
-  ];
-  final List<ActivityModel> csrCampaigns = [
-    ActivityModel(
-      title: 'Tree Plantation Drive',
-      description: 'Join us in planting trees to make our city greener.',
-      amount: 3200,
-      date: '2023-03-10',
-      type: 'csr',
-    ),
-    ActivityModel(
-      title: 'Clean Water Project',
-      description: 'Provide clean drinking water to rural communities.',
-      amount: 4100,
-      date: '2023-04-05',
-      type: 'csr',
-    ),
-  ];
 
   @override
   void initState() {
@@ -1216,20 +1183,8 @@ class _CampaignsTabSectionState extends State<_CampaignsTabSection>
     _autoScrollTimer?.cancel();
     _autoScrollTimer = Timer.periodic(const Duration(seconds: 4), (timer) {
       if (!mounted) return;
-      final itemCount = _getCampaignsCount();
-      if (itemCount > 1) {
-        int nextPage = (_pageController.page?.round() ?? 0) + 1;
-        if (nextPage >= itemCount) nextPage = 0;
-        _pageController.animateToPage(nextPage,
-            duration: const Duration(milliseconds: 500),
-            curve: Curves.easeInOut);
-      }
+      // We'll scroll after data is loaded
     });
-  }
-
-  int _getCampaignsCount() {
-    final campaigns = _currentIndex == 0 ? zakathCampaigns : csrCampaigns;
-    return campaigns.length;
   }
 
   @override
@@ -1242,100 +1197,115 @@ class _CampaignsTabSectionState extends State<_CampaignsTabSection>
 
   @override
   Widget build(BuildContext context) {
-    final campaigns = _currentIndex == 0 ? zakathCampaigns : csrCampaigns;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Campaigns', style: kBodyTitleB.copyWith(color: kBlack)),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CampaignsMainScreen(),
-                    ),
-                  );
-                },
-                child: const Text('View All',
-                    style: TextStyle(color: kRed, fontWeight: FontWeight.bold)),
+    final asyncCampaigns = ref.watch(fetchCampaignsProvider);
+    return asyncCampaigns.when(
+      data: (campaigns) {
+        final zakathCampaigns = campaigns
+            .where((c) => c.tagType.toLowerCase() == 'zakath')
+            .toList();
+        final csrCampaigns =
+            campaigns.where((c) => c.tagType.toLowerCase() == 'csr').toList();
+        final campaignsList =
+            _currentIndex == 0 ? zakathCampaigns : csrCampaigns;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Campaigns', style: kBodyTitleB.copyWith(color: kBlack)),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CampaignsMainScreen(),
+                        ),
+                      );
+                    },
+                    child: const Text('View All',
+                        style: TextStyle(
+                            color: kRed, fontWeight: FontWeight.bold)),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 8),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: TabBar(
-            labelPadding: EdgeInsets.symmetric(horizontal: 10),
-            dividerColor: kGreyLight.withOpacity(.2),
-            padding: EdgeInsets.only(left: 10),
-            indicatorWeight: 4,
-            controller: _tabController,
-            isScrollable: true,
-            labelColor: kPrimaryColor,
-            unselectedLabelColor: Colors.grey,
-            indicatorColor: kPrimaryColor,
-            indicatorSize: TabBarIndicatorSize.tab,
-            labelStyle: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
             ),
-            unselectedLabelStyle: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
-            ),
-            tabAlignment: TabAlignment.start,
-            tabs: _tabs.map((t) => Tab(text: t)).toList(),
-            onTap: (i) {
-              setState(() {
-                _currentIndex = i;
-              });
-            },
-          ),
-        ),
-        const SizedBox(height: 8),
-        SizedBox(
-          height: 390,
-          child: campaigns.isEmpty
-              ? const Center(child: Text('No campaigns yet'))
-              : PageView.builder(
-                  controller: _pageController,
-                  itemCount: campaigns.length,
-                  itemBuilder: (context, index) {
-                    final campaign = campaigns[index];
-                    return CampaignCard(
-                      campaign: campaign,
-                      tag: _types[_currentIndex],
-                      leftButtonLabel: 'Learn More',
-                      rightButtonLabel: 'Donate Now',
-                      leftButtonAction: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                CampaignDetailPage(campaign: campaign),
-                          ),
-                        );
-                      },
-                      rightButtonAction: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                CampaignDetailPage(campaign: campaign),
-                          ),
-                        );
-                      },
-                    );
-                  },
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: TabBar(
+                labelPadding: EdgeInsets.symmetric(horizontal: 10),
+                dividerColor: kGreyLight.withOpacity(.2),
+                padding: EdgeInsets.only(left: 10),
+                indicatorWeight: 4,
+                controller: _tabController,
+                isScrollable: true,
+                labelColor: kPrimaryColor,
+                unselectedLabelColor: Colors.grey,
+                indicatorColor: kPrimaryColor,
+                indicatorSize: TabBarIndicatorSize.tab,
+                labelStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
                 ),
-        ),
-      ],
+                unselectedLabelStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                ),
+                tabAlignment: TabAlignment.start,
+                tabs: _tabs.map((t) => Tab(text: t)).toList(),
+                onTap: (i) {
+                  setState(() {
+                    _currentIndex = i;
+                  });
+                },
+              ),
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 390,
+              child: campaignsList.isEmpty
+                  ? const Center(child: Text('No campaigns yet'))
+                  : PageView.builder(
+                      controller: _pageController,
+                      itemCount: campaignsList.length,
+                      itemBuilder: (context, index) {
+                        final campaign = campaignsList[index];
+                        return CampaignCard(
+                          campaign: campaign,
+                          tag: campaign.tagType,
+                          leftButtonLabel: 'Learn More',
+                          rightButtonLabel: 'Donate Now',
+                          leftButtonAction: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    CampaignDetailPage(campaign: campaign),
+                              ),
+                            );
+                          },
+                          rightButtonAction: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    CampaignDetailPage(campaign: campaign),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+            ),
+          ],
+        );
+      },
+      loading: () => const Center(child: LoadingAnimation()),
+      error: (error, stackTrace) =>
+          const Center(child: Text('Failed to load campaigns')),
     );
   }
 }

@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:familytree/src/data/globals.dart';
-import 'package:familytree/src/data/models/activity_model.dart';
 import 'package:familytree/src/data/models/family_model.dart';
 import 'package:familytree/src/data/services/snackbar_service.dart';
 import 'package:flutter/material.dart';

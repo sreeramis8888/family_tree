@@ -1,11 +1,12 @@
+import 'package:familytree/src/data/models/campaign_model.dart';
 import 'package:flutter/material.dart';
-import 'package:familytree/src/data/models/activity_model.dart';
+
 import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/data/constants/style_constants.dart';
 import 'package:intl/intl.dart';
 
 class CampaignDetailPage extends StatefulWidget {
-  final ActivityModel campaign;
+  final CampaignModel campaign;
   const CampaignDetailPage({Key? key, required this.campaign})
       : super(key: key);
 
@@ -15,7 +16,7 @@ class CampaignDetailPage extends StatefulWidget {
 
 class _CampaignDetailPageState extends State<CampaignDetailPage> {
   final TextEditingController _donationController =
-      TextEditingController(text: '500');
+      TextEditingController();
 
   @override
   void dispose() {
@@ -26,12 +27,11 @@ class _CampaignDetailPageState extends State<CampaignDetailPage> {
   @override
   Widget build(BuildContext context) {
     final campaign = widget.campaign;
-    final collected = campaign.amount ?? 0;
-    final target = 5000; // Make dynamic if needed
+    final collected = campaign.donatedAmount ?? 0;
+    final target =campaign.targetAmount ?? 0;
     final progress = (collected / target).clamp(0.0, 1.0);
-    final dueDate = campaign.date != null
-        ? DateFormat('dd MMM yyyy').format(DateTime.parse(campaign.date!))
-        : '-';
+    final dueDate = DateFormat('dd MMM yyyy').format(campaign.deadline);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kWhite,
@@ -55,12 +55,14 @@ class _CampaignDetailPageState extends State<CampaignDetailPage> {
                 borderRadius: BorderRadius.circular(12),
                 child: AspectRatio(
                   aspectRatio: 16 / 7,
-                  child: campaign.member?.chapter != null
-                      ? Image.asset(
-                          'assets/pngs/graduation_hat.png',
-                          fit: BoxFit.cover,
-                        )
-                      : Container(color: kGreyLight),
+                  child: 
+                  // campaign.member?.chapter != null
+                  //     ? Image.asset(
+                  //         'assets/pngs/graduation_hat.png',
+                  //         fit: BoxFit.cover,
+                  //       )
+                      // :
+                       Container(color: kGreyLight),
                 ),
               ),
               const SizedBox(height: 16),
@@ -71,7 +73,7 @@ class _CampaignDetailPageState extends State<CampaignDetailPage> {
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
-                  '#${campaign.type ?? ''}',
+                  '#${campaign.tagType}',
                   style: const TextStyle(
                       color: kWhite, fontWeight: FontWeight.bold, fontSize: 12),
                 ),
@@ -126,12 +128,12 @@ class _CampaignDetailPageState extends State<CampaignDetailPage> {
               ),
               const SizedBox(height: 18),
               Text(
-                campaign.title ?? '',
+                campaign.title,
                 style: kSubHeadingB.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
               Text(
-                campaign.description ?? '',
+                campaign.organizedBy ,
                 style: kSmallerTitleR,
               ),
               const SizedBox(height: 28),

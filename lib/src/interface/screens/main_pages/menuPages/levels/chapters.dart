@@ -40,14 +40,14 @@ class _ChaptersPageState extends ConsumerState<ChaptersPage> {
   }
 
   void _showNotificationDialog() {
-    if (!_canSendNotification) {
-      PermissionDeniedDialog.show(
-        context,
-        message:
-            'You do not have permission to send notifications. Please contact your administrator for access.',
-      );
-      return;
-    }
+    // if (!_canSendNotification) {
+    //   PermissionDeniedDialog.show(
+    //     context,
+    //     message:
+    //         'You do not have permission to send notifications. Please contact your administrator for access.',
+    //   );
+    //   return;
+    // }
 
     Navigator.push(
       context,

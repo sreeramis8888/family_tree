@@ -1,4 +1,7 @@
+import 'dart:developer';
 import 'dart:io';
+import 'package:familytree/src/data/globals.dart';
+import 'package:familytree/src/interface/components/loading_indicator/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:familytree/src/interface/components/custom_widgets/custom_textFormField.dart';
@@ -6,6 +9,8 @@ import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/data/constants/style_constants.dart';
 import 'package:familytree/src/interface/screens/main_pages/admin/member_creation.dart'
     show CustomDropdown;
+import 'package:familytree/src/data/api_routes/campain_api/campaign_api.dart';
+import 'package:familytree/src/interface/components/DropDown/selectionDropdown.dart';
 
 class CampaignCreatePage extends StatefulWidget {
   const CampaignCreatePage({Key? key}) : super(key: key);
@@ -196,17 +201,27 @@ class _CampaignCreatePageState extends State<CampaignCreatePage> {
                   )),
               const SizedBox(height: 16),
               Text('Status', style: kBodyTitleM),
-              CustomDropdown(
+              SelectionDropDown(
                 label: 'Status',
-                items: const ['Active', 'Inactive'],
+                items: ['Active', 'Inactive']
+                    .map((item) => DropdownMenuItem<String>(
+                          value: item,
+                          child: Text(item),
+                        ))
+                    .toList(),
                 value: _status,
                 onChanged: (v) => setState(() => _status = v ?? 'Active'),
               ),
               const SizedBox(height: 16),
               Text('Tag', style: kBodyTitleM),
-              CustomDropdown(
+              SelectionDropDown(
                 label: 'Tag',
-                items: const ['Education', 'Health', 'Environment', 'Other'],
+                items: ['zakath', 'csr']
+                    .map((item) => DropdownMenuItem<String>(
+                          value: item,
+                          child: Text(item),
+                        ))
+                    .toList(),
                 value: _tagController.text.isEmpty ? null : _tagController.text,
                 onChanged: (v) => setState(() => _tagController.text = v ?? ''),
               ),
@@ -291,9 +306,45 @@ class _CampaignCreatePageState extends State<CampaignCreatePage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState?.validate() ?? false) {
-                      // TODO: Implement campaign creation logic
+                      final Map<String, dynamic> data = {
+                        'reason': [
+                          {
+                            'title': _nameController.text,
+                            'description': _descriptionController.text,
+                            'media':
+                                //  _coverImage?.path ??
+                                'test.jpg',
+                          }
+                        ],
+                        'targetAmount': int.tryParse(_targetAmountController
+                                .text
+                                .replaceAll(RegExp(r'[^0-9]'), '')) ??
+                            0,
+                        'deadline': _targetDate?.toIso8601String(),
+                        'tagType': _tagController.text.isNotEmpty
+                            ? _tagController.text
+                            : null,
+                        'organizedBy': _organizerController.text,
+                        'documents': ['test'],
+                        // _documents.map((doc) => doc.file.path).toList(),
+                        'status': _status,
+                        'createdBy': id
+                      };
+                      log(data.toString());
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) =>
+                            const Center(child: LoadingAnimation()),
+                      );
+                      final success = await CampaignApiService.createCampaign(
+                          data: data, context: context);
+                      Navigator.of(context).pop();
+                      if (success) {
+                        Navigator.of(context).pop();
+                      }
                     }
                   },
                   child: const Text('Sent Request',

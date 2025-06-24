@@ -69,12 +69,10 @@ class UserNotifier extends StateNotifier<AsyncValue<UserModel>> {
   //   state = state.whenData((user) => user.copyWith(businessTags: businessTags));
   // }
 
-  void updateProfilePicture(Media profilePicture) {
+  void updateProfilePicture(String profilePicture) {
     state = state.whenData((user) {
-      final media = [...?user.media];
-      media.removeWhere((m) => m.metadata == "image" && m.caption == "profilePicture");
-      media.add(profilePicture.copyWith(metadata: "image", caption: "profilePicture"));
-      return user.copyWith(media: media);
+   
+      return user.copyWith(image: profilePicture);
     });
   }
 
@@ -175,6 +173,10 @@ class UserNotifier extends StateNotifier<AsyncValue<UserModel>> {
       final updated = user.website?.map((w) => w == oldWebsite ? newWebsite : w).toList();
       return user.copyWith(website: updated);
     });
+  }
+
+  void updateBirthDate(DateTime? birthDate) {
+    state = state.whenData((user) => user.copyWith(birthDate: birthDate));
   }
 }
 

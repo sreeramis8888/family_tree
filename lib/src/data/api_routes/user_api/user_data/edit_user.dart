@@ -5,8 +5,8 @@ import 'package:familytree/src/data/services/snackbar_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:familytree/src/data/globals.dart';
 
-Future<String> editUser(Map<String, dynamic> profileData) async {
-  final url = Uri.parse('$baseUrl/user/update');
+Future<String> editUser(Map<String, dynamic> profileData, String userId) async {
+  final url = Uri.parse('$baseUrl/people/$userId');
   log('requesting url:$url');
   final response = await http.patch(
     url,

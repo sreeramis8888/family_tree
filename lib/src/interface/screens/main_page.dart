@@ -386,7 +386,7 @@ class _MainPageState extends ConsumerState<MainPage> {
                       await SecureStorage.delete('token');
                       await SecureStorage.delete('id');
                       await editUser(
-                          {"fcm": "", "name": user.fullName, "phone": user.phone});
+                          {"fcm": "", "name": user.fullName, "phone": user.phone},id);
                       // Navigator.pushReplacement(
                       //   context,
                       //   MaterialPageRoute(

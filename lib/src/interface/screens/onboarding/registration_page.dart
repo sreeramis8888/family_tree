@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:familytree/src/data/api_routes/family_api.dart/family_api.dart';
 import 'package:familytree/src/data/api_routes/user_api/login/user_login_api.dart';
+import 'package:familytree/src/data/services/image_upload.dart';
 import 'package:familytree/src/data/services/navgitor_service.dart';
 import 'package:familytree/src/data/utils/secure_storage.dart';
 import 'package:familytree/src/interface/components/loading_indicator/loading_indicator.dart';
@@ -15,6 +16,7 @@ import 'package:familytree/src/interface/components/custom_widgets/custom_textFo
 import 'package:familytree/src/interface/components/Buttons/primary_button.dart';
 import 'package:familytree/src/interface/components/DropDown/selectionDropdown.dart';
 import 'package:familytree/src/interface/screens/crop_image_screen.dart';
+import 'package:path_provider/path_provider.dart';
 
 class RegistrationPage extends StatefulWidget {
   final String phone;
@@ -91,30 +93,57 @@ class _RegistrationPageState extends State<RegistrationPage> {
     }
   }
 
+  Future<String> saveUint8ListToFile(Uint8List bytes, String fileName) async {
+    final tempDir = await getTemporaryDirectory();
+    final file = File('${tempDir.path}/$fileName');
+    await file.writeAsBytes(bytes);
+    return file.path;
+  }
+
   Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
-      String? phone = await SecureStorage.getPhoneNumber();
-      Map<String, dynamic> formData = {
-        "fullName": _nameController.text,
-        "gender": _gender,
-        "parentFamilyId": _parentFamily,
-        "isAlive": _status == 'Alive' ? true : false,
-        "familyId": _family,
-        "phone": phone,
-        "media": [
-          {"url": "profile.png", "metadata": "image"}
-        ],
-        "relationships": [
-          {"personId": _linkedMember, "type": _relationship}
-        ]
-      };
-      log(formData.toString());
-      final responseStatuscode =
-          await sendRequest(formData: formData, context: context);
-      if (responseStatuscode == 200) {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => const ApprovalWaitingPage(),
-        ));
+      String? profilePictureUrl;
+      try {
+        String? phone = await SecureStorage.getPhoneNumber();
+
+        if (_profileImage != null) {
+          String tempImagePath =
+              await saveUint8ListToFile(_profileImage!, 'profile.png');
+
+           profilePictureUrl = await imageUpload(tempImagePath);
+        }
+        Map<String, dynamic> formData = {
+          "fullName": _nameController.text,
+          "gender": _gender,
+          "parentFamilyId": _parentFamily,
+          "isAlive": _status == 'Alive',
+          "familyId": _family,
+          "phone": phone,
+          if (profilePictureUrl!=null) "image": profilePictureUrl,
+          "relationships": _relations
+              .map((rel) => {
+                    "personId": rel['member'],
+                    "type": rel['relationship'],
+                  })
+              .toList(),
+        };
+
+        log(formData.toString());
+
+        final responseStatuscode =
+            await sendRequest(formData: formData, context: context);
+
+        if (responseStatuscode == 200) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+                builder: (context) => const ApprovalWaitingPage()),
+          );
+        }
+      } catch (e) {
+        log('Error during submission: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to submit form. Please try again.')),
+        );
       }
     }
   }
@@ -343,9 +372,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 child: Text('+ Add Relation',
                     style: TextStyle(color: kRed, fontWeight: FontWeight.bold)),
               ),
-              ..._relations.map((rel) => ListTile(
-                    title: Text('Member: ${rel['member']}'),
-                    subtitle: Text('Relationship: ${rel['relationship']}'),
+              ..._relations.asMap().entries.map((entry) => ListTile(
+                    title: Text('Member: \\${entry.value['member']}'),
+                    subtitle:
+                        Text('Relationship: \\${entry.value['relationship']}'),
+                    trailing: IconButton(
+                      icon: Icon(Icons.delete, color: Colors.red),
+                      onPressed: () {
+                        setState(() {
+                          _relations.removeAt(entry.key);
+                        });
+                      },
+                    ),
                   )),
               const SizedBox(height: 24),
               SizedBox(

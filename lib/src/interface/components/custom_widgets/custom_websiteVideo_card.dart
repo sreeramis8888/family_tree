@@ -114,7 +114,7 @@ Padding customWebsiteCard({
 Padding customVideoCard({
   required VoidCallback onRemove,
   required VoidCallback onEdit,
-  required Link? video,
+  required Media? video,
 }) {
   return Padding(
     padding: const EdgeInsets.only(
@@ -154,11 +154,11 @@ Padding customVideoCard({
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
               child: Text(
-                video?.name != '' &&
-                        video?.name != null &&
-                        video?.name != 'null'
-                    ? video?.name ?? ''
-                    : video?.link ?? '',
+                video?.caption != '' &&
+                        video?.caption != null &&
+                        video?.caption != 'null'
+                    ? video?.caption ?? ''
+                    : video?.url ?? '',
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
               ),

@@ -29,9 +29,9 @@ Future<String> imageUpload(String imagePath) async {
 
   var request = http.MultipartRequest(
     'POST',
-    Uri.parse('$baseUrl/upload'),
+    Uri.parse('$baseUrl/upload/single'),
   );
-  request.files.add(await http.MultipartFile.fromPath('image', imageFile.path));
+  request.files.add(await http.MultipartFile.fromPath('file', imageFile.path));
 
   var response = await request.send();
 
@@ -48,5 +48,5 @@ Future<String> imageUpload(String imagePath) async {
 String extractImageUrl(String responseBody) {
   final responseJson = jsonDecode(responseBody);
   log(name: "image upload response", responseJson.toString());
-  return responseJson['data'];
+  return responseJson['data']['fileUrl'];
 }

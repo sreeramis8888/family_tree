@@ -1,3 +1,5 @@
+import 'package:familytree/src/data/globals.dart';
+import 'package:familytree/src/interface/screens/main_pages/menuPages/financial_program/program_join_request.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:familytree/src/data/api_routes/user_api/user_data/edit_user.dart';
@@ -105,17 +107,33 @@ Widget customDrawer({required UserModel user, required BuildContext context}) {
               children: [
                 const SizedBox(height: 8),
                 _buildDrawerItem(
-                  icon: 'assets/svg/icons/analytics.svg',
+                  icon: 'assets/svg/icons/card.svg',
                   label: 'Financial Program',
                   onTap: () {
-                    // navigationService.pushNamed('AnalyticsPage');
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const FinancialProgramPage(),
-                      ),
-                    );
+                    if (user.isFinanceProgramMember != null) {
+                      if (user.isFinanceProgramMember ?? true) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const FinancialProgramPage(),
+                          ),
+                        );
+                      } else {
+                                   Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const FinancialAssistancePage(),
+                          ),
+                        );
+                      }
+                    }else{
+                                       Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const FinancialAssistancePage(),
+                          ),
+                        );
+                    }
                   },
                 ),
                 _buildDrawerItem(
@@ -178,7 +196,7 @@ Widget customDrawer({required UserModel user, required BuildContext context}) {
                     await SecureStorage.delete('token');
                     await SecureStorage.delete('id');
                     navigationService.pushNamedAndRemoveUntil('PhoneNumber');
-                    await editUser({"fcm": ""});
+                    await editUser({"fcm": "",},id);
                   },
                 ),
                 const SizedBox(height: 8),

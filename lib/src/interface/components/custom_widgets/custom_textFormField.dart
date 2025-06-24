@@ -111,86 +111,57 @@ class CustomTextFormField extends StatelessWidget {
               onChanged: (value) {
                 log(companyIndex.toString());
                 switch (labelText) {
-                  // case 'Enter your Name':
-                  //   ref.read(userProvider.notifier).updateName(
-                  //         name: textController!.text,
-                  //       );
-                  //   break;
+                  case 'Enter your Name':
+                    ref.read(userProvider.notifier).updateName(
+                          textController!.text,
+                        );
+                    break;
 
-                  // case 'Enter Personal Address':
-                  //   ref
-                  //       .read(userProvider.notifier)
-                  //       .updateAddress(textController!.text);
-                  //   break;
+                  case 'Enter Personal Address':
+                    ref
+                        .read(userProvider.notifier)
+                        .updateAddress(textController!.text);
+                    break;
 
-                  // case 'Enter Designation':
-                  //   ref.read(userProvider.notifier).updateCompany(
-                  //         Company(designation: textController!.text),
-                  //         companyIndex!,
-                  //       );
-                  //   break;
+                  case 'Enter Designation':
+                    ref
+                        .read(userProvider.notifier)
+                        .updateOccupation(textController!.text);
+                    break;
 
-                  // case 'Bio':
-                  //   ref
-                  //       .read(userProvider.notifier)
-                  //       .updateBio(textController!.text);
-                  //   break;
+                  case 'Bio':
+                    ref
+                        .read(userProvider.notifier)
+                        .updateBio(textController!.text);
+                    break;
 
-                  // case 'Enter Company Name':
-                  //   ref.read(userProvider.notifier).updateCompany(
-                  //         Company(name: textController!.text),
-                  //         companyIndex!,
-                  //       );
-                  //   break;
+                  case 'Enter Instagram':
+                    ref.read(userProvider.notifier).updateSocialMedia(
+                        [...?ref.read(userProvider).value?.social],
+                        'instagram',
+                        textController!.text);
+                    break;
 
-                  // case 'Enter Company Email':
-                  //   ref.read(userProvider.notifier).updateCompany(
-                  //         Company(email: textController!.text),
-                  //         companyIndex!,
-                  //       );
-                  //   break;
+                  case 'Enter Linkedin':
+                    ref.read(userProvider.notifier).updateSocialMedia(
+                        [...?ref.read(userProvider).value?.social],
+                        'linkedin',
+                        textController!.text);
+                    break;
 
-                  // case 'Enter Company Phone':
-                  //   ref.read(userProvider.notifier).updateCompany(
-                  //         Company(phone: textController!.text),
-                  //         companyIndex!,
-                  //       );
-                  //   break;
+                  case 'Enter Twitter':
+                    ref.read(userProvider.notifier).updateSocialMedia(
+                        [...?ref.read(userProvider).value?.social],
+                        'twitter',
+                        textController!.text);
+                    break;
 
-                  // case 'Enter Company Website':
-                  //   ref.read(userProvider.notifier).updateCompany(
-                  //         Company(websites: textController!.text),
-                  //         companyIndex!,
-                  //       );
-                  //   break;
-
-                  // case 'Enter Instagram':
-                  //   ref.read(userProvider.notifier).updateSocialMedia(
-                  //       [...?ref.read(userProvider).value?.social],
-                  //       'instagram',
-                  //       textController!.text);
-                  //   break;
-
-                  // case 'Enter Linkedin':
-                  //   ref.read(userProvider.notifier).updateSocialMedia(
-                  //       [...?ref.read(userProvider).value?.social],
-                  //       'linkedin',
-                  //       textController!.text);
-                  //   break;
-
-                  // case 'Enter Twitter':
-                  //   ref.read(userProvider.notifier).updateSocialMedia(
-                  //       [...?ref.read(userProvider).value?.social],
-                  //       'twitter',
-                  //       textController!.text);
-                  //   break;
-
-                  // case 'Enter Facebook':
-                  //   ref.read(userProvider.notifier).updateSocialMedia(
-                  //       [...?ref.read(userProvider).value?.social],
-                  //       'facebook',
-                  //       textController!.text);
-                  //   break;
+                  case 'Enter Facebook':
+                    ref.read(userProvider.notifier).updateSocialMedia(
+                        [...?ref.read(userProvider).value?.social],
+                        'facebook',
+                        textController!.text);
+                    break;
 
                   default:
                 }

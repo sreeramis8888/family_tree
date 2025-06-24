@@ -15,8 +15,7 @@ import 'package:familytree/src/interface/screens/main_pages/menuPages/add_produc
 import 'package:familytree/src/interface/screens/main_pages/menuPages/analytics/analytics.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/levels/send_analytic_req.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/change_number.dart';
-import 'package:familytree/src/interface/screens/main_pages/menuPages/levels/activity_page.dart';
-import 'package:familytree/src/interface/screens/main_pages/menuPages/levels/profile_analytics.dart';
+
 import 'package:familytree/src/interface/screens/main_pages/menuPages/levels/states.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/my_businesses.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/my_enquiries.dart';
@@ -82,8 +81,8 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
           builder: (context) => EventMemberList(
                 event: event,
               ));
-    // case 'EditUser':
-    //   return MaterialPageRoute(builder: (context) => EditUser());
+    case 'EditUser':
+      return MaterialPageRoute(builder: (context) => EditUser());
     case 'IndividualPage':
       final args = settings?.arguments as Map<String, dynamic>?;
       Participant sender = args?['sender'];
@@ -137,12 +136,7 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
     //       builder: (context) => ProfileAnalyticsPage(
     //             user: user,
     //           ));
-    case 'ActivityPage':
-      String chapterId = settings?.arguments as String;
-      return MaterialPageRoute(
-          builder: (context) => ActivityPage(
-                chapterId: chapterId,
-              ));
+
     case 'MyEnquiries':
       return MaterialPageRoute(builder: (context) => const MyEnquiriesPage());
     default:

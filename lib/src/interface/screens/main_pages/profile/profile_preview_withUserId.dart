@@ -3,8 +3,7 @@ import 'package:familytree/src/interface/screens/main_pages/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:familytree/src/data/api_routes/review_api/review_api.dart';
+
 import 'package:familytree/src/data/api_routes/user_api/user_data/user_data.dart';
 import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/data/constants/style_constants.dart';

@@ -1,12 +1,12 @@
 import 'package:familytree/src/data/constants/style_constants.dart';
 import 'package:familytree/src/interface/components/Buttons/primary_button.dart';
 import 'package:flutter/material.dart';
-import 'package:familytree/src/data/models/activity_model.dart';
+import 'package:familytree/src/data/models/campaign_model.dart';
 import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:intl/intl.dart';
 
 class CampaignCard extends StatelessWidget {
-  final ActivityModel campaign;
+  final CampaignModel campaign;
   final String tag;
   final String leftButtonLabel;
   final String rightButtonLabel;
@@ -25,11 +25,11 @@ class CampaignCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final collected = campaign.amount ?? 0;
-    final target = 5000; // You may want to make this dynamic
-    final progress = (collected / target).clamp(0.0, 1.0);
-    final dueDate = campaign.date != null
-        ? DateFormat('dd MMM yyyy').format(DateTime.parse(campaign.date!))
+    final collected = campaign.donatedAmount;
+    final target = campaign.targetAmount;
+    final progress = (collected / (target == 0 ? 1 : target)).clamp(0.0, 1.0);
+    final dueDate = campaign.deadline != null
+        ? DateFormat('dd MMM yyyy').format(campaign.deadline)
         : '-';
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
@@ -46,12 +46,7 @@ class CampaignCard extends StatelessWidget {
                 topLeft: Radius.circular(16), topRight: Radius.circular(16)),
             child: AspectRatio(
               aspectRatio: 16 / 7,
-              child: campaign.member?.chapter != null
-                  ? Image.asset(
-                      'assets/pngs/graduation_hat.png',
-                      fit: BoxFit.cover,
-                    )
-                  : Container(color: kGreyLight),
+              child: Container(color: kGreyLight), 
             ),
           ),
           Padding(
@@ -135,19 +130,43 @@ class CampaignCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  campaign.title ?? '',
+                  campaign.title,
                   style: kSubHeadingB,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  campaign.description ?? '',
+                  campaign.organizedBy,
                   style: kSmallerTitleR,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 14),
+                // Donors List
+                if (campaign.donatedMembers.isNotEmpty) ...[
+                  Text('Recent Donors:', style: kSmallerTitleB),
+                  const SizedBox(height: 4),
+                  ...campaign.donatedMembers.take(3).map((donor) => Row(
+                        children: [
+                          Icon(Icons.person, size: 14, color: kPrimaryColor),
+                          const SizedBox(width: 6),
+                          Text(donor.donorName ?? 'Anonymous',
+                              style: kSmallerTitleR),
+                          const SizedBox(width: 8),
+                          Text('₹${donor.amount}', style: kSmallerTitleB),
+                        ],
+                      )),
+                  if (campaign.donatedMembers.length > 3)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2.0),
+                      child: Text(
+                        '+${campaign.donatedMembers.length - 3} more',
+                        style: kSmallerTitleR.copyWith(color: kGrey),
+                      ),
+                    ),
+                  const SizedBox(height: 10),
+                ],
                 Row(
                   children: [
                     if (rightButtonLabel != 'View Details')
