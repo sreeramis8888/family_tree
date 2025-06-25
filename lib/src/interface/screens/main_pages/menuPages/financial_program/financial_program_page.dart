@@ -5,15 +5,17 @@ import 'package:familytree/src/interface/components/Buttons/primary_button.dart'
 import 'package:familytree/src/interface/components/custom_widgets/custom_choicechip.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:familytree/src/data/api_routes/finance_api/finance_api.dart';
 
-class FinancialProgramPage extends StatefulWidget {
+class FinancialProgramPage extends ConsumerStatefulWidget {
   const FinancialProgramPage({Key? key}) : super(key: key);
 
   @override
-  State<FinancialProgramPage> createState() => _FinancialProgramPageState();
+  ConsumerState<FinancialProgramPage> createState() => _FinancialProgramPageState();
 }
 
-class _FinancialProgramPageState extends State<FinancialProgramPage>
+class _FinancialProgramPageState extends ConsumerState<FinancialProgramPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
@@ -84,37 +86,53 @@ class _FinancialProgramPageState extends State<FinancialProgramPage>
   }
 }
 
-class _BalanceCard extends StatelessWidget {
+class _BalanceCard extends ConsumerWidget {
   const _BalanceCard();
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 35),
-      decoration: BoxDecoration(
-          border: Border.all(color: kTertiary),
-          color: kSecondaryColor,
-          borderRadius: BorderRadius.circular(12)),
-      child: Padding(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final minBalanceAsync = ref.watch(getMinimumBalanceProvider);
+    return minBalanceAsync.when(
+      data: (minBalance) {
+        final amount = minBalance?.minimumAmount ?? 0;
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 35),
+          decoration: BoxDecoration(
+              border: Border.all(color: kTertiary),
+              color: kSecondaryColor,
+              borderRadius: BorderRadius.circular(12)),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              children: [
+                const Text('Current Balance', style: kSmallTitleR),
+                const SizedBox(height: 8),
+                Text('₹${amount.toStringAsFixed(0)}',
+                    style: const TextStyle(
+                        fontSize: 36,
+                        color: kPrimaryColor,
+                        fontWeight: FontWeight.bold)),
+                const SizedBox(height: 16),
+                SizedBox(
+                    width: double.infinity,
+                    child: customButton(
+                      label: '+ Top Up Wallet',
+                      onPressed: () {},
+                    )),
+              ],
+            ),
+          ),
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, st) => Container(
+        margin: const EdgeInsets.symmetric(horizontal: 35),
         padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            const Text('Current Balance', style: kSmallTitleR),
-            const SizedBox(height: 8),
-            const Text('₹2500',
-                style: TextStyle(
-                    fontSize: 36,
-                    color: kPrimaryColor,
-                    fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            SizedBox(
-                width: double.infinity,
-                child: customButton(
-                  label: '+ Top Up Wallet',
-                  onPressed: () {},
-                )),
-          ],
-        ),
+        decoration: BoxDecoration(
+            border: Border.all(color: kTertiary),
+            color: kSecondaryColor,
+            borderRadius: BorderRadius.circular(12)),
+        child: const Text('Failed to load balance'),
       ),
     );
   }
@@ -163,64 +181,75 @@ class _LowBalanceAlert extends StatelessWidget {
   }
 }
 
-class _MembershipTab extends StatelessWidget {
+class _MembershipTab extends ConsumerWidget {
   const _MembershipTab();
 
   @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.topCenter, // Keep it top-aligned if needed
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Container(
-          decoration: BoxDecoration(
-            color: kWhite,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: kTertiary),
-          ),
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+  Widget build(BuildContext context, WidgetRef ref) {
+    // TODO: Replace with actual user id
+    final String userId = 'CURRENT_USER_ID';
+    final memberAsync = ref.watch(getProgramMemberByIdProvider(userId));
+    return memberAsync.when(
+      data: (member) {
+        if (member == null) {
+          return const Center(child: Text('Not a program member.'));
+        }
+        return Align(
+          alignment: Alignment.topCenter,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Container(
+              decoration: BoxDecoration(
+                color: kWhite,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: kTertiary),
+              ),
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Membership status:', style: kSmallTitleM),
-                  Spacer(),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Color(0xFF2E7D32),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: const Text('Active',
-                        style: TextStyle(color: Colors.white, fontSize: 13)),
+                  Row(
+                    children: [
+                      const Text('Membership status:', style: kSmallTitleM),
+                      const Spacer(),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: member.membershipStatus == 'Active' ? const Color(0xFF2E7D32) : Colors.grey,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Text(member.membershipStatus,
+                            style: const TextStyle(color: Colors.white, fontSize: 13)),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Last renewed on:', style: kSmallTitleM),
+                      // TODO: Replace with actual renewal date if available
+                      Text('-', style: kSmallTitleB.copyWith(color: kPrimaryColor)),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Next renewal on:', style: kSmallTitleM),
+                      // TODO: Replace with actual next renewal date if available
+                      Text('-', style: kSmallTitleM.copyWith(color: kPrimaryColor)),
+                    ],
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Last renewed on:', style: kSmallTitleM),
-                  Text('19 July 2025',
-                      style: kSmallTitleB.copyWith(color: kPrimaryColor)),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Next renewal on:', style: kSmallTitleM),
-                  Text('19 July 2025',
-                      style: kSmallTitleM.copyWith(color: kPrimaryColor)),
-                ],
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, st) => const Center(child: Text('Failed to load membership info.')),
     );
   }
 }
@@ -421,44 +450,34 @@ class _TransactionsTabState extends State<_TransactionsTab> {
   }
 }
 
-class _MembersTab extends StatelessWidget {
+class _MembersTab extends ConsumerWidget {
   const _MembersTab();
 
   @override
-  Widget build(BuildContext context) {
-    final members = [
-      {'name': 'John flitzgerald', 'role': 'Event Manager', 'image': null},
-      {'name': 'Céline Wolf', 'role': 'Event Manager', 'image': null},
-      {'name': 'Céline Wolf', 'role': 'Event Manager', 'image': null},
-      {'name': 'Céline Wolf', 'role': 'Event Manager', 'image': null},
-      {'name': 'Céline Wolf', 'role': 'Event Manager', 'image': null},
-      {'name': 'Céline Wolf', 'role': 'Event Manager', 'image': null},
-    ];
-    return ListView.separated(
-      itemCount: members.length,
-      separatorBuilder: (_, __) => const Divider(),
-      itemBuilder: (context, index) {
-        final member = members[index];
-        return Column(
-          children: [
-            Container(
-              child: ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: member['image'] == null
-                      ? null
-                      : NetworkImage(member['image']!),
-                  child:
-                      member['image'] == null ? const Icon(Icons.person) : null,
-                ),
-                title: Text(member['name']!),
-                subtitle: Text(member['role']!),
-                trailing: const Icon(Icons.chat_bubble_outline),
-                onTap: () {},
-              ),
-            ),
-          ],
+  Widget build(BuildContext context, WidgetRef ref) {
+    final membersAsync = ref.watch(getAllProgramMembersProvider());
+    return membersAsync.when(
+      data: (members) {
+        if (members.isEmpty) {
+          return const Center(child: Text('No members found.'));
+        }
+        return ListView.separated(
+          itemCount: members.length,
+          separatorBuilder: (_, __) => const Divider(),
+          itemBuilder: (context, index) {
+            final member = members[index];
+            return ListTile(
+              leading: const CircleAvatar(child: Icon(Icons.person)),
+              title: Text(member.memberId),
+              subtitle: Text(member.membershipStatus),
+              trailing: const Icon(Icons.chat_bubble_outline),
+              onTap: () {},
+            );
+          },
         );
       },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, st) => const Center(child: Text('Failed to load members.')),
     );
   }
 }

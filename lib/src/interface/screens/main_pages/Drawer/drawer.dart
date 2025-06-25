@@ -107,7 +107,7 @@ Widget customDrawer({required UserModel user, required BuildContext context}) {
               children: [
                 const SizedBox(height: 8),
                 _buildDrawerItem(
-                  icon: 'assets/svg/icons/card.svg',
+                  icon: 'assets/svg/icons/financial_logo.svg',
                   label: 'Financial Program',
                   onTap: () {
                     if (user.isFinanceProgramMember != null) {
@@ -119,20 +119,21 @@ Widget customDrawer({required UserModel user, required BuildContext context}) {
                           ),
                         );
                       } else {
-                                   Navigator.push(
+                        Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const FinancialAssistancePage(),
+                            builder: (context) =>
+                                const FinancialAssistancePage(),
                           ),
                         );
                       }
-                    }else{
-                                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const FinancialAssistancePage(),
-                          ),
-                        );
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const FinancialAssistancePage(),
+                        ),
+                      );
                     }
                   },
                 ),
@@ -196,7 +197,9 @@ Widget customDrawer({required UserModel user, required BuildContext context}) {
                     await SecureStorage.delete('token');
                     await SecureStorage.delete('id');
                     navigationService.pushNamedAndRemoveUntil('PhoneNumber');
-                    await editUser({"fcm": "",},id);
+                    await editUser({
+                      "fcm": "",
+                    }, id);
                   },
                 ),
                 const SizedBox(height: 8),

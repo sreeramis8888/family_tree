@@ -1,7 +1,7 @@
 import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/data/constants/style_constants.dart';
 import 'package:familytree/src/interface/components/Buttons/primary_button.dart';
-import 'package:familytree/src/interface/screens/main_pages/menuPages/financial_program/financial_program_page.dart';
+import 'package:familytree/src/interface/screens/main_pages/menuPages/financial_program/financial_program_join_payment.dart';
 import 'package:flutter/material.dart';
 
 class FinancialAssistancePage extends StatelessWidget {
@@ -184,7 +184,7 @@ class FinancialAssistancePage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const FinancialProgramPage(),
+                            builder: (context) => const FinancialProgramJoinPaymentPage(),
                           ),
                         );
                       },
