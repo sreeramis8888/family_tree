@@ -1,6 +1,6 @@
 import 'dart:developer';
 import 'package:familytree/src/data/api_routes/analytics_api/analytics_api.dart';
-import 'package:familytree/src/data/api_routes/business_api/business_api.dart';
+import 'package:familytree/src/data/api_routes/requirements_api/requirements_api.dart';
 import 'package:familytree/src/data/models/analytics_model.dart';
 import 'package:familytree/src/data/models/business_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

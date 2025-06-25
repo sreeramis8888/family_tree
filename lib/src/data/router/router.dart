@@ -1,4 +1,6 @@
 
+import 'package:familytree/src/interface/screens/main_pages/menuPages/financial_program/program_join_onboarding_page.dart';
+import 'package:familytree/src/interface/screens/main_pages/menuPages/financial_program/program_join_request.dart';
 import 'package:flutter/material.dart';
 import 'package:familytree/src/data/models/chat_model.dart';
 import 'package:familytree/src/data/models/events_model.dart';
@@ -19,7 +21,7 @@ import 'package:familytree/src/interface/screens/main_pages/menuPages/change_num
 import 'package:familytree/src/interface/screens/main_pages/menuPages/levels/states.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/my_businesses.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/my_enquiries.dart';
-import 'package:familytree/src/interface/screens/main_pages/menuPages/my_events.dart';
+import 'package:familytree/src/interface/screens/main_pages/menuPages/event/my_events.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/my_products.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/privacy_policy.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/request_nfc.dart';
@@ -83,6 +85,8 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
               ));
     case 'EditUser':
       return MaterialPageRoute(builder: (context) => EditUser());
+    case 'FinancialAssistancePage':
+      return MaterialPageRoute(builder: (context) => FinancialAssistancePage());
     case 'IndividualPage':
       final args = settings?.arguments as Map<String, dynamic>?;
       Participant sender = args?['sender'];
@@ -95,6 +99,8 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
               ));
     case 'ChangeNumber':
       return MaterialPageRoute(builder: (context) => ChangeNumberPage());
+    case 'FinancialProgramOnboarding':
+      return MaterialPageRoute(builder: (context) => ProgramJoinOnboardingPage());
     case 'NotificationPage':
       return MaterialPageRoute(builder: (context) => NotificationPage());
     case 'AboutPage':

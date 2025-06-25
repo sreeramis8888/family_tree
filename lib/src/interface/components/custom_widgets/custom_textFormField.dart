@@ -98,7 +98,7 @@ class CustomTextFormField extends StatelessWidget {
                 children: [
                   Text(
                     title ?? '',
-                    style: kBodyTitleR,
+                    style: kSmallTitleM,
                   ),
                 ],
               ),
@@ -172,7 +172,7 @@ class CustomTextFormField extends StatelessWidget {
               validator: validator,
               decoration: InputDecoration(
                 errorMaxLines: 2,
-                hintStyle: TextStyle(color: Color(0xFF979797)),
+                hintStyle: TextStyle(color: Color(0xFF979797), fontSize: 14),
                 hintText: labelText,
                 labelStyle: const TextStyle(color: Colors.grey),
                 floatingLabelBehavior: FloatingLabelBehavior.never,

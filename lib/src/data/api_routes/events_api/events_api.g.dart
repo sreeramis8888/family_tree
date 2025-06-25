@@ -23,7 +23,7 @@ final fetchEventsProvider = AutoDisposeFutureProvider<List<Event>>.internal(
 // ignore: unused_element
 typedef FetchEventsRef = AutoDisposeFutureProviderRef<List<Event>>;
 String _$fetchEventAttendanceHash() =>
-    r'c3d8d19f68fc8dc9fb804faa874624e88b3c2f0d';
+    r'397e3f49d647ff82387140ee04796e804c3cecf1';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -179,7 +179,7 @@ class _FetchEventAttendanceProviderElement
   String get eventId => (origin as FetchEventAttendanceProvider).eventId;
 }
 
-String _$fetchMyEventsHash() => r'61d68719db492c84b95f14764f17582fac8d372b';
+String _$fetchMyEventsHash() => r'd6a5700f499a5609986e5681987070f42dfa2cf1';
 
 /// See also [fetchMyEvents].
 @ProviderFor(fetchMyEvents)

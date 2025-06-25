@@ -110,7 +110,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           String tempImagePath =
               await saveUint8ListToFile(_profileImage!, 'profile.png');
 
-           profilePictureUrl = await imageUpload(tempImagePath);
+          profilePictureUrl = await imageUpload(tempImagePath);
         }
         Map<String, dynamic> formData = {
           "fullName": _nameController.text,
@@ -119,7 +119,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           "isAlive": _status == 'Alive',
           "familyId": _family,
           "phone": phone,
-          if (profilePictureUrl!=null) "image": profilePictureUrl,
+          if (profilePictureUrl != null) "image": profilePictureUrl,
           "relationships": _relations
               .map((rel) => {
                     "personId": rel['member'],
@@ -313,7 +313,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   );
                 },
               ),
-              const SizedBox(height: 16),
+              if (_family != null) const SizedBox(height: 16),
               if (_family != null)
                 Text('Link to Family Member 1 *',
                     style: TextStyle(fontWeight: FontWeight.bold)),
@@ -351,22 +351,24 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     );
                   },
                 ),
-              const SizedBox(height: 16),
-              Text('Relationship *',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
-              SelectionDropDown(
-                label: null,
-                hintText: 'Select Relationship',
-                value: _relationship,
-                items: _relationships
-                    .map((r) => DropdownMenuItem(
-                        value: r, child: Text(r.toUpperCase())))
-                    .toList(),
-                onChanged: (val) => setState(() => _relationship = val),
-                validator: (val) => val == null ? 'Required' : null,
-              ),
-              const SizedBox(height: 8),
+              if (_family != null) const SizedBox(height: 16),
+              if (_family != null)
+                Text('Relationship *',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+              if (_family != null) const SizedBox(height: 16),
+              if (_family != null)
+                SelectionDropDown(
+                  label: null,
+                  hintText: 'Select Relationship',
+                  value: _relationship,
+                  items: _relationships
+                      .map((r) => DropdownMenuItem(
+                          value: r, child: Text(r.toUpperCase())))
+                      .toList(),
+                  onChanged: (val) => setState(() => _relationship = val),
+                  validator: (val) => val == null ? 'Required' : null,
+                ),
+              if (_family != null) const SizedBox(height: 8),
               TextButton(
                 onPressed: _addRelation,
                 child: Text('+ Add Relation',

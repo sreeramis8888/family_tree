@@ -6,13 +6,13 @@ import 'package:http/http.dart' as http;
 import 'package:familytree/src/data/globals.dart';
 import 'package:familytree/src/data/models/business_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-part 'business_api.g.dart';
+part 'requirements_api.g.dart';
 
 @riverpod
 Future<List<Business>> fetchBusiness(FetchBusinessRef ref,
     {int pageNo = 1, int limit = 10}) async {
   final response = await http.get(
-    Uri.parse('$baseUrl/feeds/list?pageNo=$pageNo&limit=$limit'),
+    Uri.parse('$baseUrl/requirements?pageNo=$pageNo&limit=$limit'),
     headers: {
       "Content-Type": "application/json",
       // "Authorization": "Bearer $token"
@@ -20,7 +20,7 @@ Future<List<Business>> fetchBusiness(FetchBusinessRef ref,
   );
   log(
       name: "Requesting Feeds:",
-      '$baseUrl/feeds/list?pageNo=$pageNo&limit=$limit');
+      '$baseUrl/requirements/list?pageNo=$pageNo&limit=$limit');
   if (response.statusCode == 200) {
     final data = json.decode(response.body);
     print(response.body);
@@ -36,7 +36,7 @@ Future<List<Business>> fetchBusiness(FetchBusinessRef ref,
 
 @riverpod
 Future<List<Business>> fetchMyBusinesses(Ref ref) async {
-  final url = Uri.parse('$baseUrl/feeds/my-feeds');
+  final url = Uri.parse('$baseUrl/requirements/my/requirements');
   print('Requesting URL: $url');
   final response = await http.get(
     url,
@@ -65,7 +65,7 @@ Future<List<Business>> fetchMyBusinesses(Ref ref) async {
 
 Future<void> uploadBusiness(
     {required String? media, required String content}) async {
-  final url = Uri.parse('$baseUrl/feeds');
+  final url = Uri.parse('$baseUrl/requirements');
 
   final headers = {
     'accept': '*/*',
@@ -98,7 +98,7 @@ Future<void> uploadBusiness(
 
 Future<void> deletePost(String postId, context) async {
   SnackbarService snackbarService = SnackbarService();
-  final url = Uri.parse('$baseUrl/feeds/single/$postId');
+  final url = Uri.parse('$baseUrl/requirements/$postId');
   print('requesting url:$url');
   final response = await http.delete(
     url,

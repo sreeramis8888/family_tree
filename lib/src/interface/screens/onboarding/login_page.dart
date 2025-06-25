@@ -20,7 +20,7 @@ import 'package:familytree/src/interface/components/Buttons/primary_button.dart'
 import 'package:familytree/src/interface/components/loading_indicator/loading_indicator.dart';
 import 'package:familytree/src/interface/screens/main_page.dart';
 import 'package:familytree/src/interface/screens/main_pages/profile/editUser.dart';
-import 'package:familytree/src/interface/screens/main_pages/eula_agreement_screen.dart';
+import 'package:familytree/src/interface/screens/onboarding/eula_agreement_screen.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
 import 'package:flutter/material.dart';

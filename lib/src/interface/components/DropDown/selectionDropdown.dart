@@ -1,3 +1,4 @@
+import 'package:familytree/src/data/constants/style_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:flutter/material.dart';
@@ -75,14 +76,7 @@ class _SelectionDropDownState extends State<SelectionDropDown>
               if (widget.label != null)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
-                  child: Text(
-                    widget.label ?? "",
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      color: Color(0xFF2D3748),
-                    ),
-                  ),
+                  child: Text(widget.label ?? "", style: kSmallTitleM),
                 ),
               DropdownButtonFormField<String>(
                 hint: Text(

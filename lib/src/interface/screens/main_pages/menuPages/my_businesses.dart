@@ -4,7 +4,7 @@ import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:familytree/src/data/api_routes/business_api/business_api.dart';
+import 'package:familytree/src/data/api_routes/requirements_api/requirements_api.dart';
 
 import 'package:familytree/src/data/globals.dart';
 import 'package:familytree/src/interface/components/loading_indicator/loading_indicator.dart';

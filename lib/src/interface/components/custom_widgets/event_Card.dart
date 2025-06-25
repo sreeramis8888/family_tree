@@ -1,5 +1,6 @@
 import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/data/constants/style_constants.dart';
+import 'package:familytree/src/data/globals.dart';
 import 'package:familytree/src/data/services/navgitor_service.dart';
 import 'package:familytree/src/interface/components/Buttons/primary_button.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,8 @@ Widget eventWidget({
       formattedDate = 'Invalid Date';
     }
   }
-
+  bool isRegistered = false;
+  if (event.rsvp != null) isRegistered = event.rsvp!.contains(id);
   return Container(
     margin: const EdgeInsets.symmetric(vertical: 10),
     decoration: BoxDecoration(
@@ -106,7 +108,9 @@ Widget eventWidget({
                 children: [
                   Expanded(
                       child: customButton(
-                    label: 'Register Now',
+                    buttonColor: isRegistered ? kGreen : kPrimaryColor,
+                    sideColor: isRegistered ? kGreen : kPrimaryColor,
+                    label: isRegistered ? 'REGRISTERED' : 'Register Now',
                     onPressed: () {
                       NavigationService navigationService = NavigationService();
                       navigationService.pushNamed('ViewMoreEvent',

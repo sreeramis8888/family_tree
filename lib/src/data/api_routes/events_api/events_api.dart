@@ -40,7 +40,7 @@ Future<List<Event>> fetchEvents(Ref ref) async {
 }
 
 Future<Event> fetchEventById(id) async {
-  final url = Uri.parse('$baseUrl/event/single/$id');
+  final url = Uri.parse('$baseUrl/events/single/$id');
   print('Requesting URL: $url');
   final response = await http.get(
     url,
@@ -67,7 +67,7 @@ Future<Event> fetchEventById(id) async {
 Future<AttendanceUserListModel> fetchEventAttendance(
     FetchEventAttendanceRef ref,
     {required String eventId}) async {
-  final url = Uri.parse('$baseUrl/event/attend/$eventId');
+  final url = Uri.parse('$baseUrl/events/attend/$eventId');
   print('Requesting URL: $url');
   final response = await http.get(
     url,
@@ -90,7 +90,7 @@ Future<AttendanceUserListModel> fetchEventAttendance(
 
 @riverpod
 Future<List<Event>> fetchMyEvents(FetchMyEventsRef ref) async {
-  final url = Uri.parse('$baseUrl/event/reg-events');
+  final url = Uri.parse('$baseUrl/events/registered-events');
   print('Requesting URL: $url');
   final response = await http.get(
     url,
@@ -99,7 +99,6 @@ Future<List<Event>> fetchMyEvents(FetchMyEventsRef ref) async {
       "Authorization": "Bearer $token"
     },
   );
-  print('hello');
   print(json.decode(response.body)['status']);
   if (response.statusCode == 200) {
     final List<dynamic> data = json.decode(response.body)['data'];
@@ -109,7 +108,7 @@ Future<List<Event>> fetchMyEvents(FetchMyEventsRef ref) async {
     for (var item in data) {
       events.add(Event.fromJson(item));
     }
-    print(events);
+    log(events.toString());
     return events;
   } else {
     print(json.decode(response.body)['message']);
@@ -119,7 +118,7 @@ Future<List<Event>> fetchMyEvents(FetchMyEventsRef ref) async {
 }
 
 Future<void> markEventAsRSVP(String eventId) async {
-  final String url = '$baseUrl/event/single/$eventId';
+  final String url = '$baseUrl/events/$eventId';
 
   try {
     final response = await http.patch(
@@ -150,7 +149,7 @@ Future<AttendanceUserModel?> markAttendanceEvent({
   required String userId,
 }) async {
   SnackbarService snackbarService = SnackbarService();
-  final String url = '$baseUrl/event/attend/$eventId';
+  final String url = '$baseUrl/events/attend/$eventId';
   final Map<String, String> headers = {
     'accept': 'application/json',
     'Authorization': 'Bearer $token',

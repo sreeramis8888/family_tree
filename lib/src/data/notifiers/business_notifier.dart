@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:familytree/src/data/models/business_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../api_routes/business_api/business_api.dart';
+import '../api_routes/requirements_api/requirements_api.dart';
 part 'business_notifier.g.dart';
 
 @riverpod

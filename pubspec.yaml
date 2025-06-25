@@ -98,7 +98,6 @@ flutter:
     - assets/svg/icons/
     - assets/svg/images/
     - assets/pngs/
-    - assets/jpgs/
     - .env
 
 flutter_launcher_icons:

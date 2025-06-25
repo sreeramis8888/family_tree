@@ -3,7 +3,7 @@ import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/data/services/navgitor_service.dart';
 import 'package:familytree/src/data/utils/secure_storage.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/terms.dart';
-import 'package:familytree/src/interface/screens/main_pages/profile/editUser.dart';
+
 
 class EulaAgreementScreen extends StatelessWidget {
   const EulaAgreementScreen({super.key});
@@ -28,7 +28,7 @@ class EulaAgreementScreen extends StatelessWidget {
                       await SecureStorage.write('eula_agreed', 'true');
 
                       navigationService
-                          .pushNamedReplacement('MainPage');
+                          .pushNamedReplacement('FinancialProgramOnboarding');
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: kPrimaryColor,
