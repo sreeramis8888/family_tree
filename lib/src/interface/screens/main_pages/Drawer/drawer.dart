@@ -1,6 +1,10 @@
+import 'dart:developer';
+
+import 'package:familytree/src/data/api_routes/finance_api/finance_api.dart';
 import 'package:familytree/src/data/globals.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/financial_program/program_join_request.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:familytree/src/data/api_routes/user_api/user_data/edit_user.dart';
 import 'package:familytree/src/data/constants/color_constants.dart';
@@ -15,7 +19,10 @@ import 'package:familytree/src/interface/screens/main_pages/menuPages/levels/zon
 import 'package:familytree/src/interface/screens/web_view_screen.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/financial_program/financial_program_page.dart';
 
-Widget customDrawer({required UserModel user, required BuildContext context}) {
+Widget customDrawer(
+    {required UserModel user,
+    required BuildContext context,
+    required WidgetRef ref}) {
   NavigationService navigationService = NavigationService();
   return Drawer(
     child: Column(
@@ -109,9 +116,12 @@ Widget customDrawer({required UserModel user, required BuildContext context}) {
                 _buildDrawerItem(
                   icon: 'assets/svg/icons/financial_logo.svg',
                   label: 'Financial Program',
-                  onTap: () {
-                    if (user.isFinanceProgramMember != null) {
-                      if (user.isFinanceProgramMember ?? true) {
+                  onTap: () async {
+                    try {
+                      final membershipDetails = await ref
+                          .read(getProgramMemberByIdProvider(id).future);
+
+                      if (membershipDetails != null) {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -127,7 +137,11 @@ Widget customDrawer({required UserModel user, required BuildContext context}) {
                           ),
                         );
                       }
-                    } else {
+                    } catch (e, stackTrace) {
+                      log('❌ Error fetching membership: $e');
+                      log('Stack trace:\n$stackTrace');
+
+                      // Optional: Navigate to fallback or show error
                       Navigator.push(
                         context,
                         MaterialPageRoute(

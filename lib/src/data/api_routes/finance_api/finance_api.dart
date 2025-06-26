@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:familytree/src/data/models/finance_model.dart';
+import 'package:familytree/src/data/models/transaction_model.dart';
 part 'finance_api.g.dart';
 
 class FinanceApiService {
@@ -33,14 +34,42 @@ class FinanceApiService {
   }
 
   static Future<FinancialAssistance?> getProgramMemberById(String id) async {
-    final url = Uri.parse('$_baseUrl/finance/$id');
-    final response = await http.get(url, headers: _headers());
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      return FinancialAssistance.fromJson(data['data']['member']);
-    } else {
-      final data = json.decode(response.body);
-      log(data);
+    final url = Uri.parse('$_baseUrl/$id');
+    log('GET request to: $url');
+
+    try {
+      final response = await http.get(url, headers: _headers());
+
+      log('Response status: ${response.statusCode}');
+      log('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final memberJson = data['data']?['member'];
+
+        if (memberJson == null) {
+          log('❗ "member" key is missing or null in response');
+          return null;
+        }
+
+        try {
+          final member = FinancialAssistance.fromJson(memberJson);
+          log('✅ Successfully parsed FinancialAssistance');
+          return member;
+        } catch (e, stackTrace) {
+          log('❌ Error parsing FinancialAssistance.fromJson: $e');
+          log('Stack trace:\n$stackTrace');
+          log('Raw member JSON: $memberJson');
+          return null;
+        }
+      } else {
+        final errorData = json.decode(response.body);
+        log('❌ Error response [${response.statusCode}]: $errorData');
+        return null;
+      }
+    } catch (e, stackTrace) {
+      log('❌ Exception during HTTP call: $e');
+      log('Stack trace:\n$stackTrace');
       return null;
     }
   }
@@ -48,19 +77,12 @@ class FinanceApiService {
   static Future<List<FinancialAssistance>> getAllProgramMembers({
     int page = 1,
     int limit = 20,
-    String? membershipStatus,
-    String sortBy = 'createdAt',
-    String sortOrder = 'desc',
   }) async {
     final queryParams = {
       'page': page.toString(),
       'limit': limit.toString(),
-      'sortBy': sortBy,
-      'sortOrder': sortOrder,
-      if (membershipStatus != null) 'membershipStatus': membershipStatus,
     };
-    final uri =
-        Uri.parse('$_baseUrl/finance').replace(queryParameters: queryParams);
+    final uri = Uri.parse('$_baseUrl').replace(queryParameters: queryParams);
     final response = await http.get(uri, headers: _headers());
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -93,6 +115,66 @@ class FinanceApiService {
       return false;
     }
   }
+
+  static Future<List<ProgramMember>> getAllFlatProgramMembers({
+    int page = 1,
+    int limit = 20,
+  }) async {
+    final queryParams = {
+      'page': page.toString(),
+      'limit': limit.toString(),
+    };
+    final uri = Uri.parse('$_baseUrl').replace(queryParameters: queryParams);
+    final response = await http.get(uri, headers: _headers());
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final List members = data['data'] as List;
+      return members.map((e) => ProgramMember.fromJson(e)).toList();
+    } else {
+      final data = json.decode(response.body);
+      log(data);
+      return [];
+    }
+  }
+
+  static Future<List<TransactionModel>> getAllTransactions({
+    int page = 1,
+    int limit = 20,
+    String? search,
+    String? method,
+    String? type,
+    String? personId,
+    String? startDate,
+    String? endDate,
+    double? minAmount,
+    double? maxAmount,
+    String sortBy = 'date',
+    String sortOrder = 'desc',
+  }) async {
+    final queryParams = {
+      'page': page.toString(),
+      'limit': limit.toString(),
+      if (search != null) 'search': search,
+      if (method != null) 'method': method,
+      if (type != null) 'type': type,
+ 'personId': id,
+      if (startDate != null) 'startDate': startDate,
+      if (endDate != null) 'endDate': endDate,
+      if (minAmount != null) 'minAmount': minAmount.toString(),
+      if (maxAmount != null) 'maxAmount': maxAmount.toString(),
+      'sortBy': sortBy,
+      'sortOrder': sortOrder,
+    };
+    final uri = Uri.parse('$baseUrl/transactions').replace(queryParameters: queryParams);
+    final response = await http.get(uri, headers: _headers());
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final List txs = data['data']['transactions'] as List;
+      return txs.map((e) => TransactionModel.fromJson(e)).toList();
+    } else {
+      throw Exception('Failed to load transactions');
+    }
+  }
 }
 
 @riverpod
@@ -105,21 +187,16 @@ Future<FinancialAssistance?> getProgramMemberById(Ref ref, String id) {
   return FinanceApiService.getProgramMemberById(id);
 }
 
+
 @riverpod
-Future<List<FinancialAssistance>> getAllProgramMembers(
+Future<List<ProgramMember>> getAllFlatProgramMembers(
   Ref ref, {
   int page = 1,
   int limit = 20,
-  String? membershipStatus,
-  String sortBy = 'createdAt',
-  String sortOrder = 'desc',
 }) {
-  return FinanceApiService.getAllProgramMembers(
+  return FinanceApiService.getAllFlatProgramMembers(
     page: page,
     limit: limit,
-    membershipStatus: membershipStatus,
-    sortBy: sortBy,
-    sortOrder: sortOrder,
   );
 }
 
@@ -134,5 +211,39 @@ Future<bool> joinProgram(
     memberId: memberId,
     membershipStatus: membershipStatus,
     amount: amount,
+  );
+}
+
+
+@riverpod
+Future<List<TransactionModel>> getAllTransactions(
+  Ref ref, {
+    int page = 1,
+    int limit = 20,
+    String? search,
+    String? method,
+    String? type,
+    String? personId,
+    String? startDate,
+    String? endDate,
+    double? minAmount,
+    double? maxAmount,
+    String sortBy = 'date',
+    String sortOrder = 'desc',
+  }
+) {
+  return FinanceApiService.getAllTransactions(
+    page: page,
+    limit: limit,
+    search: search,
+    method: method,
+    type: type,
+    personId: personId,
+    startDate: startDate,
+    endDate: endDate,
+    minAmount: minAmount,
+    maxAmount: maxAmount,
+    sortBy: sortBy,
+    sortOrder: sortOrder,
   );
 }

@@ -27,7 +27,7 @@ class UserModel {
   final double? receivedContributions;
   final double? fixedWalletAmount;
   final bool? needsRechargeReminder;
-  final bool? isFinanceProgramMember;
+
 
   final bool? isAlive;
   final String? status;
@@ -63,7 +63,7 @@ class UserModel {
     this.receivedContributions,
     this.fixedWalletAmount,
     this.needsRechargeReminder,
-    this.isFinanceProgramMember,
+
     this.isAlive,
     this.status,
     this.isPrivate,
@@ -134,7 +134,7 @@ class UserModel {
       receivedContributions: receivedContributions ?? this.receivedContributions,
       fixedWalletAmount: fixedWalletAmount ?? this.fixedWalletAmount,
       needsRechargeReminder: needsRechargeReminder ?? this.needsRechargeReminder,
-      isFinanceProgramMember: isFinanceProgramMember ?? this.isFinanceProgramMember,
+
       isAlive: isAlive ?? this.isAlive,
       status: status ?? this.status,
       isPrivate: isPrivate ?? this.isPrivate,
@@ -172,7 +172,7 @@ class UserModel {
       receivedContributions: (json['receivedContributions'] as num?)?.toDouble(),
       fixedWalletAmount: (json['fixedWalletAmount'] as num?)?.toDouble(),
       needsRechargeReminder: json['needsRechargeReminder'],
-      isFinanceProgramMember: json['isFinanceProgramMember'],
+
       isAlive: json['isAlive'],
       status: json['status'],
       isPrivate: json['isPrivate'],
@@ -210,7 +210,7 @@ class UserModel {
       'receivedContributions': receivedContributions,
       'fixedWalletAmount': fixedWalletAmount,
       'needsRechargeReminder': needsRechargeReminder,
-      'isFinanceProgramMember': isFinanceProgramMember,
+
       'isAlive': isAlive,
       'status': status,
       'isPrivate': isPrivate,

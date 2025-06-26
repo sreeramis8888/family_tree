@@ -101,7 +101,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           child: SizedBox(
             width: MediaQuery.of(context).size.width, // Full screen
             height: MediaQuery.of(context).size.height,
-            child: customDrawer(user: user, context: context),
+            child: customDrawer(user: user, context: context,ref: ref),
           ),
         );
       },

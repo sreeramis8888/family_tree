@@ -1,7 +1,41 @@
 import 'dart:convert';
 
+class MemberInfo {
+  final String id;
+  final String fullName;
+  final String phone;
+  final double walletBalance;
+  final String? email;
+
+  MemberInfo({
+    required this.id,
+    required this.fullName,
+    required this.phone,
+    required this.walletBalance,
+    this.email,
+  });
+
+  factory MemberInfo.fromJson(Map<String, dynamic> json) {
+    return MemberInfo(
+      id: json['_id'] ?? '',
+      fullName: json['fullName'] ?? '',
+      phone: json['phone'] ?? '',
+      walletBalance: (json['walletBalance'] ?? 0).toDouble(),
+      email: json['email'],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        '_id': id,
+        'fullName': fullName,
+        'phone': phone,
+        'walletBalance': walletBalance,
+        'email': email,
+      };
+}
+
 class FinancialAssistance {
-  final String memberId;
+  final MemberInfo memberId;
   final String membershipStatus;
   final OnDeath? onDeath;
 
@@ -12,16 +46,20 @@ class FinancialAssistance {
   });
 
   factory FinancialAssistance.fromJson(Map<String, dynamic>? json) {
-    if (json == null) return FinancialAssistance(memberId: '', membershipStatus: '', onDeath: null);
+    if (json == null) return FinancialAssistance(
+      memberId: MemberInfo(id: '', fullName: '', phone: '', walletBalance: 0),
+      membershipStatus: '',
+      onDeath: null,
+    );
     return FinancialAssistance(
-      memberId: json['memberId'] ?? '',
+      memberId: json['memberId'] != null ? MemberInfo.fromJson(json['memberId']) : MemberInfo(id: '', fullName: '', phone: '', walletBalance: 0),
       membershipStatus: json['membershipStatus'] ?? '',
       onDeath: json['onDeath'] != null ? OnDeath.fromJson(json['onDeath']) : null,
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'memberId': memberId,
+        'memberId': memberId.toJson(),
         'membershipStatus': membershipStatus,
         'onDeath': onDeath?.toJson(),
       };
@@ -91,4 +129,36 @@ class MinimumBalance {
         'createdAt': createdAt?.toIso8601String(),
         'updatedAt': updatedAt?.toIso8601String(),
       };
+}
+
+class ProgramMember {
+  final String id;
+  final String fullName;
+  final String phone;
+  final String? email;
+  final double walletBalance;
+  final String status;
+  final String? transferStatus;
+
+  ProgramMember({
+    required this.id,
+    required this.fullName,
+    required this.phone,
+    this.email,
+    required this.walletBalance,
+    required this.status,
+    this.transferStatus,
+  });
+
+  factory ProgramMember.fromJson(Map<String, dynamic> json) {
+    return ProgramMember(
+      id: json['_id'] ?? '',
+      fullName: json['fullName'] ?? '',
+      phone: json['phone'] ?? '',
+      email: json['email'],
+      walletBalance: (json['walletBalance'] ?? 0).toDouble(),
+      status: json['status'] ?? '',
+      transferStatus: json['transferStatus'],
+    );
+  }
 } 

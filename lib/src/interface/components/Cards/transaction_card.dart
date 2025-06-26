@@ -2,6 +2,7 @@ import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/data/constants/style_constants.dart';
 import 'package:familytree/src/data/models/transaction_model.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class TransactionCard extends StatelessWidget {
   final TransactionModel transaction;
@@ -15,26 +16,9 @@ class TransactionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color statusColor;
-    String statusText;
 
-    switch (transaction.status.toLowerCase()) {
-      case 'pending':
-        statusColor = Colors.orange.shade100;
-        statusText = 'Pending';
-        break;
-      case 'approved':
-        statusColor = kGreenLight;
-        statusText = 'Approved';
-        break;
-      case 'rejected':
-        statusColor = kRed.withOpacity(0.2);
-        statusText = 'Rejected';
-        break;
-      default:
-        statusColor = kGreyLight;
-        statusText = 'Unknown';
-    }
+
+
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
@@ -54,38 +38,8 @@ class TransactionCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             _buildInfoRow('Type', transaction.type.toUpperCase()),
-            _buildInfoRow('Date & time', transaction.dateTime),
-            _buildInfoRow('Amount paid', '₹${transaction.amountPaid}'),
-            _buildInfoRowWithStatus('Status', statusText, statusColor),
-            if (transaction.status.toLowerCase() == 'rejected' &&
-                transaction.reasonForRejection != null &&
-                transaction.reasonForRejection!.isNotEmpty)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 8),
-                  _buildInfoRow('Reason for rejection', transaction.reasonForRejection!),
-                  if (transaction.description != null && transaction.description!.isNotEmpty)
-                    _buildInfoRow('Description', transaction.description!),
-                  const SizedBox(height: 12),
-                  Center(
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: onReUpload,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: kRed,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: Text('Re Upload', style: kSmallTitleB.copyWith(color: kWhite)),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            _buildInfoRow('Date & time', DateFormat('dd-MM-yyyy').format(transaction.date)),
+            _buildInfoRow('Amount paid', '₹${transaction.amount}'),
           ],
         ),
       ),

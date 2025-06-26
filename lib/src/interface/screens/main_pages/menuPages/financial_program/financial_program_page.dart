@@ -1,18 +1,23 @@
 import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/data/constants/style_constants.dart';
+import 'package:familytree/src/data/globals.dart';
 import 'package:familytree/src/data/models/transaction_model.dart';
 import 'package:familytree/src/interface/components/Buttons/primary_button.dart';
 import 'package:familytree/src/interface/components/custom_widgets/custom_choicechip.dart';
+import 'package:familytree/src/interface/components/loading_indicator/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:familytree/src/data/api_routes/finance_api/finance_api.dart';
+import 'package:familytree/src/data/notifiers/members_notifier.dart';
+import 'package:familytree/src/data/notifiers/transactions_notifier.dart';
 
 class FinancialProgramPage extends ConsumerStatefulWidget {
   const FinancialProgramPage({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<FinancialProgramPage> createState() => _FinancialProgramPageState();
+  ConsumerState<FinancialProgramPage> createState() =>
+      _FinancialProgramPageState();
 }
 
 class _FinancialProgramPageState extends ConsumerState<FinancialProgramPage>
@@ -91,10 +96,10 @@ class _BalanceCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final minBalanceAsync = ref.watch(getMinimumBalanceProvider);
-    return minBalanceAsync.when(
-      data: (minBalance) {
-        final amount = minBalance?.minimumAmount ?? 0;
+    final memberAsync = ref.watch(getProgramMemberByIdProvider(id));
+    return memberAsync.when(
+      data: (member) {
+        final walletBalance = member?.memberId.walletBalance ?? 0.0;
         return Container(
           margin: const EdgeInsets.symmetric(horizontal: 35),
           decoration: BoxDecoration(
@@ -107,18 +112,66 @@ class _BalanceCard extends ConsumerWidget {
               children: [
                 const Text('Current Balance', style: kSmallTitleR),
                 const SizedBox(height: 8),
-                Text('₹${amount.toStringAsFixed(0)}',
+                Text('₹${walletBalance.toStringAsFixed(0)}',
                     style: const TextStyle(
                         fontSize: 36,
                         color: kPrimaryColor,
                         fontWeight: FontWeight.bold)),
                 const SizedBox(height: 16),
                 SizedBox(
-                    width: double.infinity,
-                    child: customButton(
-                      label: '+ Top Up Wallet',
-                      onPressed: () {},
-                    )),
+                  width: double.infinity,
+                  child: customButton(
+                    label: '+ Top Up Wallet',
+                    onPressed: () async {
+                      final amount = await showDialog<double>(
+                        context: context,
+                        builder: (context) {
+                          double? enteredAmount;
+                          return AlertDialog(
+                            title: const Text('Top Up Wallet'),
+                            content: TextField(
+                              keyboardType: TextInputType.numberWithOptions(decimal: true),
+                              decoration: const InputDecoration(hintText: 'Enter amount'),
+                              onChanged: (value) {
+                                enteredAmount = double.tryParse(value);
+                              },
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: const Text('Cancel'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  if (enteredAmount != null && enteredAmount! > 0) {
+                                    Navigator.of(context).pop(enteredAmount);
+                                  }
+                                },
+                                child: const Text('Top Up'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                      if (amount != null && amount > 0) {
+                        final success = await ref.read(joinProgramProvider(
+                          memberId: id,
+                          amount: amount,
+                        ).future);
+                        if (success) {
+                          ref.invalidate(getProgramMemberByIdProvider(id));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Wallet topped up successfully!')),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Failed to top up wallet.')),
+                          );
+                        }
+                      }
+                    },
+                  ),
+                ),
               ],
             ),
           ),
@@ -185,10 +238,7 @@ class _MembershipTab extends ConsumerWidget {
   const _MembershipTab();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // TODO: Replace with actual user id
-    final String userId = 'CURRENT_USER_ID';
-    final memberAsync = ref.watch(getProgramMemberByIdProvider(userId));
+  Widget build(BuildContext context, WidgetRef ref) {    final memberAsync = ref.watch(getProgramMemberByIdProvider(id));
     return memberAsync.when(
       data: (member) {
         if (member == null) {
@@ -214,13 +264,17 @@ class _MembershipTab extends ConsumerWidget {
                       const Text('Membership status:', style: kSmallTitleM),
                       const Spacer(),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 4),
                         decoration: BoxDecoration(
-                          color: member.membershipStatus == 'Active' ? const Color(0xFF2E7D32) : Colors.grey,
+                          color: member.membershipStatus == 'active'
+                              ? const Color(0xFF2E7D32)
+                              : Colors.grey,
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(member.membershipStatus,
-                            style: const TextStyle(color: Colors.white, fontSize: 13)),
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 13)),
                       ),
                     ],
                   ),
@@ -230,7 +284,8 @@ class _MembershipTab extends ConsumerWidget {
                     children: [
                       const Text('Last renewed on:', style: kSmallTitleM),
                       // TODO: Replace with actual renewal date if available
-                      Text('-', style: kSmallTitleB.copyWith(color: kPrimaryColor)),
+                      Text('-',
+                          style: kSmallTitleB.copyWith(color: kPrimaryColor)),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -239,7 +294,8 @@ class _MembershipTab extends ConsumerWidget {
                     children: [
                       const Text('Next renewal on:', style: kSmallTitleM),
                       // TODO: Replace with actual next renewal date if available
-                      Text('-', style: kSmallTitleM.copyWith(color: kPrimaryColor)),
+                      Text('-',
+                          style: kSmallTitleM.copyWith(color: kPrimaryColor)),
                     ],
                   ),
                 ],
@@ -249,71 +305,76 @@ class _MembershipTab extends ConsumerWidget {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, st) => const Center(child: Text('Failed to load membership info.')),
+      error: (e, st) =>
+          const Center(child: Text('Failed to load membership info.')),
     );
   }
 }
 
-class _TransactionsTab extends StatefulWidget {
+class _TransactionsTab extends ConsumerStatefulWidget {
   const _TransactionsTab();
 
   @override
-  State<_TransactionsTab> createState() => _TransactionsTabState();
+  ConsumerState<_TransactionsTab> createState() => _TransactionsTabState();
 }
 
-class _TransactionsTabState extends State<_TransactionsTab> {
+class _TransactionsTabState extends ConsumerState<_TransactionsTab> {
   String selectedStatus = 'All';
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Row(
-            children: [
-              _buildChoiceChip('All'),
-              _buildChoiceChip('Pending'),
-              _buildChoiceChip('Approved'),
-              _buildChoiceChip('Rejected'),
-            ],
-          ),
-        ),
-        Expanded(
-          child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              _transactionCard(
-                  id: 'VCRU65789900',
-                  category: 'Wallet Recharge',
-                  date: DateTime(2025, 5, 18, 10, 45),
-                  amount: 1500,
-                  status: 'Pending'),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
+    final transactions = ref.watch(transactionsNotifierProvider);
+    final txNotifier = ref.read(transactionsNotifierProvider.notifier);
+    final isLoading = txNotifier.isLoading;
+    final hasMore = txNotifier.hasMore;
 
-  Widget _buildChoiceChip(String label) {
-    return CustomChoiceChip(
-      label: label,
-      selected: selectedStatus == label,
-      onTap: () {
-        setState(() {
-          selectedStatus = label;
-        });
+    return NotificationListener<ScrollNotification>(
+      onNotification: (scrollInfo) {
+        if (!isLoading && hasMore &&
+            scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+          txNotifier.fetchMoreTransactions();
+        }
+        return false;
       },
+      child: RefreshIndicator(
+        onRefresh: () async => await txNotifier.refresh(),
+        child: transactions.isEmpty && isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : transactions.isEmpty
+                ? const Center(child: Text('No transactions found.'))
+                : ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: transactions.length + (hasMore ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      if (index == transactions.length) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      }
+                      final tx = transactions[index];
+                      return _transactionCard(
+                        id: tx.transactionId,
+                        category: tx.type,
+                        date: tx.date,
+                        amount: tx.amount,
+                        status: tx.method,
+                      );
+                    },
+                  ),
+      ),
     );
   }
 
-  Widget _transactionCard( {required String id,required String category,required DateTime date,required int amount, required String status}) {
+  Widget _transactionCard(
+      {required String id,
+      required String category,
+      required DateTime date,
+      required double amount,
+      required String status}) {
     String formattedDate = '';
     if (date != null) {
-      formattedDate =
-          DateFormat('d\'th\' MMMM y, h:mm a').format(date!);
+      formattedDate = DateFormat('d\'th\' MMMM y, h:mm a').format(date!);
     }
 
     Color statusColor = status == 'approved'
@@ -362,7 +423,7 @@ class _TransactionsTabState extends State<_TransactionsTab> {
                       border: Border.all(color: statusColor),
                     ),
                     child: Text(
-                      status?.toUpperCase() ?? '',
+                      status.toUpperCase() ,
                       style: TextStyle(
                         color: statusColor,
                         fontWeight: FontWeight.bold,
@@ -373,10 +434,9 @@ class _TransactionsTabState extends State<_TransactionsTab> {
               ),
               const SizedBox(height: 8),
               _detailRow('Type', category ?? ''),
-              if (date != null)
-                _detailRow('Date & time', formattedDate),
-              _detailRow('Amount paid',
-                  '${amount ?? ''}'), // Placeholder for now
+              if (date != null) _detailRow('Date & time', formattedDate),
+              _detailRow(
+                  'Amount paid', '${amount ?? ''}'), // Placeholder for now
               // if (transaction.status == 'rejected')
               //   Column(
               //     crossAxisAlignment: CrossAxisAlignment.start,
@@ -450,34 +510,80 @@ class _TransactionsTabState extends State<_TransactionsTab> {
   }
 }
 
-class _MembersTab extends ConsumerWidget {
+class _MembersTab extends ConsumerStatefulWidget {
   const _MembersTab();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final membersAsync = ref.watch(getAllProgramMembersProvider());
-    return membersAsync.when(
-      data: (members) {
-        if (members.isEmpty) {
-          return const Center(child: Text('No members found.'));
-        }
-        return ListView.separated(
-          itemCount: members.length,
-          separatorBuilder: (_, __) => const Divider(),
-          itemBuilder: (context, index) {
-            final member = members[index];
-            return ListTile(
-              leading: const CircleAvatar(child: Icon(Icons.person)),
-              title: Text(member.memberId),
-              subtitle: Text(member.membershipStatus),
-              trailing: const Icon(Icons.chat_bubble_outline),
-              onTap: () {},
+  ConsumerState<_MembersTab> createState() => _MembersTabState();
+}
+
+class _MembersTabState extends ConsumerState<_MembersTab> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+    // Optionally, fetch initial members if not already loaded
+    if (ref.read(membersNotifierProvider).isEmpty) {
+      ref.read(membersNotifierProvider.notifier).fetchMoreMembers();
+    }
+  }
+
+  void _onScroll() {
+    final notifier = ref.read(membersNotifierProvider.notifier);
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 100) {
+      if (!notifier.isLoading && notifier.hasMore) {
+        notifier.fetchMoreMembers();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final members = ref.watch(membersNotifierProvider);
+    final membersNotifier = ref.read(membersNotifierProvider.notifier);
+    final isLoading = membersNotifier.isLoading;
+    final hasMore = membersNotifier.hasMore;
+
+    if (members.isEmpty && isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    } else if (members.isEmpty) {
+      return const Center(child: Text('No members found.'));
+    }
+
+    return RefreshIndicator(
+      onRefresh: () async => await membersNotifier.refresh(),
+      child: ListView.separated(
+        controller: _scrollController,
+        itemCount: members.length + (hasMore ? 1 : 0),
+        separatorBuilder: (_, __) => const Divider(),
+        itemBuilder: (context, index) {
+          if (index == members.length) {
+            return const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              child: Center(child: CircularProgressIndicator()),
             );
-          },
-        );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, st) => const Center(child: Text('Failed to load members.')),
+          }
+          final member = members[index];
+          return ListTile(
+            leading: const CircleAvatar(child: Icon(Icons.person)),
+            title: Text(
+              member.fullName,
+              style: kBodyTitleB,
+            ),
+            subtitle: Text(member.status),
+            trailing: const Icon(Icons.chat_bubble_outline),
+            onTap: () {},
+          );
+        },
+      ),
     );
   }
 }
