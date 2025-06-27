@@ -16,7 +16,7 @@ Future<List<UserModel>> fetchActiveUsers(Ref ref,
     String? district,
     List<String>? tags}) async {
   // Construct the base URL
-  Uri url = Uri.parse('$baseUrl/user/list?pageNo=$pageNo&limit=$limit');
+  Uri url = Uri.parse('$baseUrl/people?page=$pageNo&limit=$limit');
 
   // Append query parameter if provided
   Map<String, String> queryParams = {};

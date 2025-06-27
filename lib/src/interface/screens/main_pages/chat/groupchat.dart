@@ -1,125 +1,81 @@
 // import 'package:flutter/material.dart';
 // import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:familytree/src/data/api_routes/group_chat_api/group_api.dart';
-// import 'package:familytree/src/data/constants/color_constants.dart';
-// import 'package:familytree/src/data/globals.dart';
-// import 'package:familytree/src/data/models/chat_model.dart';
-// import 'package:familytree/src/interface/components/loading_indicator/loading_indicator.dart';
-// import 'package:familytree/src/interface/screens/main_pages/chat/groupchatscreen.dart';
+// import 'package:familytree/src/data/api_routes/chat_api/chat_api.dart';
+// import 'package:familytree/src/data/models/chat_conversation_model.dart';
+// import 'package:familytree/src/interface/screens/main_pages/chat/chat_screen.dart';
 
-// class GroupChatPage extends ConsumerStatefulWidget {
-//   GroupChatPage({super.key});
+// class GroupChatPage extends ConsumerWidget {
+//   const GroupChatPage({super.key});
 
 //   @override
-//   ConsumerState<GroupChatPage> createState() => _ChatPageState();
-// }
+//   Widget build(BuildContext context, WidgetRef ref) {
+//     final token = 'YOUR_TOKEN'; // Replace with actual token
+//     final conversationsAsync = ref.watch(fetchChatConversationsProvider(token: token));
 
-// class _ChatPageState extends ConsumerState<GroupChatPage> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Consumer(
-//         builder: (BuildContext context, WidgetRef ref, Widget? child) {
-//       final asyncGroups = ref.watch(getGroupListProvider);
-
-//       return Scaffold(
-//           backgroundColor: kWhite,
-//           body: asyncGroups.when(
-//             data: (groups) {
-//               if (groups.isNotEmpty) {
-//                 return ListView.builder(
-//                   itemCount: groups.length,
-//                   itemBuilder: (context, index) {
-//                     var receiver = Participant(
-//                         id: groups[index].id, name: groups[index].groupName);
-
-//                     var sender = Participant(id: id);
-//                     return ListTile(
-//                       leading: ClipOval(
-//                         child: Container(
-//                           width: 40,
-//                           height: 40,
-//                           color: kPrimaryColor,
-//                           child: Image.network(
-//                             '',
-//                             fit: BoxFit.cover,
-//                             errorBuilder: (context, error, stackTrace) {
-//                               return const Icon(
-//                                 Icons.groups_2,
-//                                 color: kWhite,
-//                               );
-//                             },
-//                           ),
+//     return Scaffold(
+//       backgroundColor: Colors.white,
+//       body: conversationsAsync.when(
+//         loading: () => const Center(child: CircularProgressIndicator()),
+//         error: (error, stack) => Center(child: Text('Error: $error')),
+//         data: (chats) {
+//           final groups = chats.where((c) => c.type == 'group').toList();
+//           if (groups.isEmpty) {
+//             return Column(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 Padding(
+//                   padding: const EdgeInsets.all(8.0),
+//                   child: Center(child: Image.asset('assets/pngs/nochat.png')),
+//                 ),
+//                 const Text('No group chat yet!'),
+//               ],
+//             );
+//           }
+//           return ListView.builder(
+//             itemCount: groups.length,
+//             itemBuilder: (context, index) {
+//               final group = groups[index];
+//               final messagesAsync = ref.watch(
+//                 fetchChatMessagesProvider(token: token, conversationId: group.id),
+//               );
+//               return messagesAsync.when(
+//                 loading: () => ListTile(
+//                   leading: CircleAvatar(child: Icon(Icons.groups)),
+//                   title: Text(group.name ?? 'Group'),
+//                   subtitle: const Text('Loading...'),
+//                 ),
+//                 error: (error, stack) => ListTile(
+//                   leading: CircleAvatar(child: Icon(Icons.groups)),
+//                   title: Text(group.name ?? 'Group'),
+//                   subtitle: const Text('Error loading message'),
+//                 ),
+//                 data: (messages) {
+//                   String lastMessageText = '';
+//                   if (messages.isNotEmpty) {
+//                     lastMessageText = messages.last.content ?? '';
+//                     if (lastMessageText.length > 30) {
+//                       lastMessageText = lastMessageText.substring(0, 30) + '...';
+//                     }
+//                   }
+//                   return ListTile(
+//                     leading: CircleAvatar(child: Icon(Icons.groups)),
+//                     title: Text(group.name ?? 'Group'),
+//                     subtitle: Text(lastMessageText),
+//                     onTap: () {
+//                       Navigator.of(context).push(MaterialPageRoute(
+//                         builder: (context) => IndividualPage(
+//                           conversation: group,
+//                           currentUserId: token,
 //                         ),
-//                       ),
-//                       title: Text('${receiver.name ?? ''}'),
-//                       subtitle: Text(
-//                         groups[index].lastMessage != null
-//                             ? (groups[index].lastMessage!.length > 10
-//                                 ? '${groups[index].lastMessage?.substring(0, groups[index].lastMessage!.length.clamp(0, 10))}...'
-//                                 : groups[index].lastMessage!)
-//                             : '',
-//                       ),
-//                       trailing: groups[index].unreadCount != 0 &&
-//                               groups[index].unreadCount != null
-//                           ? SizedBox(
-//                               width: 24,
-//                               height: 24,
-//                               child: Container(
-//                                 padding: EdgeInsets.all(4),
-//                                 decoration: BoxDecoration(
-//                                   color: Colors.red,
-//                                   borderRadius: BorderRadius.circular(12),
-//                                 ),
-//                                 constraints: BoxConstraints(
-//                                   minWidth: 16,
-//                                   minHeight: 16,
-//                                 ),
-//                                 child: Center(
-//                                   child: groups[index].unreadCount != null
-//                                       ? Text(
-//                                           '${groups[index].unreadCount}',
-//                                           style: TextStyle(
-//                                             color: kWhite,
-//                                             fontSize: 12,
-//                                           ),
-//                                           textAlign: TextAlign.center,
-//                                         )
-//                                       : null,
-//                                 ),
-//                               ),
-//                             )
-//                           : const SizedBox.shrink(),
-//                       onTap: () {
-//                         Navigator.of(context).push(MaterialPageRoute(
-//                             builder: (context) => Groupchatscreen(
-//                                   group: receiver,
-//                                   sender: sender,
-//                                 )));
-//                       },
-//                     );
-//                   },
-//                 );
-//               } else {
-//                 return Column(
-//                   mainAxisAlignment: MainAxisAlignment.center,
-//                   children: [
-//                     Padding(
-//                       padding: const EdgeInsets.all(8.0),
-//                       child:
-//                           Center(child: Image.asset('assets/pngs/nochat.png')),
-//                     ),
-//                     Text('No group chat yet!')
-//                   ],
-//                 );
-//               }
-//             },
-//             loading: () => const Center(child: LoadingAnimation()),
-//             error: (error, stackTrace) {
-//               return Center(
-//                 child: Text('No Groups'),
+//                       ));
+//                     },
+//                   );
+//                 },
 //               );
 //             },
-//           ));
-//     });
+//           );
+//         },
+//       ),
+//     );
 //   }
 // }

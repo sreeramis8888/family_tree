@@ -87,10 +87,10 @@ class DeepLinkService {
               final user = await UserService.fetchUserDetails(userId);
               NavigationService.navigatorKey.currentState
                   ?.pushNamed('IndividualPage', arguments: {
-                'sender': Participant(id: id),
-                'receiver': Participant(
+                'sender': ChatUser(id: id),
+                'receiver': ChatUser(
                   id: user.id,
-                  name: user.fullName,
+                  fullName: user.fullName,
                   image: user.image,
                 ),
               });

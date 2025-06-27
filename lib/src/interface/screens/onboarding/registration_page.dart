@@ -42,6 +42,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final List<String> _genders = ['Male', 'Female', 'Other'];
   final List<String> _relationships = ["spouse", "parent", "sibling", "child"];
 
+  bool _isCreatingFamily = false;
+  String? _familyCreationError;
+
   @override
   void initState() {
     super.initState();
@@ -259,18 +262,256 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   final asyncFamilies = ref.watch(fetchAllFamilyProvider);
                   return asyncFamilies.when(
                     data: (families) {
-                      return SelectionDropDown(
-                        label: null,
-                        hintText: 'Select family',
-                        value: _family,
-                        items: families
-                            .map((f) => DropdownMenuItem<String>(
-                                  value: f.id ?? '',
-                                  child: Text(f.name ?? ''),
-                                ))
-                            .toList(),
-                        onChanged: (val) => setState(() => _family = val),
-                        validator: (val) => val == null ? 'Required' : null,
+                      final items = families
+                          .map((f) => DropdownMenuItem<String>(
+                                value: f.id ?? '',
+                                child: Text(f.name ?? ''),
+                              ))
+                          .toList();
+                      items.add(
+                        const DropdownMenuItem<String>(
+                          value: '__add_new__',
+                          child: Text('+ Add new family',
+                              style: TextStyle(fontStyle: FontStyle.italic)),
+                        ),
+                      );
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SelectionDropDown(
+                            label: null,
+                            hintText: 'Select family',
+                            value: _family,
+                            items: items,
+                            onChanged: (val) async {
+                              if (val == '__add_new__') {
+                                final newFamilyName = await showDialog<String>(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (context) {
+                                    String input = '';
+                                    final TextEditingController controller =
+                                        TextEditingController();
+
+                                    return Dialog(
+                                      elevation: 8,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      child: Container(
+                                        width: 400,
+                                        padding: const EdgeInsets.all(24),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            // Header with icon
+                                            Row(
+                                              children: [
+                                                Container(
+                                                  padding:
+                                                      const EdgeInsets.all(8),
+                                                  decoration: BoxDecoration(
+                                                    color: kPrimaryColor
+                                                        .withOpacity(0.1),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8),
+                                                  ),
+                                                  child: Icon(
+                                                    Icons.group_add,
+                                                    color: kPrimaryColor,
+                                                    size: 24,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 12),
+                                                Expanded(
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        'Add New Family',
+                                                        style: TextStyle(
+                                                          fontSize: 20,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          color: kBlack,
+                                                        ),
+                                                      ),
+                                                      const SizedBox(height: 4),
+                                                      Text(
+                                                        'Enter the name for the new family',
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                          color: kGreyDark,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+
+                                            const SizedBox(height: 24),
+
+                                            // Input field
+                                            Text(
+                                              'Family Name',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w500,
+                                                color: kBlack,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                border: Border.all(
+                                                    color: kGreyLight),
+                                                color: kWhite,
+                                              ),
+                                              child: TextField(
+                                                controller: controller,
+                                                autofocus: true,
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: kBlack,
+                                                ),
+                                                decoration: InputDecoration(
+                                                  hintText: 'Enter family name',
+                                                  hintStyle: TextStyle(
+                                                    color: kInputFieldcolor,
+                                                    fontSize: 16,
+                                                  ),
+                                                  border: InputBorder.none,
+                                                  contentPadding:
+                                                      const EdgeInsets
+                                                          .symmetric(
+                                                    horizontal: 16,
+                                                    vertical: 14,
+                                                  ),
+                                                  prefixIcon: Icon(
+                                                    Icons.family_restroom,
+                                                    color: kInputFieldcolor,
+                                                    size: 20,
+                                                  ),
+                                                ),
+                                                onChanged: (v) => input = v,
+                                                textCapitalization:
+                                                    TextCapitalization.words,
+                                              ),
+                                            ),
+
+                                            const SizedBox(height: 32),
+
+                                            // Action buttons
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.of(context)
+                                                          .pop(),
+                                                  style: TextButton.styleFrom(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                      horizontal: 24,
+                                                      vertical: 12,
+                                                    ),
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8),
+                                                    ),
+                                                  ),
+                                                  child: Text(
+                                                    'Cancel',
+                                                    style: TextStyle(
+                                                      color: kGreyDark,
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 12),
+                                                SizedBox(
+                                                  width: 140,
+                                                  child: customButton(
+                                                    label: 'Add Family',
+                                                    onPressed: () {
+                                                      if (input
+                                                          .trim()
+                                                          .isNotEmpty) {
+                                                        Navigator.of(context)
+                                                            .pop(input.trim());
+                                                      }
+                                                    },
+                                                    buttonColor: kPrimaryColor,
+                                                    labelColor: kWhite,
+                                                    fontSize: 16,
+                                                    buttonHeight: 44,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                                if (newFamilyName != null &&
+                                    newFamilyName.isNotEmpty) {
+                                  setState(() {
+                                    _isCreatingFamily = true;
+                                    _familyCreationError = null;
+                                  });
+                                  try {
+                                    final newFamily =
+                                        await FamilyApiService.createFamily(
+                                            newFamilyName);
+                                    setState(() {
+                                      _family = newFamily.id;
+                                      _isCreatingFamily = false;
+                                    });
+                                    // Optionally, refresh the families provider
+                                    ref.invalidate(fetchAllFamilyProvider);
+                                  } catch (e) {
+                                    setState(() {
+                                      _isCreatingFamily = false;
+                                      _familyCreationError =
+                                          'Failed to create family. Please try again.';
+                                    });
+                                  }
+                                }
+                              } else {
+                                setState(() {
+                                  _family = val;
+                                });
+                              }
+                            },
+                            validator: (val) => val == null ? 'Required' : null,
+                          ),
+                          if (_isCreatingFamily)
+                            const Padding(
+                              padding: EdgeInsets.only(top: 8.0),
+                              child: LinearProgressIndicator(),
+                            ),
+                          if (_familyCreationError != null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Text(_familyCreationError!,
+                                  style: const TextStyle(color: Colors.red)),
+                            ),
+                        ],
                       );
                     },
                     loading: () => const Center(child: LoadingAnimation()),
@@ -291,11 +532,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   final asyncFamilies = ref.watch(fetchAllFamilyProvider);
                   return asyncFamilies.when(
                     data: (families) {
+                      final filteredFamilies =
+                          families.where((f) => f.id != _family).toList();
                       return SelectionDropDown(
                         label: null,
                         hintText: 'Select parent family',
                         value: _parentFamily,
-                        items: families
+                        items: filteredFamilies
                             .map((f) => DropdownMenuItem<String>(
                                   value: f.id ?? '',
                                   child: Text(f.name ?? ''),

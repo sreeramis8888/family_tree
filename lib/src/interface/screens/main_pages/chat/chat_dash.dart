@@ -1,14 +1,21 @@
-import 'package:familytree/src/data/constants/color_constants.dart';
+import 'package:familytree/src/data/globals.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:familytree/src/data/api_routes/chat_api/chat_api.dart';
-import 'package:familytree/src/data/globals.dart';
-import 'package:familytree/src/data/models/chat_model.dart';
-import 'package:familytree/src/interface/components/loading_indicator/loading_indicator.dart';
 import 'package:familytree/src/interface/screens/main_pages/chat/chat_screen.dart';
+import 'package:familytree/src/data/models/chat_conversation_model.dart';
+import 'package:familytree/src/data/models/chat_model.dart';
+import 'package:familytree/src/data/services/socket_service.dart';
 
-import 'package:shimmer/shimmer.dart';
+extension ChatConversationUnread on ChatConversation {
+  int get unreadCount => (this as dynamic).unreadCount ?? 0;
+}
+
+bool isOtherParticipant(dynamic userId, String currentUserId) {
+  if (userId is String) return userId != currentUserId;
+  if (userId is ChatUser) return userId.id != currentUserId;
+  return false;
+}
 
 class ChatDash extends ConsumerStatefulWidget {
   ChatDash({super.key});
@@ -18,142 +25,176 @@ class ChatDash extends ConsumerStatefulWidget {
 }
 
 class _ChatDashState extends ConsumerState<ChatDash> {
+  final Map<String, Map<String, String?>> _userPresence = {};
+  late SocketService _socketService;
+
+  @override
+  void initState() {
+    super.initState();
+    _socketService = SocketService();
+    _socketService.onUserStatusUpdate((userId, status, lastSeen) {
+      setState(() {
+        _userPresence[userId] = {'status': status, 'lastSeen': lastSeen};
+      });
+    });
+  }
+
+  String timeAgo(DateTime dateTime) {
+    final now = DateTime.now();
+    final diff = now.difference(dateTime);
+    if (diff.inSeconds < 60) return 'just now';
+    if (diff.inMinutes < 60) return '${diff.inMinutes} min ago';
+    if (diff.inHours < 24) return '${diff.inHours} hr ago';
+    return '${diff.inDays} days ago';
+  }
+
+  String getPresenceText(String userId) {
+    final presence = _userPresence[userId];
+    if (presence == null) return '';
+    if (presence['status'] == 'online') return 'Online';
+    if (presence['lastSeen'] != null && presence['lastSeen']!.isNotEmpty) {
+      final dt = DateTime.tryParse(presence['lastSeen']!);
+      if (dt != null) return 'Last seen ' + timeAgo(dt);
+    }
+    return 'Offline';
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Consumer(
-        builder: (BuildContext context, WidgetRef ref, Widget? child) {
-      final asyncChats = ref.watch(fetchChatThreadProvider);
+    final conversationsAsync = ref.watch(fetchChatConversationsProvider);
 
-      return Scaffold(
-          backgroundColor: kWhite,
-          body: asyncChats.when(
-            data: (chats) {
-              if (chats.isNotEmpty) {
-                return ListView.builder(
-                  itemCount: chats.length,
-                  itemBuilder: (context, index) {
-                    var receiver = chats[index].participants?.firstWhere(
-                          (participant) => participant.id != id,
-                          orElse: () => Participant(),
-                        );
-                    var sender = chats[index].participants?.firstWhere(
-                          (participant) => participant.id == id,
-                          orElse: () => Participant(),
-                        );
-                    return Column(
-                      children: [
-                        ListTile(
-                          leading: ClipOval(
-                            child: Container(
-                              width: 40,
-                              height: 40,
-                              color: const Color.fromARGB(255, 255, 255, 255),
-                              child: Image.network(
-                                loadingBuilder:
-                                    (context, child, loadingProgress) {
-                                  if (loadingProgress == null) {
-                                    return child;
-                                  }
-
-                                  return Container(
-                                    child: Shimmer.fromColors(
-                                      baseColor: Colors.grey[300]!,
-                                      highlightColor: Colors.grey[100]!,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey[300],
-                                          borderRadius:
-                                              BorderRadius.circular(8.0),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                                receiver?.image ?? '',
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return SvgPicture.asset(
-                                      'assets/svg/icons/dummy_person_small.svg');
-                                },
-                              ),
-                            ),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: conversationsAsync.when(  
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(child: Text('Error: $error')),
+        data: (chats) {
+          if (chats.isEmpty) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Center(child: Image.asset('assets/pngs/nochat.png')),
+                ),
+                const Text('No chat yet!'),
+              ],
+            );
+          }
+          return ListView.builder(
+            itemCount: chats.length,
+            itemBuilder: (context, index) {
+              final conversation = chats[index];
+              final messagesAsync = ref.watch(
+                fetchChatMessagesProvider(conversationId: conversation.id??''),
+              );
+              return Column(
+                children: [
+                  messagesAsync.when(
+                    loading: () => ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: (conversation.participants.length == 2 && conversation.participants.firstWhere((p) => isOtherParticipant(p.userId, id), orElse: () => Participant(userId: '', isActive: false))?.isActive == true)
+                            ? Colors.green[100]
+                            : Colors.grey[200],
+                        backgroundImage: conversation.avatar != null && conversation.avatar!.isNotEmpty
+                            ? NetworkImage(conversation.avatar!)
+                            : null,
+                        child: conversation.avatar == null || conversation.avatar!.isEmpty
+                            ? Text(conversation.name != null && conversation.name!.isNotEmpty ? conversation.name![0] : '?')
+                            : null,
+                      ),
+                      title: Text(conversation.name ?? 'Chat'),
+                      subtitle: () {
+                        if (conversation.participants.length > 2) {
+                          final onlineCount = conversation.participants.where((p) => p.isActive == true).length;
+                          return Text('${conversation.participants.length} members, $onlineCount online');
+                        } else {
+                          final other = conversation.participants.firstWhere(
+                            (p) => isOtherParticipant(p.userId, id),
+                            orElse: () => Participant(userId: '', isActive: false),
+                          );
+                          if (other != null && other.isActive == true) {
+                            return const Text('Online', style: TextStyle(color: Colors.green));
+                          } else if (conversation.lastActivity != null) {
+                            return Text('Last seen ' + timeAgo(conversation.lastActivity!));
+                          } else {
+                            return const Text('Offline');
+                          }
+                        }
+                      }(),
+                      trailing: conversation.unreadCount != null && conversation.unreadCount! > 0
+                        ? CircleAvatar(
+                            radius: 10,
+                            backgroundColor: Colors.red,
+                            child: Text('${conversation.unreadCount}', style: const TextStyle(color: Colors.white, fontSize: 12)),
+                          )
+                        : null,
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => IndividualPage(
+                            conversation: conversation,
+                            currentUserId: id,
                           ),
-                          title: Text('${receiver?.name ?? ''}'),
-                          subtitle: Text(
-                            chats[index].lastMessage?.content != null
-                                ? (chats[index].lastMessage!.content!.length >
-                                        10
-                                    ? '${chats[index].lastMessage?.content!.substring(0, chats[index].lastMessage!.content!.length.clamp(0, 10))}...'
-                                    : chats[index].lastMessage!.content!)
-                                : '',
-                          ),
-                          trailing: chats[index].unreadCount?[sender?.id] !=
-                                      0 &&
-                                  chats[index].unreadCount?[sender!.id] != null
-                              ? SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: Container(
-                                    padding: EdgeInsets.all(4),
-                                    decoration: BoxDecoration(
-                                      color: Colors.red,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    constraints: BoxConstraints(
-                                      minWidth: 16,
-                                      minHeight: 16,
-                                    ),
-                                    child: Center(
-                                      child: chats[index]
-                                                  .unreadCount?[sender!.id] !=
-                                              null
-                                          ? Text(
-                                              '${chats[index].unreadCount?[sender!.id]}',
-                                              style: TextStyle(
-                                                color: kWhite,
-                                                fontSize: 12,
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            )
-                                          : null,
-                                    ),
-                                  ),
-                                )
-                              : const SizedBox.shrink(),
-                          onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => IndividualPage(
-                                receiver: receiver!,
-                                sender: sender!,
-                              ),
-                            ));
-                          },
-                        ),
-                        Divider(
-                            thickness: 1,
-                            height: 1,
-                            color: Colors.grey[350]), // Full-width divider line
-                      ],
-                    );
-                  },
-                );
-              } else {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child:
-                          Center(child: Image.asset('assets/pngs/nochat.png')),
+                        ));
+                      },
                     ),
-                    Text('No chat yet!')
-                  ],
-                );
-              }
+                    error: (error, stack) => ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.white,
+                        backgroundImage: conversation.avatar != null && conversation.avatar!.isNotEmpty
+                            ? NetworkImage(conversation.avatar!)
+                            : null,
+                        child: conversation.avatar == null || conversation.avatar!.isEmpty
+                            ? const Icon(Icons.person)
+                            : null,
+                      ),
+                      title: Text(conversation.name ?? 'Chat'),
+                      subtitle: const Text('Error loading message'),
+                      trailing: const SizedBox.shrink(),
+                    ),
+                    data: (messages) {
+                      String lastMessageText = '';
+                      if (messages.isNotEmpty) {
+                        lastMessageText = messages.last.content ?? '';
+                        if (lastMessageText.length > 30) {
+                          lastMessageText = lastMessageText.substring(0, 30) + '...';
+                        }
+                      }
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.white,
+                          backgroundImage: conversation.avatar != null && conversation.avatar!.isNotEmpty
+                              ? NetworkImage(conversation.avatar!)
+                              : null,
+                          child: conversation.avatar == null || conversation.avatar!.isEmpty
+                              ? const Icon(Icons.person)
+                              : null,
+                        ),
+                        title: Text(conversation.name ?? 'Chat'),
+                        subtitle: Text(lastMessageText),
+                        trailing: const SizedBox.shrink(),
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => IndividualPage(
+                              conversation: conversation,
+                              currentUserId: id,
+                            ),
+                          ));
+                        },
+                      );
+                    },
+                  ),
+                  Divider(
+                    thickness: 1,
+                    height: 1,
+                    color: Colors.grey[350],
+                  ),
+                ],
+              );
             },
-            loading: () => const Center(child: LoadingAnimation()),
-            error: (error, stackTrace) {},
-          ));
-    });
+          );
+        },
+      ),
+    );
   }
 }

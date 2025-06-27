@@ -64,6 +64,20 @@ class FamilyApiService {
       throw Exception(json.decode(response.body)['message']);
     }
   }
+  static Future<FamilyModel> createFamily(String name) async {
+    Uri url = Uri.parse('$_baseUrl');
+    final response = await http.post(
+      url,
+      headers: _headers(),
+      body: json.encode({"name": name}),
+    );
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      final dynamic data = json.decode(response.body)["data"];
+      return FamilyModel.fromJson(data);
+    } else {
+      throw Exception(json.decode(response.body)["message"] ?? "Failed to create family");
+    }
+  }
 }
 
 @riverpod

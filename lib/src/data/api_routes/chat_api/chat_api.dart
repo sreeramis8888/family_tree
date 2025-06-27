@@ -1,208 +1,175 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
-
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:familytree/src/data/api_routes/group_chat_api/group_api.dart';
 import 'package:familytree/src/data/globals.dart';
-import 'package:familytree/src/data/models/chat_model.dart';
-import 'package:familytree/src/data/models/group_chat_model.dart';
-import 'package:familytree/src/data/models/msg_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
-
+import '../../models/chat_conversation_model.dart';
+import '../../models/chat_message_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
-
 part 'chat_api.g.dart';
 
-final socketIoClientProvider = Provider<SocketIoClient>((ref) {
-  return SocketIoClient();
-});
+class ChatApi {
+  final bool debug = true;
 
-// Individual Message Stream Provider
-final messageStreamProvider = StreamProvider.autoDispose<MessageModel>((ref) {
-  final socketIoClient = ref.read(socketIoClientProvider);
-  return socketIoClient.messageStream;
-});
+  static Map<String, String> _headers() => {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+        'accept': '*/*',
+      };
 
-// Group Message Stream Provider
-final groupMessageStreamProvider =
-    StreamProvider.autoDispose<GroupChatModel>((ref) {
-  final socketIoClient = ref.read(socketIoClientProvider);
-  return socketIoClient.groupMessageStream;
-});
-
-class SocketIoClient {
-  late IO.Socket _socket;
-
-  // Separate controllers for individual & group chat messages
-  final _messageController = StreamController<MessageModel>.broadcast();
-  final _groupMessageController = StreamController<GroupChatModel>.broadcast();
-
-  SocketIoClient();
-
-  Stream<MessageModel> get messageStream => _messageController.stream;
-  Stream<GroupChatModel> get groupMessageStream =>
-      _groupMessageController.stream;
-
-  void connect(String senderId, WidgetRef ref) {
-    final uri = 'wss://api.familytreeconnect.com/api/v1/chat?userId=$senderId';
-
-    _socket = IO.io(
-      uri,
-      IO.OptionBuilder()
-          .setTransports(['websocket'])
-          .disableAutoConnect()
-          .build(),
-    );
-
-    log('Connecting to: $uri');
-
-    _socket.onConnect((_) {
-      log('Connected to: $uri');
-    });
-
-    // Listen for messages (for both individual and group chat)
-    _socket.on('message', (data) {
-      log('Received message: $data');
-
-      if (data['isGroup'] == true) {
-        final groupMessageModel = GroupChatModel.fromJson(data);
-        ref.invalidate(getGroupListProvider); // Invalidate group list provider
-        if (!_groupMessageController.isClosed) {
-          _groupMessageController.add(groupMessageModel);
-        }
-      } else {
-        final messageModel = MessageModel.fromJson(data);
-        ref.invalidate(
-            fetchChatThreadProvider); // Invalidate individual chat provider
-        if (!_messageController.isClosed) {
-          _messageController.add(messageModel);
-        }
-      }
-    });
-
-    _socket.on('connect_error', (error) {
-      log('Connection Error: $error');
-      if (!_messageController.isClosed) _messageController.addError(error);
-      if (!_groupMessageController.isClosed)
-        _groupMessageController.addError(error);
-    });
-
-    _socket.onDisconnect((_) {
-      log('Disconnected from server');
-    });
-
-    _socket.connect();
+  void _log(String name, String message) {
+    if (debug) log(message, name: name);
   }
 
-  void disconnect() {
-    _socket.disconnect();
-    _socket.dispose(); // Prevent memory leaks
+  Future<List<ChatConversation>> fetchConversations(
+      {int page = 1, int limit = 20}) async {
+    final url = '$baseUrl/chat/conversations?page=$page&limit=$limit';
+    _log('FETCH_CONVERSATIONS', 'GET $url');
 
-    if (!_messageController.isClosed) _messageController.close();
-    if (!_groupMessageController.isClosed) _groupMessageController.close();
-  }
-}
+    final response = await http.get(Uri.parse(url), headers: _headers());
 
-Future<String> sendChatMessage(
-    {required String Id,
-    String? content,
-    String? productId,
-    bool? isGroup = false,
-    String? businessId}) async {
-  final url = Uri.parse('$baseUrl/chat/send-message/$Id');
-  final headers = {
-    'accept': '*/*',
-    'Authorization': 'Bearer $token',
-    'Content-Type': 'application/json',
-  };
-  final body = jsonEncode({
-    if (content != null) 'content': content,
-    if (productId != null) 'product': productId,
-    if (businessId != null) 'feed': businessId,
-    "isGroup": isGroup
-  });
-  log('sending body $body');
-  try {
-    final response = await http.post(
-      url,
-      headers: headers,
-      body: body,
-    );
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      // Successfully sent the message
-      final jsonResponse = json.decode(response.body);
-      print('Message sent: ${response.body}');
-      log('Message: ${jsonResponse['data']['_id']}');
-      return jsonResponse['data']['_id'];
-    } else {
-      final jsonResponse = json.decode(response.body);
-
-      print(jsonResponse['message']);
-      print('Failed to send message: ${response.statusCode}');
-      return '';
-    }
-  } catch (e) {
-    print('Error occurred: $e');
-    return '';
-  }
-}
-
-Future<List<MessageModel>> getChatBetweenUsers(String userId) async {
-  final url = Uri.parse('$baseUrl/chat/between-users/$userId');
-  final headers = {
-    'accept': '*/*',
-    'Authorization': 'Bearer $token',
-  };
-
-  try {
-    final response = await http.get(url, headers: headers);
+    _log('FETCH_CONVERSATIONS', 'Status: ${response.statusCode}');
+    _log('FETCH_CONVERSATIONS', 'Response: ${response.body}');
 
     if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body)['data'];
-      print(response.body);
-      List<MessageModel> messages = [];
-      log(data.toString());
-      for (var item in data) {
-        messages.add(MessageModel.fromJson(item));
-      }
-      return messages;
+      final List data = json.decode(response.body)['data'];
+      return data.map((e) => ChatConversation.fromJson(e)).toList();
     } else {
-      print('Error: ${response.statusCode}');
-      return [];
+      throw Exception('Failed to load conversations');
     }
-  } catch (e) {
-    // Handle errors
-    print('Error: $e');
-    return [];
+  }
+
+  Future<ChatConversation> fetchDirectConversation(String recipientId) async {
+    final url = '$baseUrl/chat/conversations/direct/$recipientId';
+    _log('FETCH_DIRECT_CONVERSATION', 'GET $url');
+
+    final response = await http.get(Uri.parse(url), headers: _headers());
+
+    _log('FETCH_DIRECT_CONVERSATION', 'Status: ${response.statusCode}');
+    _log('FETCH_DIRECT_CONVERSATION', 'Response: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body)['data'];
+      return ChatConversation.fromJson(data);
+    } else {
+      throw Exception('Failed to load direct conversation');
+    }
+  }
+
+  Future<ChatConversation> createGroupConversation({
+    required String name,
+    String? description,
+    required List<String> participantIds,
+    String? familyId,
+  }) async {
+    final url = '$baseUrl/chat/conversations/group';
+    final payload = {
+      'name': name,
+      'description': description,
+      'participantIds': participantIds,
+      'familyId': familyId,
+    };
+
+    _log('CREATE_GROUP_CONVERSATION', 'POST $url');
+    _log('CREATE_GROUP_CONVERSATION', 'Payload: ${json.encode(payload)}');
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: _headers(),
+      body: json.encode(payload),
+    );
+
+    _log('CREATE_GROUP_CONVERSATION', 'Status: ${response.statusCode}');
+    _log('CREATE_GROUP_CONVERSATION', 'Response: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body)['data'];
+      return ChatConversation.fromJson(data);
+    } else {
+      throw Exception('Failed to create group conversation');
+    }
+  }
+
+  Future<List<ChatMessage>> fetchMessages(String conversationId,
+      {int page = 1, int limit = 50}) async {
+    final url =
+        '$baseUrl/chat/conversations/$conversationId/messages?page=$page&limit=$limit';
+    _log('FETCH_MESSAGES', 'GET $url');
+
+    final response = await http.get(Uri.parse(url), headers: _headers());
+
+    _log('FETCH_MESSAGES', 'Status: ${response.statusCode}');
+    _log('FETCH_MESSAGES', 'Response: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final List data = json.decode(response.body)['data'];
+      return data.map((e) => ChatMessage.fromJson(e)).toList();
+    } else {
+      throw Exception('Failed to load messages');
+    }
+  }
+
+  Future<ChatMessage> sendMessage(String conversationId, String content,
+      {String messageType = 'text',
+      List<Map<String, dynamic>>? attachments,
+      dynamic replyTo}) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/chat/conversations/$conversationId/messages'),
+      headers: _headers(),
+      body: json.encode({
+        'content': content,
+        'messageType': messageType,
+        if (attachments != null) 'attachments': attachments,
+        if (replyTo != null)
+          'replyTo': replyTo is String
+              ? replyTo
+              : (replyTo is ChatMessage ? replyTo.id : null),
+      }),
+    );
+    final data = json.decode(response.body)['data'];
+    log(response.body);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final data = json.decode(response.body)['data'];
+      return ChatMessage.fromJson(data);
+    } else {
+      throw Exception('Failed to send message');
+    }
+  }
+
+  Future<bool> markMessagesAsRead(String conversationId, List<String> messageIds) async {
+    final url = '$baseUrl/chat/conversations/$conversationId/messages/read';
+    _log('MARK_MESSAGES_AS_READ', 'PUT $url');
+    final response = await http.put(
+      Uri.parse(url),
+      headers: _headers(),
+      body: json.encode({'messageIds': messageIds}),
+    );
+    _log('MARK_MESSAGES_AS_READ', 'Status: \\${response.statusCode}');
+    _log('MARK_MESSAGES_AS_READ', 'Response: \\${response.body}');
+    return response.statusCode == 200;
   }
 }
 
 @riverpod
-Future<List<ChatModel>> fetchChatThread(FetchChatThreadRef ref) async {
-  final url = Uri.parse('$baseUrl/chat/get-chats');
-  print('Requesting URL: $url');
+Future<List<ChatConversation>> fetchChatConversations(Ref ref) async {
+  final api = ChatApi();
+  return api.fetchConversations();
+}
 
-  final response = await http.get(
-    url,
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    },
-  );
+@riverpod
+Future<List<ChatMessage>> fetchChatMessages(Ref ref,
+    {required String conversationId}) async {
+  final api = ChatApi();
+  return api.fetchMessages(conversationId);
+}
 
-  if (response.statusCode == 200 || response.statusCode == 201) {
-    final data = json.decode(response.body)['data'];
-    log('Response data: $data');
-    final List<ChatModel> chats =
-        await data.map<ChatModel>((item) => ChatModel.fromJson(item)).toList();
-    ;
-
-    return chats;
-  } else {
-    print('Error: ${json.decode(response.body)['message']}');
-    throw Exception(json.decode(response.body)['message']);
-  }
+@riverpod
+Future<ChatMessage> sendChatMessage(Ref ref,
+    {required String conversationId,
+    required String content,
+    List<Map<String, dynamic>>? attachments,
+    dynamic replyTo}) async {
+  final api = ChatApi();
+  return api.sendMessage(conversationId, content,
+      attachments: attachments, replyTo: replyTo);
 }

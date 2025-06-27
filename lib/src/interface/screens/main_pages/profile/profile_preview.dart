@@ -5,7 +5,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/data/constants/style_constants.dart';
 import 'package:familytree/src/data/globals.dart';
-import 'package:familytree/src/data/models/chat_model.dart';
 import 'package:familytree/src/data/models/user_model.dart';
 import 'package:familytree/src/data/services/save_contact.dart';
 import 'package:familytree/src/interface/components/Buttons/primary_button.dart';
@@ -686,18 +685,18 @@ class ProfilePreview extends ConsumerWidget {
                                 fontSize: 16,
                                 label: 'SAY HI',
                                 onPressed: () {
-                                  final Participant receiver = Participant(
-                                    id: user.id,
-                                    image: user.image ?? '',
-                                    name: user.fullName,
-                                  );
-                                  final Participant sender =
-                                      Participant(id: id);
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => IndividualPage(
-                                            receiver: receiver,
-                                            sender: sender,
-                                          )));
+                                  // final Participant receiver = Participant(
+                                  //   id: user.id,
+                                  //   image: user.image ?? '',
+                                  //   name: user.fullName,
+                                  // );
+                                  // final Participant sender =
+                                  //     Participant(id: id);
+                                  // Navigator.of(context).push(MaterialPageRoute(
+                                  //     builder: (context) => IndividualPage(
+                                  //           receiver: receiver,
+                                  //           sender: sender,
+                                  //         )));
                                 }),
                           ),
                           const SizedBox(

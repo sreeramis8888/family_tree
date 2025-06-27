@@ -15,8 +15,8 @@ class BusinessDetailsModalSheet extends StatelessWidget {
   final VoidCallback onButtonPressed;
   final String buttonText;
   final Business business;
-  final Participant sender;
-  final Participant receiver;
+  final ChatUser sender;
+  final ChatUser receiver;
 
   const BusinessDetailsModalSheet({
     Key? key,
@@ -132,15 +132,15 @@ class BusinessDetailsModalSheet extends StatelessWidget {
                         return customButton(
                           label: buttonText,
                           onPressed: () async {
-                            await sendChatMessage(
-                                Id: business.author ?? '',
-                                content: business.content ?? '',
-                                businessId: business.id);
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => IndividualPage(
-                                      receiver: receiver,
-                                      sender: sender,
-                                    )));
+                            // await sendChatMessage(
+                            //     Id: business.author ?? '',
+                            //     content: business.content ?? '',
+                            //     businessId: business.id);
+                            // Navigator.of(context).push(MaterialPageRoute(
+                            //     builder: (context) => IndividualPage(
+                            //           receiver: receiver,
+                            //           sender: sender,
+                            //         )));
                           },
                           fontSize: 16,
                         );
@@ -162,8 +162,8 @@ void showBusinessModalSheet({
   required VoidCallback onButtonPressed,
   required String buttonText,
   required Business business,
-  required Participant sender,
-  required Participant receiver,
+  required ChatUser sender,
+  required ChatUser receiver,
 }) {
   showModalBottomSheet(
     isScrollControlled: true,

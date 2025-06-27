@@ -161,4 +161,5 @@ class ProgramMember {
       transferStatus: json['transferStatus'],
     );
   }
-} 
+}
+

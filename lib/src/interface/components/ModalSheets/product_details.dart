@@ -20,8 +20,8 @@ import 'package:shimmer/shimmer.dart';
 
 class ProductDetailsModal extends ConsumerStatefulWidget {
   final Product product;
-  final Participant receiver;
-  final Participant sender;
+  final ChatUser receiver;
+  final ChatUser sender;
 
   const ProductDetailsModal(
       {super.key,
@@ -355,17 +355,17 @@ class _ProductDetailsModalState extends ConsumerState<ProductDetailsModal> {
                         label: 'Get Quote',
                         onPressed: () async {
                           if (subscriptionType != 'free') {
-                            await sendChatMessage(
-                                productId: widget.product.id,
-                                Id: widget.product.seller!,
-                                content:
-                                    '''I need ${_quantityController.text}\nLet\'s Connect!''');
+                            // await sendChatMessage(
+                            //     productId: widget.product.id,
+                            //     Id: widget.product.seller!,
+                            //     content:
+                            //         '''I need ${_quantityController.text}\nLet\'s Connect!''');
 
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => IndividualPage(
-                                      receiver: widget.receiver,
-                                      sender: widget.sender,
-                                    )));
+                            // Navigator.of(context).push(MaterialPageRoute(
+                            //     builder: (context) => IndividualPage(
+                            //           receiver: widget.receiver,
+                            //           sender: widget.sender,
+                            //         )));
                           } else {
                             showDialog(
                               context: context,
@@ -390,8 +390,8 @@ class _ProductDetailsModalState extends ConsumerState<ProductDetailsModal> {
 void showProductDetails(
     {required BuildContext context,
     required product,
-    required Participant sender,
-    required Participant receiver}) {
+    required ChatUser sender,
+    required ChatUser receiver}) {
   showModalBottomSheet(
     isScrollControlled: true,
     context: context,

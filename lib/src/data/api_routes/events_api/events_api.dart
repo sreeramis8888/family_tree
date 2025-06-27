@@ -177,3 +177,63 @@ Future<AttendanceUserModel?> markAttendanceEvent({
     throw Exception(json.decode(response.body)['message']);
   }
 }
+
+Future<Event?> postEventByUser({
+  required String userId,
+  required String eventName,
+  required String description,
+  required String eventStartDate,
+  required String eventEndDate,
+  required String posterVisibilityStartDate,
+  required String posterVisibilityEndDate,
+  required String platform,
+  required String link,
+  required String venue,
+  required String organiserName,
+  required List<String> coordinators,
+  required int limit,
+  required List<Map<String, dynamic>> speakers,
+  required String eventMode,
+  required String type,
+  required String image,
+}) async {
+  final url = Uri.parse('$baseUrl/events/byUser');
+  try {
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'user_id': userId,
+        'event_name': eventName,
+        'description': description,
+        'event_start_date': eventStartDate,
+        'event_end_date': eventEndDate,
+        'poster_visibility_start_date': posterVisibilityStartDate,
+        'poster_visibility_end_date': posterVisibilityEndDate,
+        'platform': platform,
+        'link': link,
+        'venue': venue,
+        'organiser_name': organiserName,
+        'coordinators': coordinators,
+        'limit': limit,
+        'speakers': speakers,
+        'eventMode': eventMode,
+        'type': type,
+        'image': image,
+      }),
+    );
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body)['data'];
+      return Event.fromJson(data);
+    } else {
+      print(json.decode(response.body)['message']);
+      throw Exception(json.decode(response.body)['message']);
+    }
+  } catch (e) {
+    print('An error occurred: $e');
+    return null;
+  }
+}

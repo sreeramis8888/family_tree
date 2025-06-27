@@ -16,8 +16,8 @@ void businessEnquiry({
   required String buttonText,
   required Business businesss,
   required UserModel businessAuthor,
-  required Participant sender,
-  required Participant receiver,
+  required ChatUser sender,
+  required ChatUser receiver,
 }) {
   showModalBottomSheet(
     isScrollControlled: true,
@@ -127,8 +127,8 @@ void messageSheet({
   required VoidCallback onButtonPressed,
   required String buttonText,
   required Business feed,
-  required Participant sender,
-  required Participant receiver,
+  required ChatUser sender,
+  required ChatUser receiver,
 }) {
   TextEditingController messageController = TextEditingController();
   showModalBottomSheet(
@@ -247,18 +247,18 @@ void messageSheet({
                           return customButton(
                             label: buttonText,
                             onPressed: () async {
-                              await sendChatMessage(
-                                  Id: feed.author ?? '',
-                                  content: feed.content!,
-                                  businessId: feed.id);
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => IndividualPage(
-                                        receiver: receiver,
-                                        sender: sender,
-                                      )));
-                              await sendChatMessage(
-                                  Id: feed.author ?? '',
-                                  content: messageController.text);
+                              // await sendChatMessage(
+                              //     Id: feed.author ?? '',
+                              //     content: feed.content!,
+                              //     businessId: feed.id);
+                              // Navigator.of(context).push(MaterialPageRoute(
+                              //     builder: (context) => IndividualPage(
+                              //           receiver: receiver,
+                              //           sender: sender,
+                              //         )));
+                              // await sendChatMessage(
+                              //     Id: feed.author ?? '',
+                              //     content: messageController.text);
                             },
                             fontSize: 16,
                           );

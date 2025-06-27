@@ -31,6 +31,7 @@ import 'package:familytree/src/interface/screens/main_pages/news_bookmark/news_l
 import 'package:familytree/src/interface/screens/main_pages/news_bookmark/news_page.dart';
 import 'package:familytree/src/interface/screens/main_pages/user_inactive_page.dart';
 import 'package:familytree/src/interface/screens/no_chapter_condition_page.dart';
+import 'package:socket_io_client/socket_io_client.dart';
 
 class IconResolver extends StatelessWidget {
   final String iconPath;
@@ -77,18 +78,17 @@ class MainPage extends ConsumerStatefulWidget {
 }
 
 class _MainPageState extends ConsumerState<MainPage> {
-  late final SocketIoClient webSocketClient;
+
 
   @override
   void initState() {
     super.initState();
-    webSocketClient = ref.read(socketIoClientProvider);
-    webSocketClient.connect(id, ref);
+
   }
 
   @override
   void dispose() {
-    webSocketClient.disconnect();
+
     super.dispose();
   }
 
@@ -385,8 +385,11 @@ class _MainPageState extends ConsumerState<MainPage> {
                     onPressed: () async {
                       await SecureStorage.delete('token');
                       await SecureStorage.delete('id');
-                      await editUser(
-                          {"fcm": "", "name": user.fullName, "phone": user.phone},id);
+                      await editUser({
+                        "fcm": "",
+                        "name": user.fullName,
+                        "phone": user.phone
+                      }, id);
                       // Navigator.pushReplacement(
                       //   context,
                       //   MaterialPageRoute(

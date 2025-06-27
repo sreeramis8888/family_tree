@@ -6,17 +6,11 @@ import 'package:familytree/src/data/api_routes/chat_api/chat_api.dart';
 import 'package:familytree/src/data/api_routes/levels_api/levels_api.dart';
 import 'package:familytree/src/data/api_routes/user_api/user_data/user_data.dart';
 import 'package:familytree/src/data/constants/color_constants.dart';
-import 'package:familytree/src/data/constants/style_constants.dart';
 import 'package:familytree/src/data/globals.dart';
-import 'package:familytree/src/data/models/chat_model.dart';
 import 'package:familytree/src/data/notifiers/people_notifier.dart';
 import 'package:familytree/src/interface/components/Buttons/primary_button.dart';
-import 'package:familytree/src/interface/components/custom_widgets/blue_tick_names.dart';
-
 import 'package:familytree/src/interface/components/loading_indicator/loading_indicator.dart';
 import 'package:familytree/src/interface/screens/main_pages/chat/chat_screen.dart';
-import 'package:familytree/src/interface/screens/main_pages/profile/profile_preview.dart';
-import 'package:familytree/src/interface/screens/main_pages/profile/profile_preview.dart';
 import 'package:shimmer/shimmer.dart';
 
 import 'dart:async';
@@ -513,8 +507,8 @@ class _MembersPageState extends ConsumerState<MembersPage> {
   Widget build(BuildContext context) {
     final users = ref.watch(peopleNotifierProvider);
     final isLoading = ref.read(peopleNotifierProvider.notifier).isLoading;
-    final asyncChats = ref.watch(fetchChatThreadProvider);
     final isFirstLoad = ref.read(peopleNotifierProvider.notifier).isFirstLoad;
+    final conversationsAsync = ref.watch(fetchChatConversationsProvider);
 
     return Scaffold(
       backgroundColor: kWhite,
@@ -615,129 +609,114 @@ class _MembersPageState extends ConsumerState<MembersPage> {
             if (isFirstLoad)
               const Center(child: LoadingAnimation())
             else if (users.isNotEmpty)
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: users.length + (isLoading ? 1 : 0),
-                itemBuilder: (context, index) {
-                  if (index == users.length) {
-                    return Center(child: LoadingAnimation());
-                  }
-                  final user = users[index];
-                  final asyncUserChat = asyncChats.when(
-                    data: (chats) {
-                      final chatForUser = chats.firstWhere(
-                        (chat) =>
-                            chat.participants?.any((p) => p.id == user.id) ??
-                            false,
-                        orElse: () => ChatModel(
-                          participants: [
-                            Participant(
-                              id: user.id,
-                              name: user.fullName ?? '',
-                              image: user.image ?? '',
+              conversationsAsync.when(
+                loading: () => const Center(child: LoadingAnimation()),
+                error: (error, stack) => Center(child: Text('Error: $error')),
+                data: (conversations) {
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: users.length + (isLoading ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      if (index == users.length) {
+                        return const Center(child: LoadingAnimation());
+                      }
+                      final user = users[index];
+                      // Find direct conversation with this user
+                      final directConversation = conversations.where(
+                        (c) => c.type == 'direct' &&
+                          c.participants.any((p) => p.userId == (user.id ?? '')),
+                      ).isNotEmpty ? conversations.where(
+                        (c) => c.type == 'direct' &&
+                          c.participants.any((p) => p.userId == (user.id ?? '')),
+                      ).first : null;
+                      final userId = user.id ?? '';
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => ProfilePage(user: user),
                             ),
-                            Participant(id: id),
-                          ],
-                        ),
-                      );
-
-                      final receiver = chatForUser.participants?.firstWhere(
-                        (p) => p.id != id,
-                        orElse: () => Participant(
-                          id: user.id,
-                          name: user.fullName ?? '',
-                          image: user.image,
-                        ),
-                      );
-                      final sender = chatForUser.participants?.firstWhere(
-                        (p) => p.id == id,
-                        orElse: () => Participant(),
-                      );
-
-                      return Column(
-                        children: [
-                          ListTile(
-                            leading: SizedBox(
-                              height: 40,
-                              width: 40,
-                              child: ClipOval(
-                                child: Image.network(
-                                  loadingBuilder:
-                                      (context, child, loadingProgress) {
-                                    if (loadingProgress == null) {
-                                      return child;
-                                    }
-                                    return Shimmer.fromColors(
-                                      baseColor: Colors.grey[300]!,
-                                      highlightColor: Colors.grey[100]!,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey[300],
-                                          borderRadius:
-                                              BorderRadius.circular(8.0),
+                          );
+                        },
+                        child: Column(
+                          children: [
+                            ListTile(
+                              leading: SizedBox(
+                                height: 40,
+                                width: 40,
+                                child: ClipOval(
+                                  child: Image.network(
+                                    loadingBuilder:
+                                        (context, child, loadingProgress) {
+                                      if (loadingProgress == null) {
+                                        return child;
+                                      }
+                                      return Shimmer.fromColors(
+                                        baseColor: Colors.grey[300]!,
+                                        highlightColor: Colors.grey[100]!,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey[300],
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                  },
-                                  user.image ?? '',
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return SvgPicture.asset(
-                                        'assets/svg/icons/dummy_person_small.svg');
+                                      );
+                                    },
+                                    user.image ?? '',
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return SvgPicture.asset(
+                                          'assets/svg/icons/dummy_person_small.svg');
+                                    },
+                                  ),
+                                ),
+                              ),
+                              title: Text(user.fullName ?? ''),
+                              trailing: SizedBox(
+                                width: 40,
+                                height: 40,
+                                child: IconButton(
+                                  icon: const Icon(Icons.chat_bubble_outline),
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                  onPressed: () async {
+                                    if (directConversation != null) {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) => IndividualPage(
+                                            conversation: directConversation,
+                                            currentUserId: id,
+                                          ),
+                                        ),
+                                      );
+                                    } else {
+
+                                      final newConversation = await ChatApi()
+                                          .fetchDirectConversation(userId);
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) => IndividualPage(
+                                            conversation: newConversation,
+                                            currentUserId: id,
+                                          ),
+                                        ),
+                                      );
+                                    }
                                   },
                                 ),
                               ),
                             ),
-                            title: Text(
-                    
-                        user.fullName ?? '',
-                    
+                            const Divider(
+                              thickness: 1,
+                              color: Color.fromARGB(255, 227, 221, 221),
+                              height: 1,
                             ),
-                            // subtitle: Text('${user.chapter?.name ?? ''}',
-                            //     style:
-                            //         kSmallerTitleB.copyWith(color: kGreyDark)),
-                            trailing: SizedBox(
-                              width: 40,
-                              height: 40,
-                              child: IconButton(
-                                icon: const Icon(Icons.chat_bubble_outline),
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => IndividualPage(
-                                        receiver: receiver!,
-                                        sender: sender!,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                          const Divider(
-                            thickness: 1,
-                            color: Color.fromARGB(255, 227, 221, 221),
-                            height: 1,
-                          ),
-                        ],
-                      );
-                    },
-                    loading: () => const SizedBox.shrink(),
-                    error: (error, stackTrace) {},
-                  );
-
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => ProfilePage(user: user),
+                          ],
                         ),
                       );
                     },
-                    child: asyncUserChat,
                   );
                 },
               )

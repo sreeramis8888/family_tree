@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
+import 'package:familytree/src/data/models/chat_model.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,6 @@ import 'package:familytree/src/data/api_routes/user_api/user_data/user_data.dart
 import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/data/globals.dart';
 import 'package:familytree/src/data/models/business_model.dart';
-import 'package:familytree/src/data/models/chat_model.dart';
 import 'package:familytree/src/data/models/user_model.dart';
 import 'package:familytree/src/data/notifiers/business_notifier.dart';
 import 'package:familytree/src/interface/components/Dialogs/upgrade_dialog.dart';
@@ -278,13 +278,13 @@ class _BusinessViewState extends ConsumerState<BusinessView> {
             ref.watch(fetchUserDetailsProvider(feed.author ?? ''));
         return asyncUser.when(
           data: (user) {
-            var receiver = Participant(
+            var receiver = ChatUser(
               id: user.id ?? '',
-              name: user.fullName ?? '',
+              fullName: user.fullName ?? '',
               image: user.image ?? '',
             );
 
-            var sender = Participant(
+            var sender = ChatUser(
               id: id,
             );
             return ReusableBusinessPost(

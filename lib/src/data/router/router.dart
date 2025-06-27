@@ -87,16 +87,16 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       return MaterialPageRoute(builder: (context) => EditUser());
     case 'FinancialAssistancePage':
       return MaterialPageRoute(builder: (context) => FinancialAssistancePage());
-    case 'IndividualPage':
-      final args = settings?.arguments as Map<String, dynamic>?;
-      Participant sender = args?['sender'];
-      Participant receiver = args?['receiver'];
+    // case 'IndividualPage':
+    //   final args = settings?.arguments as Map<String, dynamic>?;
+    //   ChatUser sender = args?['sender'];
+    //   ChatUser receiver = args?['receiver'];
 
-      return MaterialPageRoute(
-          builder: (context) => IndividualPage(
-                receiver: receiver,
-                sender: sender,
-              ));
+    //   return MaterialPageRoute(
+    //       builder: (context) => IndividualPage(
+    //             receiver: receiver,
+    //             sender: sender,
+    //           ));
     case 'ChangeNumber':
       return MaterialPageRoute(builder: (context) => ChangeNumberPage());
     case 'FinancialProgramOnboarding':

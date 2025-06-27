@@ -1,11 +1,13 @@
 import 'dart:io';
 import 'package:familytree/src/data/constants/style_constants.dart';
+import 'package:familytree/src/data/globals.dart';
 import 'package:flutter/material.dart';
 import 'package:familytree/src/interface/components/custom_widgets/custom_textFormField.dart';
 import 'package:familytree/src/interface/components/DropDown/selectionDropdown.dart';
 import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:familytree/src/data/api_routes/events_api/events_api.dart';
 
 class AddEventPage extends StatefulWidget {
   const AddEventPage({Key? key}) : super(key: key);
@@ -302,9 +304,60 @@ class _AddEventPageState extends State<AddEventPage> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      // Submit logic here
+                      // Collect all required fields
+                      final userId = id;
+                      final eventName = _eventNameController.text;
+                      final description = _descriptionController.text;
+                      final eventStartDate = _startDateController.text;
+                      final eventEndDate = _endDateController.text;
+                      final posterVisibilityStartDate = _startDateController
+                          .text; // You may want a separate field
+                      final posterVisibilityEndDate = _endDateController
+                          .text; // You may want a separate field
+                      final platform = _platform ?? '';
+                      final link = _linkController.text;
+                      final venue = '';
+                      final organiserName = '';
+                      final coordinators = [_coordinatorController.text];
+                      final limit = 100;
+                      final speakers = <Map<String,
+                          dynamic>>[]; // TODO: Add speaker fields if needed
+                      final eventMode = _eventType ?? '';
+                      final type = _category ?? '';
+                      final image = _eventImage?.path ?? '';
+
+                      final result = await postEventByUser(
+                        userId: userId,
+                        eventName: eventName,
+                        description: description,
+                        eventStartDate: eventStartDate,
+                        eventEndDate: eventEndDate,
+                        posterVisibilityStartDate: posterVisibilityStartDate,
+                        posterVisibilityEndDate: posterVisibilityEndDate,
+                        platform: platform,
+                        link: link,
+                        venue: venue,
+                        organiserName: organiserName,
+                        coordinators: coordinators,
+                        limit: limit,
+                        speakers: speakers,
+                        eventMode: eventMode,
+                        type: type,
+                        image: image,
+                      );
+
+                      if (result != null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Event applied successfully')),
+                        );
+                        Navigator.of(context).pop();
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Failed to apply event')),
+                        );
+                      }
                     }
                   },
                   child: const Text('Sent Request',
