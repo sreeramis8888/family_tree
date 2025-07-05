@@ -214,9 +214,9 @@ class _CampaignsMainScreenState extends ConsumerState<CampaignsMainScreen>
               );
             },
           ),
-          // Transactions Tab Content (Placeholder)
-          // const TransactionsListPage(),
-          // My Campaigns Tab Content
+
+          Text(''),
+
           Column(
             children: [
               SizedBox(

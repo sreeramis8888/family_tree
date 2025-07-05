@@ -60,9 +60,9 @@ class PeoplePage extends ConsumerWidget {
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black12,
-                    offset: Offset(0, 4), 
-                    blurRadius: 6, 
-                    spreadRadius: 0, 
+                    offset: Offset(0, 4),
+                    blurRadius: 6,
+                    spreadRadius: 0,
                   ),
                 ],
               ),

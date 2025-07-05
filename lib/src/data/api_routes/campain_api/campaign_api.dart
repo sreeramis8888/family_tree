@@ -16,12 +16,12 @@ class CampaignApiService {
         'Authorization': 'Bearer $token',
       };
 
-  /// Create Campaign
   static Future<bool> createCampaign({
     required Map<String, dynamic> data,
     BuildContext? context,
   }) async {
-    final _baseUrl = Uri.parse('$baseUrl/campaigns/create-campaign');
+    final _baseUrl = Uri.parse('$baseUrl/campaigns');
+    log(name: 'HITTING API', _baseUrl.toString());
     final snackbarService = SnackbarService();
     try {
       final response = await http.post(
@@ -30,6 +30,7 @@ class CampaignApiService {
         body: jsonEncode(data),
       );
       final decoded = json.decode(response.body);
+      log(response.body);
       if (response.statusCode == 201 || response.statusCode == 200) {
         snackbarService.showSnackBar(
             decoded['message'] ?? 'Campaign created successfully');
@@ -50,6 +51,7 @@ class CampaignApiService {
   static Future<List<CampaignModel>> fetchCampaigns() async {
     try {
       final _baseUrl = Uri.parse('$baseUrl/campaigns');
+      log(name: 'HITTING API', _baseUrl.toString());
       final response = await http.get(_baseUrl, headers: _headers());
       final decoded = json.decode(response.body);
       if (response.statusCode == 200) {
@@ -59,7 +61,8 @@ class CampaignApiService {
         throw Exception(decoded['message'] ?? 'Failed to fetch campaigns');
       }
     } catch (e) {
-      throw Exception('Error: ${e.toString()}');
+      log(e.toString(), name: 'CAMPAIGN FETCH FAILED');
+      return [];
     }
   }
 

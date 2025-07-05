@@ -36,8 +36,8 @@ class PeopleNotifier extends _$PeopleNotifier {
           pageNo: pageNo,
           limit: limit,
           query: searchQuery,
-          district: district, // Pass district filter
-          tags: tags, // Pass tags filter
+          district: district,
+          tags: tags, 
         ).future,
       );
 

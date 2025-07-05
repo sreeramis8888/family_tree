@@ -208,8 +208,7 @@ Widget customDrawer(
                   icon: 'assets/svg/icons/logout.svg',
                   label: 'Logout',
                   onTap: () async {
-                    await SecureStorage.delete('token');
-                    await SecureStorage.delete('id');
+                    await SecureStorage.deleteAll();
                     navigationService.pushNamedAndRemoveUntil('PhoneNumber');
                     await editUser({
                       "fcm": "",

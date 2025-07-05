@@ -25,7 +25,6 @@ import 'package:familytree/src/interface/screens/crop_image_screen.dart';
 import 'package:familytree/src/interface/screens/main_pages/notification_page.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../../components/ModalSheets/bussiness_enquiry_modal.dart';
 
 class BusinessView extends ConsumerStatefulWidget {
   const BusinessView({super.key});
@@ -205,14 +204,14 @@ class _BusinessViewState extends ConsumerState<BusinessView> {
               bottom: 30,
               child: GestureDetector(
                 onTap: () {
-                  if (subscriptionType != 'free') {
+                  // if (subscriptionType != 'free') {
                     _openModalSheet(sheet: 'post');
-                  } else {
-                    showDialog(
-                      context: context,
-                      builder: (context) => const UpgradeDialog(),
-                    );
-                  }
+                  // } else {
+                  //   showDialog(
+                  //     context: context,
+                  //     builder: (context) => const UpgradeDialog(),
+                  //   );
+                  // }
                 },
                 child: Container(
                   padding: EdgeInsets.all(10),
@@ -297,14 +296,14 @@ class _BusinessViewState extends ConsumerState<BusinessView> {
                 },
                 onComment: () async {},
                 onShare: () {
-                  businessEnquiry(
-                      businessAuthor: user,
-                      context: context,
-                      onButtonPressed: () async {},
-                      buttonText: 'MESSAGE',
-                      businesss: feed,
-                      receiver: receiver,
-                      sender: sender);
+                  // businessEnquiry(
+                  //     businessAuthor: user,
+                  //     context: context,
+                  //     onButtonPressed: () async {},
+                  //     buttonText: 'MESSAGE',
+                  //     businesss: feed,
+                  //     receiver: receiver,
+                  //     sender: sender);
                 });
           },
           loading: () => const ReusableFeedPostSkeleton(),

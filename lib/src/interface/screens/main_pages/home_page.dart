@@ -101,7 +101,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           child: SizedBox(
             width: MediaQuery.of(context).size.width, // Full screen
             height: MediaQuery.of(context).size.height,
-            child: customDrawer(user: user, context: context,ref: ref),
+            child: customDrawer(user: user, context: context, ref: ref),
           ),
         );
       },
@@ -1199,113 +1199,115 @@ class _CampaignsTabSectionState extends ConsumerState<_CampaignsTabSection>
   Widget build(BuildContext context) {
     final asyncCampaigns = ref.watch(fetchCampaignsProvider);
     return asyncCampaigns.when(
-      data: (campaigns) {
-        final zakathCampaigns = campaigns
-            .where((c) => c.tagType.toLowerCase() == 'zakath')
-            .toList();
-        final csrCampaigns =
-            campaigns.where((c) => c.tagType.toLowerCase() == 'csr').toList();
-        final campaignsList =
-            _currentIndex == 0 ? zakathCampaigns : csrCampaigns;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Campaigns', style: kBodyTitleB.copyWith(color: kBlack)),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CampaignsMainScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text('View All',
-                        style: TextStyle(
-                            color: kRed, fontWeight: FontWeight.bold)),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: TabBar(
-                labelPadding: EdgeInsets.symmetric(horizontal: 10),
-                dividerColor: kGreyLight.withOpacity(.2),
-                padding: EdgeInsets.only(left: 10),
-                indicatorWeight: 4,
-                controller: _tabController,
-                isScrollable: true,
-                labelColor: kPrimaryColor,
-                unselectedLabelColor: Colors.grey,
-                indicatorColor: kPrimaryColor,
-                indicatorSize: TabBarIndicatorSize.tab,
-                labelStyle: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-                unselectedLabelStyle: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                ),
-                tabAlignment: TabAlignment.start,
-                tabs: _tabs.map((t) => Tab(text: t)).toList(),
-                onTap: (i) {
-                  setState(() {
-                    _currentIndex = i;
-                  });
-                },
-              ),
-            ),
-            const SizedBox(height: 8),
-            SizedBox(
-              height: 390,
-              child: campaignsList.isEmpty
-                  ? const Center(child: Text('No campaigns yet'))
-                  : PageView.builder(
-                      controller: _pageController,
-                      itemCount: campaignsList.length,
-                      itemBuilder: (context, index) {
-                        final campaign = campaignsList[index];
-                        return CampaignCard(
-                          campaign: campaign,
-                          tag: campaign.tagType,
-                          leftButtonLabel: 'Learn More',
-                          rightButtonLabel: 'Donate Now',
-                          leftButtonAction: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    CampaignDetailPage(campaign: campaign),
-                              ),
-                            );
-                          },
-                          rightButtonAction: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    CampaignDetailPage(campaign: campaign),
-                              ),
-                            );
-                          },
+        data: (campaigns) {
+          final zakathCampaigns = campaigns
+              .where((c) => c.tagType.toLowerCase() == 'zakath')
+              .toList();
+          final csrCampaigns =
+              campaigns.where((c) => c.tagType.toLowerCase() == 'csr').toList();
+          final campaignsList =
+              _currentIndex == 0 ? zakathCampaigns : csrCampaigns;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Campaigns',
+                        style: kBodyTitleB.copyWith(color: kBlack)),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CampaignsMainScreen(),
+                          ),
                         );
                       },
+                      child: const Text('View All',
+                          style: TextStyle(
+                              color: kRed, fontWeight: FontWeight.bold)),
                     ),
-            ),
-          ],
-        );
-      },
-      loading: () => const Center(child: LoadingAnimation()),
-      error: (error, stackTrace) =>
-          const Center(child: Text('Failed to load campaigns')),
-    );
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: TabBar(
+                  labelPadding: EdgeInsets.symmetric(horizontal: 10),
+                  dividerColor: kGreyLight.withOpacity(.2),
+                  padding: EdgeInsets.only(left: 10),
+                  indicatorWeight: 4,
+                  controller: _tabController,
+                  isScrollable: true,
+                  labelColor: kPrimaryColor,
+                  unselectedLabelColor: Colors.grey,
+                  indicatorColor: kPrimaryColor,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  labelStyle: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  unselectedLabelStyle: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  tabAlignment: TabAlignment.start,
+                  tabs: _tabs.map((t) => Tab(text: t)).toList(),
+                  onTap: (i) {
+                    setState(() {
+                      _currentIndex = i;
+                    });
+                  },
+                ),
+              ),
+              const SizedBox(height: 8),
+              SizedBox(
+                height: 390,
+                child: campaignsList.isEmpty
+                    ? const Center(child: Text('No campaigns yet'))
+                    : PageView.builder(
+                        controller: _pageController,
+                        itemCount: campaignsList.length,
+                        itemBuilder: (context, index) {
+                          final campaign = campaignsList[index];
+                          return CampaignCard(
+                            campaign: campaign,
+                            tag: campaign.tagType,
+                            leftButtonLabel: 'Learn More',
+                            rightButtonLabel: 'Donate Now',
+                            leftButtonAction: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      CampaignDetailPage(campaign: campaign),
+                                ),
+                              );
+                            },
+                            rightButtonAction: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      CampaignDetailPage(campaign: campaign),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+              ),
+            ],
+          );
+        },
+        loading: () => const Center(child: LoadingAnimation()),
+        error: (error, stackTrace) {
+          log(error.toString());
+          return SizedBox.shrink();
+        });
   }
 }

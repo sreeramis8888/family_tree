@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:familytree/src/data/globals.dart';
+import 'package:familytree/src/interface/components/loading_indicator/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:familytree/src/data/api_routes/chat_api/chat_api.dart';
@@ -65,9 +68,12 @@ class _ChatDashState extends ConsumerState<ChatDash> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: conversationsAsync.when(  
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('Error: $error')),
+      body: conversationsAsync.when(
+        loading: () => const Center(child: LoadingAnimation()),
+        error: (error, stack) {
+          log(error.toString());
+          return SizedBox.shrink();
+        },
         data: (chats) {
           if (chats.isEmpty) {
             return Column(
@@ -85,103 +91,35 @@ class _ChatDashState extends ConsumerState<ChatDash> {
             itemCount: chats.length,
             itemBuilder: (context, index) {
               final conversation = chats[index];
-              final messagesAsync = ref.watch(
-                fetchChatMessagesProvider(conversationId: conversation.id??''),
-              );
+              String lastMessageText = '';
+              if (conversation.lastMessage != null) {
+                lastMessageText = conversation.lastMessage ?? '';
+                if (lastMessageText.length > 30) {
+                  lastMessageText = '${lastMessageText.substring(0, 30)}...';
+                }
+              }
               return Column(
                 children: [
-                  messagesAsync.when(
-                    loading: () => ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: (conversation.participants.length == 2 && conversation.participants.firstWhere((p) => isOtherParticipant(p.userId, id), orElse: () => Participant(userId: '', isActive: false))?.isActive == true)
-                            ? Colors.green[100]
-                            : Colors.grey[200],
-                        backgroundImage: conversation.avatar != null && conversation.avatar!.isNotEmpty
-                            ? NetworkImage(conversation.avatar!)
-                            : null,
-                        child: conversation.avatar == null || conversation.avatar!.isEmpty
-                            ? Text(conversation.name != null && conversation.name!.isNotEmpty ? conversation.name![0] : '?')
-                            : null,
-                      ),
-                      title: Text(conversation.name ?? 'Chat'),
-                      subtitle: () {
-                        if (conversation.participants.length > 2) {
-                          final onlineCount = conversation.participants.where((p) => p.isActive == true).length;
-                          return Text('${conversation.participants.length} members, $onlineCount online');
-                        } else {
-                          final other = conversation.participants.firstWhere(
-                            (p) => isOtherParticipant(p.userId, id),
-                            orElse: () => Participant(userId: '', isActive: false),
-                          );
-                          if (other != null && other.isActive == true) {
-                            return const Text('Online', style: TextStyle(color: Colors.green));
-                          } else if (conversation.lastActivity != null) {
-                            return Text('Last seen ' + timeAgo(conversation.lastActivity!));
-                          } else {
-                            return const Text('Offline');
-                          }
-                        }
-                      }(),
-                      trailing: conversation.unreadCount != null && conversation.unreadCount! > 0
-                        ? CircleAvatar(
-                            radius: 10,
-                            backgroundColor: Colors.red,
-                            child: Text('${conversation.unreadCount}', style: const TextStyle(color: Colors.white, fontSize: 12)),
-                          )
-                        : null,
-                      onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => IndividualPage(
-                            conversation: conversation,
-                            currentUserId: id,
-                          ),
-                        ));
-                      },
+                  ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.white,
+                  backgroundImage: conversation.participantDetails.length > 1 &&
+                 conversation.participantDetails[1].image != null &&
+                 conversation.participantDetails[1].image!.isNotEmpty
+    ? NetworkImage(conversation.participantDetails[1].image!)
+    : null,
+
                     ),
-                    error: (error, stack) => ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.white,
-                        backgroundImage: conversation.avatar != null && conversation.avatar!.isNotEmpty
-                            ? NetworkImage(conversation.avatar!)
-                            : null,
-                        child: conversation.avatar == null || conversation.avatar!.isEmpty
-                            ? const Icon(Icons.person)
-                            : null,
-                      ),
-                      title: Text(conversation.name ?? 'Chat'),
-                      subtitle: const Text('Error loading message'),
-                      trailing: const SizedBox.shrink(),
-                    ),
-                    data: (messages) {
-                      String lastMessageText = '';
-                      if (messages.isNotEmpty) {
-                        lastMessageText = messages.last.content ?? '';
-                        if (lastMessageText.length > 30) {
-                          lastMessageText = lastMessageText.substring(0, 30) + '...';
-                        }
-                      }
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: Colors.white,
-                          backgroundImage: conversation.avatar != null && conversation.avatar!.isNotEmpty
-                              ? NetworkImage(conversation.avatar!)
-                              : null,
-                          child: conversation.avatar == null || conversation.avatar!.isEmpty
-                              ? const Icon(Icons.person)
-                              : null,
+                    title: Text(conversation.name ?? 'Chat'),
+                    subtitle: Text(lastMessageText),
+                    trailing: const SizedBox.shrink(),
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => IndividualPage(
+                          conversation: conversation,
+                          currentUserId: id,
                         ),
-                        title: Text(conversation.name ?? 'Chat'),
-                        subtitle: Text(lastMessageText),
-                        trailing: const SizedBox.shrink(),
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => IndividualPage(
-                              conversation: conversation,
-                              currentUserId: id,
-                            ),
-                          ));
-                        },
-                      );
+                      ));
                     },
                   ),
                   Divider(

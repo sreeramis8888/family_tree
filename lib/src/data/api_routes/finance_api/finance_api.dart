@@ -16,7 +16,7 @@ class FinanceApiService {
   static Map<String, String> _headers() => {
         'Content-Type': 'application/json',
         'accept': '*/*',
-        // 'Authorization': 'Bearer $token',
+        'Authorization': 'Bearer $token',
       };
 
   static Future<MinimumBalance?> getMinimumBalance() async {

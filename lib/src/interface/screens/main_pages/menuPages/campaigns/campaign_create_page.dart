@@ -216,7 +216,7 @@ class _CampaignCreatePageState extends State<CampaignCreatePage> {
               Text('Tag', style: kBodyTitleM),
               SelectionDropDown(
                 label: 'Tag',
-                items: ['zakath', 'csr']
+                items: ['ZAKATH', 'CSR']
                     .map((item) => DropdownMenuItem<String>(
                           value: item,
                           child: Text(item),
@@ -309,15 +309,9 @@ class _CampaignCreatePageState extends State<CampaignCreatePage> {
                   onPressed: () async {
                     if (_formKey.currentState?.validate() ?? false) {
                       final Map<String, dynamic> data = {
-                        'reason': [
-                          {
-                            'title': _nameController.text,
-                            'description': _descriptionController.text,
-                            'media':
-                                //  _coverImage?.path ??
-                                'test.jpg',
-                          }
-                        ],
+                        'title': _nameController.text,
+                        'description': _descriptionController.text,
+                        'media': _coverImage?.path ?? '',
                         'targetAmount': int.tryParse(_targetAmountController
                                 .text
                                 .replaceAll(RegExp(r'[^0-9]'), '')) ??
@@ -327,8 +321,8 @@ class _CampaignCreatePageState extends State<CampaignCreatePage> {
                             ? _tagController.text
                             : null,
                         'organizedBy': _organizerController.text,
-                        'documents': ['test'],
-                        // _documents.map((doc) => doc.file.path).toList(),
+                        'documents':
+                            _documents.map((doc) => doc.file.path).toList(),
                         'status': _status,
                         'createdBy': id
                       };

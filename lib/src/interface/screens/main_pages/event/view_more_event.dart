@@ -268,57 +268,14 @@ class _ViewMoreEventPageState extends ConsumerState<ViewMoreEventPage>
                       const SizedBox(height: 24),
                       _buildInfoSection(
                           'Organizer', widget.event.organiserName ?? ''),
-                      const SizedBox(height: 24),
-
-                      _buildEventCoordinator(),
+          
                       const SizedBox(height: 24),
                       _buildSpeakersSection(),
                       const SizedBox(height: 14),
                       if (widget.event.limit != null)
                         _buildInfoSection(
                             'Registration', _getRegistrationCountText()),
-                      if (widget.event.coordinator != null)
-                        if (widget.event.coordinator!.contains(id))
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: kWhite,
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.1),
-                                    spreadRadius: .1,
-                                    offset: Offset(0, 1),
-                                  ),
-                                ],
-                              ),
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  backgroundColor: kWhite,
-                                  child: Icon(Icons.map_outlined,
-                                      color: kPrimaryColor),
-                                ),
-                                title: Text(
-                                  'Member List',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                trailing: Icon(Icons.arrow_forward_ios,
-                                    size: 16, color: Colors.grey),
-                                onTap: () {
-                                  NavigationService navigationService =
-                                      NavigationService();
-                                  navigationService.pushNamed('EventMemberList',
-                                      arguments: widget.event);
-                                },
-                              ),
-                            ),
-                          ),
+          
                       const SizedBox(
                           height: 80), // Bottom padding for the register button
                     ]),
@@ -560,48 +517,6 @@ class _ViewMoreEventPageState extends ConsumerState<ViewMoreEventPage>
     );
   }
 
-  Widget _buildEventCoordinator() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Event Coordinator',
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: kWhite,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 6,
-                offset: const Offset(0, 3),
-              ),
-            ],
-          ),
-          child: ListTile(
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-            leading: const CircleAvatar(
-              child: Icon(
-                Icons.person,
-                size: 25,
-              ),
-            ),
-            title: Text(
-              widget.event.organiserName ?? 'TBA',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-            ),
-          ),
-        )
-      ],
-    );
-  }
 
   Widget _buildSpeakersSection() {
     if (widget.event.speakers == null || widget.event.speakers!.isEmpty) {

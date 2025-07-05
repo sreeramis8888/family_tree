@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:familytree/src/data/constants/style_constants.dart';
 import 'package:familytree/src/data/globals.dart';
+import 'package:familytree/src/data/services/image_upload.dart';
 import 'package:flutter/material.dart';
 import 'package:familytree/src/interface/components/custom_widgets/custom_textFormField.dart';
 import 'package:familytree/src/interface/components/DropDown/selectionDropdown.dart';
@@ -30,7 +31,7 @@ class _AddEventPageState extends State<AddEventPage> {
   final TextEditingController _eventNameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _linkController = TextEditingController();
-  final TextEditingController _coordinatorController = TextEditingController();
+
   final TextEditingController _startDateController = TextEditingController();
   final TextEditingController _endDateController = TextEditingController();
   final TextEditingController _startTimeController = TextEditingController();
@@ -130,10 +131,10 @@ class _AddEventPageState extends State<AddEventPage> {
                 value: _category,
                 hintText: 'Select',
                 items: [
-                  DropdownMenuItem(value: 'Cultural', child: Text('Cultural')),
-                  DropdownMenuItem(value: 'Business', child: Text('Business')),
-                  DropdownMenuItem(value: 'Family', child: Text('Family')),
-                  DropdownMenuItem(value: 'Other', child: Text('Other')),
+                  DropdownMenuItem(
+                      value: 'familyEvent', child: Text('Family Event')),
+                  DropdownMenuItem(
+                      value: "officialEvent", child: Text("Official Event")),
                 ],
                 onChanged: (val) => setState(() => _category = val),
                 validator: (val) =>
@@ -282,17 +283,6 @@ class _AddEventPageState extends State<AddEventPage> {
                 textController: _linkController,
                 validator: (val) => null,
               ),
-              SizedBox(
-                height: 10,
-              ),
-              CustomTextFormField(
-                title: 'Coordinator',
-                labelText: 'Enter Coordinator Name',
-                textController: _coordinatorController,
-                validator: (val) => val == null || val.isEmpty
-                    ? 'Enter coordinator name'
-                    : null,
-              ),
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
@@ -320,13 +310,13 @@ class _AddEventPageState extends State<AddEventPage> {
                       final link = _linkController.text;
                       final venue = '';
                       final organiserName = '';
-                      final coordinators = [_coordinatorController.text];
+
                       final limit = 100;
                       final speakers = <Map<String,
                           dynamic>>[]; // TODO: Add speaker fields if needed
                       final eventMode = _eventType ?? '';
                       final type = _category ?? '';
-                      final image = _eventImage?.path ?? '';
+                      final image = await imageUpload(_eventImage?.path ?? '');
 
                       final result = await postEventByUser(
                         userId: userId,
@@ -340,7 +330,6 @@ class _AddEventPageState extends State<AddEventPage> {
                         link: link,
                         venue: venue,
                         organiserName: organiserName,
-                        coordinators: coordinators,
                         limit: limit,
                         speakers: speakers,
                         eventMode: eventMode,

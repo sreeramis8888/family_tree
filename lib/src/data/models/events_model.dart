@@ -40,7 +40,7 @@ class Event {
   final String? link;
   final String? venue;
   final String? organiserName;
-  final List<String>? coordinator;
+
   final List<Speaker>? speakers;
   final String? status;
   final List<String>? rsvp;
@@ -60,7 +60,7 @@ class Event {
     this.link,
     this.venue,
     this.organiserName,
-    this.coordinator,
+
     this.speakers,
     this.status,
     this.rsvp,
@@ -84,7 +84,7 @@ class Event {
       link: json['link'] as String?,
       venue: json['venue'] as String?,
       organiserName: json['organiserName'] as String?,
-      coordinator: (json['coordinator'] as List?)?.map((e) => e.toString()).toList(),
+
       speakers: (json['speakers'] as List?)
           ?.map((e) => Speaker.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -113,7 +113,7 @@ class Event {
       'link': link,
       'venue': venue,
       'organiserName': organiserName,
-      'coordinator': coordinator ?? [],
+
       'speakers': speakers?.map((e) => e.toJson()).toList() ?? [],
       'status': status,
       'rsvp': rsvp ?? [],

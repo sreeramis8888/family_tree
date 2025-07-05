@@ -113,6 +113,9 @@ class ChatApi {
       {String messageType = 'text',
       List<Map<String, dynamic>>? attachments,
       dynamic replyTo}) async {
+    log(
+        name: 'HITTING API',
+        '$baseUrl/chat/conversations/$conversationId/messages');
     final response = await http.post(
       Uri.parse('$baseUrl/chat/conversations/$conversationId/messages'),
       headers: _headers(),
@@ -136,7 +139,8 @@ class ChatApi {
     }
   }
 
-  Future<bool> markMessagesAsRead(String conversationId, List<String> messageIds) async {
+  Future<bool> markMessagesAsRead(
+      String conversationId, List<String> messageIds) async {
     final url = '$baseUrl/chat/conversations/$conversationId/messages/read';
     _log('MARK_MESSAGES_AS_READ', 'PUT $url');
     final response = await http.put(

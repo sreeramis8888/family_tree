@@ -12,15 +12,13 @@ part 'requirements_api.g.dart';
 Future<List<Business>> fetchBusiness(FetchBusinessRef ref,
     {int pageNo = 1, int limit = 10}) async {
   final response = await http.get(
-    Uri.parse('$baseUrl/requirements?pageNo=$pageNo&limit=$limit'),
+    Uri.parse('$baseUrl/feeds?pageNo=$pageNo&limit=$limit'),
     headers: {
       "Content-Type": "application/json",
-      // "Authorization": "Bearer $token"
+      "Authorization": "Bearer $token"
     },
   );
-  log(
-      name: "Requesting Feeds:",
-      '$baseUrl/requirements/list?pageNo=$pageNo&limit=$limit');
+  log(name: "Requesting Feeds:", '$baseUrl/feeds?pageNo=$pageNo&limit=$limit');
   if (response.statusCode == 200) {
     final data = json.decode(response.body);
     print(response.body);
@@ -36,7 +34,7 @@ Future<List<Business>> fetchBusiness(FetchBusinessRef ref,
 
 @riverpod
 Future<List<Business>> fetchMyBusinesses(Ref ref) async {
-  final url = Uri.parse('$baseUrl/requirements/my/requirements');
+  final url = Uri.parse('$baseUrl/feeds/my/requirements');
   print('Requesting URL: $url');
   final response = await http.get(
     url,
@@ -65,7 +63,7 @@ Future<List<Business>> fetchMyBusinesses(Ref ref) async {
 
 Future<void> uploadBusiness(
     {required String? media, required String content}) async {
-  final url = Uri.parse('$baseUrl/requirements');
+  final url = Uri.parse('$baseUrl/feeds');
 
   final headers = {
     'accept': '*/*',
@@ -88,7 +86,7 @@ Future<void> uploadBusiness(
     if (response.statusCode == 201 || response.statusCode == 200) {
       print('Feed created successfully');
     } else {
-      print('Failed to create bussiness: ${response.statusCode}');
+      print('Failed to create business: ${response.statusCode}');
       print('Response body: ${response.body}');
     }
   } catch (e) {
@@ -98,7 +96,7 @@ Future<void> uploadBusiness(
 
 Future<void> deletePost(String postId, context) async {
   SnackbarService snackbarService = SnackbarService();
-  final url = Uri.parse('$baseUrl/requirements/$postId');
+  final url = Uri.parse('$baseUrl/feeds/$postId');
   print('requesting url:$url');
   final response = await http.delete(
     url,

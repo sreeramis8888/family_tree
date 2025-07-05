@@ -27,19 +27,19 @@ class SocketService {
     status = SocketStatus.connecting;
     _notifyStatus();
 
-_socket = IO.io(
-  'ws://192.168.1.101:3000',
-  <String, dynamic>{
-    'transports': ['websocket'],
-    'autoConnect': false,
-    'extraHeaders': {
-      'token': token, // Match your Postman/WebSocket test
-    },
-    'query': {
-      'userId': id,
-    },
-  },
-);
+    _socket = IO.io(
+      'http://192.168.1.5:3000',
+      <String, dynamic>{
+        'transports': ['websocket'],
+        'autoConnect': false,
+        'extraHeaders': {
+          'token': token, 
+        },
+        'query': {
+          'userId': id,
+        },
+      },
+    );
 
     _socket!.connect();
 
@@ -87,8 +87,8 @@ _socket = IO.io(
   }
 
   void onMessage(MessageCallback callback) {
-    _log("Listening to 'message' events");
-    _socket?.on('message', (data) {
+    _log("Listening to 'new_message' events");
+    _socket?.on('new_message', (data) {
       _log("Message received: $data");
       if (data is Map<String, dynamic>) {
         callback(data);
@@ -128,25 +128,9 @@ _socket = IO.io(
   //   });
   // }
 
-  void onUserOnline(void Function(String userId) callback) {
-    _log("Listening to 'user_online' events");
-    _socket?.on('user_online', (data) {
-      if (data is Map && data['userId'] != null) {
-        callback(data['userId']);
-      }
-    });
-  }
 
-  void onUserOffline(void Function(String userId) callback) {
-    _log("Listening to 'user_offline' events");
-    _socket?.on('user_offline', (data) {
-      if (data is Map && data['userId'] != null) {
-        callback(data['userId']);
-      }
-    });
-  }
-
-  void onUserStatusUpdate(void Function(String userId, String status, String? lastSeen) callback) {
+  void onUserStatusUpdate(
+      void Function(String userId, String status, String? lastSeen) callback) {
     _log("Listening to 'user_status_update' events");
     _socket?.on('user_status_update', (data) {
       if (data is Map && data['userId'] != null && data['status'] != null) {
@@ -159,30 +143,53 @@ _socket = IO.io(
     });
   }
 
-  void onMessagesRead(void Function(String conversationId, List<String> messageIds, String readBy) callback) {
+  void onMessagesRead(
+      void Function(
+              String conversationId, List<String> messageIds, String readBy)
+          callback) {
     _log("Listening to 'messages_read' events");
     _socket?.on('messages_read', (data) {
-      if (data is Map && data['conversationId'] != null && data['messageIds'] != null && data['readBy'] != null) {
-        final ids = (data['messageIds'] as List).map((e) => e.toString()).toList();
-        callback(data['conversationId'].toString(), ids, data['readBy'].toString());
+      if (data is Map &&
+          data['conversationId'] != null &&
+          data['messageIds'] != null &&
+          data['readBy'] != null) {
+        final ids =
+            (data['messageIds'] as List).map((e) => e.toString()).toList();
+        callback(
+            data['conversationId'].toString(), ids, data['readBy'].toString());
       }
     });
   }
 
-  void onUserTyping(void Function(String userId, String conversationId) callback) {
+  void onUserTyping(
+      void Function(String userId, String conversationId) callback) {
     _log("Listening to 'user_typing' events");
     _socket?.on('user_typing', (data) {
-      if (data is Map && data['userId'] != null && data['conversationId'] != null) {
+      if (data is Map &&
+          data['userId'] != null &&
+          data['conversationId'] != null) {
         callback(data['userId'].toString(), data['conversationId'].toString());
       }
     });
   }
 
-  void onUserStopTyping(void Function(String userId, String conversationId) callback) {
+  void onUserStopTyping(
+      void Function(String userId, String conversationId) callback) {
     _log("Listening to 'user_stop_typing' events");
     _socket?.on('user_stop_typing', (data) {
-      if (data is Map && data['userId'] != null && data['conversationId'] != null) {
+      if (data is Map &&
+          data['userId'] != null &&
+          data['conversationId'] != null) {
         callback(data['userId'].toString(), data['conversationId'].toString());
+      }
+    });
+  }
+
+  void onPresenceUpdate(void Function(String userId, String status) callback) {
+    _log("Listening to 'update_presence' events");
+    _socket?.on('update_presence', (data) {
+      if (data is Map && data['userId'] != null && data['status'] != null) {
+        callback(data['userId'].toString(), data['status'].toString());
       }
     });
   }
@@ -214,6 +221,26 @@ _socket = IO.io(
       _socket!.emit('typing_stop', {
         'conversationId': conversationId,
         'userId': userId,
+      });
+    }
+  }
+
+  // Emit message delivered event
+  void emitMessageDelivered(String messageId) {
+    if (_socket != null && _socket!.connected && messageId.isNotEmpty) {
+      _log("Emitting message_delivered for $messageId");
+      _socket!.emit('message_delivered', {
+        'messageId': messageId,
+      });
+    }
+  }
+
+  // Emit message read event
+  void emitMessageRead(String messageId) {
+    if (_socket != null && _socket!.connected && messageId.isNotEmpty) {
+      _log("Emitting message_read for $messageId");
+      _socket!.emit('message_read', {
+        'messageId': messageId,
       });
     }
   }

@@ -17,7 +17,7 @@ Future<List<Event>> fetchEvents(Ref ref) async {
     url,
     headers: {
       "Content-Type": "application/json",
-      // "Authorization": "Bearer $token"
+      "Authorization": "Bearer $token"
     },
   );
   print('hello');
@@ -190,7 +190,6 @@ Future<Event?> postEventByUser({
   required String link,
   required String venue,
   required String organiserName,
-  required List<String> coordinators,
   required int limit,
   required List<Map<String, dynamic>> speakers,
   required String eventMode,
@@ -217,11 +216,11 @@ Future<Event?> postEventByUser({
         'link': link,
         'venue': venue,
         'organiser_name': organiserName,
-        'coordinators': coordinators,
         'limit': limit,
         'speakers': speakers,
-        'eventMode': eventMode,
-        'type': type,
+        'type': eventMode,
+        'eventMode': type,
+        'createdBy': id,
         'image': image,
       }),
     );

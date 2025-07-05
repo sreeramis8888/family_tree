@@ -16,7 +16,7 @@ part 'user_data.g.dart';
 class UserService {
   static Map<String, String> _headers() => {
         'Content-Type': 'application/json',
-        // 'Authorization': 'Bearer $token',
+        'Authorization': 'Bearer $token',
         'accept': '*/*',
       };
 

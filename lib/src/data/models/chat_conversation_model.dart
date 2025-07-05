@@ -1,6 +1,6 @@
-import 'package:meta/meta.dart';
 import 'chat_message_model.dart';
 import 'chat_model.dart';
+import 'user_model.dart'; 
 
 class ChatConversation {
   final String? id;
@@ -11,11 +11,12 @@ class ChatConversation {
   final List<Participant> participants;
   final String? familyId;
   final String? createdBy;
-  final dynamic lastMessage;
+  final String? lastMessage;
   final DateTime? lastActivity;
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final int? unreadCount;
+  final List<UserModel> participantDetails;
 
   ChatConversation({
     this.id,
@@ -31,6 +32,7 @@ class ChatConversation {
     this.createdAt,
     this.updatedAt,
     this.unreadCount,
+    this.participantDetails = const [], 
   });
 
   factory ChatConversation.fromJson(Map<String, dynamic> json) => ChatConversation(
@@ -44,11 +46,11 @@ class ChatConversation {
             .toList(),
         familyId: json['familyId']?.toString(),
         createdBy: json['createdBy']?.toString(),
-        lastMessage: json['lastMessage'] != null
-            ? (json['lastMessage'] is String
-                ? json['lastMessage']
-                : ChatMessage.fromJson(json['lastMessage']))
-            : null,
+   lastMessage: (json['lastMessageDetail'] != null && json['lastMessageDetail']['content'] != null)
+    ? json['lastMessageDetail']['content'].toString()
+    : '',
+
+             
         lastActivity: json['lastActivity'] != null && (json['lastActivity'] as String).isNotEmpty
             ? DateTime.tryParse(json['lastActivity'])
             : null,
@@ -59,6 +61,9 @@ class ChatConversation {
             ? DateTime.tryParse(json['updatedAt'])
             : null,
         unreadCount: json['unreadCount'] != null ? int.tryParse(json['unreadCount'].toString()) : null,
+        participantDetails: (json['participantDetails'] as List<dynamic>? ?? [])
+            .map((e) => UserModel.fromJson(e as Map<String, dynamic>))
+            .toList(),
       );
 
   Map<String, dynamic> toJson() {
@@ -76,6 +81,7 @@ class ChatConversation {
       if (createdAt != null) 'createdAt': createdAt?.toIso8601String(),
       if (updatedAt != null) 'updatedAt': updatedAt?.toIso8601String(),
       if (unreadCount != null) 'unreadCount': unreadCount,
+      'participantDetails': participantDetails.map((e) => e.toJson()).toList(), // ✅ INCLUDE IN JSON
     };
   }
 }
@@ -83,14 +89,15 @@ class ChatConversation {
 class Participant {
   final dynamic userId; 
   final String? role;
+  final String? fullName;
   final DateTime? joinedAt;
   final DateTime? leftAt;
   final bool? isActive;
   final DateTime? muteUntil;
   final String? lastSeenMessageId;
 
-  Participant({
-    this.userId,
+  Participant( {
+    this.userId,this.fullName,
     this.role,
     this.joinedAt,
     this.leftAt,
@@ -104,6 +111,7 @@ class Participant {
             ? json['userId']
             : ChatUser.fromJson(json['userId']),
         role: json['role']?.toString(),
+        fullName: json['fullName']?.toString(),
         joinedAt: json['joinedAt'] != null && (json['joinedAt'] as String).isNotEmpty
             ? DateTime.tryParse(json['joinedAt'])
             : null,
@@ -121,6 +129,7 @@ class Participant {
     return {
       'userId': userId is ChatUser ? (userId as ChatUser).toJson() : userId,
       if (role != null) 'role': role,
+      if (fullName != null) 'fullName': fullName,
       if (joinedAt != null) 'joinedAt': joinedAt?.toIso8601String(),
       if (leftAt != null) 'leftAt': leftAt?.toIso8601String(),
       if (isActive != null) 'isActive': isActive,

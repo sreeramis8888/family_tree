@@ -14,7 +14,7 @@ Future<List<Promotion>> fetchPromotions(Ref ref) async {
     url,
     headers: {
       "Content-Type": "application/json",
-      // "Authorization": "Bearer $token"
+      "Authorization": "Bearer $token"
     },
   );
 
