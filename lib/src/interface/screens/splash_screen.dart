@@ -2,7 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+<<<<<<< HEAD
 import 'package:familytree/src/data/services/auth_service.dart';
+=======
+>>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -60,7 +63,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     }
   }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
   Future<void> checkFirstLaunch() async {
     isFirstLaunch = await SecureStorage.read('has_launched_before') ?? 'false';
     if (isFirstLaunch == 'true') {
@@ -334,6 +340,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     });
   }
 
+<<<<<<< HEAD
 Future<void> checktoken() async {
     String? savedToken = await SecureStorage.read('token') ?? '';
     String? savedId = await SecureStorage.read('id') ?? '';
@@ -363,6 +370,19 @@ Future<void> checktoken() async {
           LoggedIn = false;
         });
       }
+=======
+  Future<void> checktoken() async {
+    String? savedtoken = await SecureStorage.read('token') ?? '';
+    String? savedId = await SecureStorage.read('id') ?? '';
+    log('token:$savedtoken');
+    log('userId:$savedId');
+    if (savedtoken != '' && savedtoken.isNotEmpty && savedId != '') {
+      setState(() {
+        LoggedIn = true;
+        token = savedtoken;
+        id = savedId;
+      });
+>>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
     }
   }
 

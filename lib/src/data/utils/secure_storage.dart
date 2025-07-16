@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:familytree/src/data/globals.dart';
 
@@ -44,3 +45,51 @@ Future<void> saveSecureData() async {
   await SecureStorage.write('fcmToken', fcmToken);
   await SecureStorage.write('subscriptionType', subscriptionType);
 }
+=======
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:familytree/src/data/globals.dart';
+
+class SecureStorage {
+  static final FlutterSecureStorage _storage = FlutterSecureStorage();
+
+  static Future<void> write(String key, String value) async {
+    await _storage.write(key: key, value: value);
+  }
+
+  static Future<String?> read(String key) async {
+    return await _storage.read(key: key);
+  }
+
+  static Future<void> delete(String key) async {
+    await _storage.delete(key: key);
+  }
+
+  static Future<void> deleteAll() async {
+    await _storage.deleteAll();
+  }
+
+  static Future<void> savePhoneNumber(String phone) async {
+    await _storage.write(key: 'phone', value: phone);
+  }
+
+  static Future<String?> getPhoneNumber() async {
+    return await _storage.read(key: 'phone');
+  }
+}
+
+Future<void> loadSecureData() async {
+  token = await SecureStorage.read('token') ?? '';
+  LoggedIn = (await SecureStorage.read('LoggedIn')) == 'true';
+  id = await SecureStorage.read('id') ?? '';
+  fcmToken = await SecureStorage.read('fcmToken') ?? '';
+  subscriptionType = await SecureStorage.read('subscriptionType') ?? 'free';
+}
+
+Future<void> saveSecureData() async {
+  await SecureStorage.write('token', token);
+  await SecureStorage.write('LoggedIn', LoggedIn.toString());
+  await SecureStorage.write('id', id);
+  await SecureStorage.write('fcmToken', fcmToken);
+  await SecureStorage.write('subscriptionType', subscriptionType);
+}
+>>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9

@@ -28,13 +28,20 @@ class UserModel {
   final double? fixedWalletAmount;
   final bool? needsRechargeReminder;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
   final bool? isAlive;
   final String? status;
   final bool? isPrivate;
   final String? image;
   final String? location;
   final bool? isRegistered;
+<<<<<<< HEAD
   final bool? isFamilyAdmin;
+=======
+>>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
 
   UserModel({
     this.id,
@@ -63,13 +70,20 @@ class UserModel {
     this.receivedContributions,
     this.fixedWalletAmount,
     this.needsRechargeReminder,
+<<<<<<< HEAD
+=======
+
+>>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
     this.isAlive,
     this.status,
     this.isPrivate,
     this.image,
     this.location,
     this.isRegistered,
+<<<<<<< HEAD
     this.isFamilyAdmin,
+=======
+>>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
   });
 
   UserModel copyWith({
@@ -106,7 +120,10 @@ class UserModel {
     String? image,
     String? location,
     bool? isRegistered,
+<<<<<<< HEAD
     bool? isisFamilyAdmin,
+=======
+>>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -132,18 +149,28 @@ class UserModel {
       lastRenewed: lastRenewed ?? this.lastRenewed,
       nextRenewal: nextRenewal ?? this.nextRenewal,
       reminderThreshold: reminderThreshold ?? this.reminderThreshold,
+<<<<<<< HEAD
       receivedContributions:
           receivedContributions ?? this.receivedContributions,
       fixedWalletAmount: fixedWalletAmount ?? this.fixedWalletAmount,
       needsRechargeReminder:
           needsRechargeReminder ?? this.needsRechargeReminder,
+=======
+      receivedContributions: receivedContributions ?? this.receivedContributions,
+      fixedWalletAmount: fixedWalletAmount ?? this.fixedWalletAmount,
+      needsRechargeReminder: needsRechargeReminder ?? this.needsRechargeReminder,
+
+>>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
       isAlive: isAlive ?? this.isAlive,
       status: status ?? this.status,
       isPrivate: isPrivate ?? this.isPrivate,
       image: image ?? this.image,
       location: location ?? this.location,
       isRegistered: isRegistered ?? this.isRegistered,
+<<<<<<< HEAD
       isFamilyAdmin: isFamilyAdmin?? this.isFamilyAdmin
+=======
+>>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
     );
   }
 
@@ -152,12 +179,17 @@ class UserModel {
       id: json['_id'],
       fullName: json['fullName'],
       gender: json['gender'],
+<<<<<<< HEAD
       birthDate: json['birthDate'] != null
           ? DateTime.tryParse(json['birthDate'])
           : null,
       deathDate: json['deathDate'] != null
           ? DateTime.tryParse(json['deathDate'])
           : null,
+=======
+      birthDate: json['birthDate'] != null ? DateTime.tryParse(json['birthDate']) : null,
+      deathDate: json['deathDate'] != null ? DateTime.tryParse(json['deathDate']) : null,
+>>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
       occupation: json['occupation'],
       biography: json['biography'],
       media: (json['media'] as List?)?.map((e) => Media.fromJson(e)).toList(),
@@ -167,6 +199,7 @@ class UserModel {
       secondaryPhone: json['secondaryPhone'],
       social: (json['social'] as List?)?.map((e) => Link.fromJson(e)).toList(),
       address: json['address'],
+<<<<<<< HEAD
       website:
           (json['website'] as List?)?.map((e) => Link.fromJson(e)).toList(),
       walletBalance: (json['walletBalance'] as num?)?.toDouble(),
@@ -187,13 +220,31 @@ class UserModel {
           (json['receivedContributions'] as num?)?.toDouble(),
       fixedWalletAmount: (json['fixedWalletAmount'] as num?)?.toDouble(),
       needsRechargeReminder: json['needsRechargeReminder'],
+=======
+        website: (json['website'] as List?)?.map((e) => Link.fromJson(e)).toList(),
+      walletBalance: (json['walletBalance'] as num?)?.toDouble(),
+      lastRecharge: json['lastRecharge'] != null ? DateTime.tryParse(json['lastRecharge']) : null,
+      walletStatus: json['walletStatus'],
+      lastRechargeAmount: (json['lastRechargeAmount'] as num?)?.toDouble(),
+      totalContribution: (json['totalContribution'] as num?)?.toDouble(),
+      lastRenewed: json['lastRenewed'] != null ? DateTime.tryParse(json['lastRenewed']) : null,
+      nextRenewal: json['nextRenewal'] != null ? DateTime.tryParse(json['nextRenewal']) : null,
+      reminderThreshold: json['reminderThreshold'],
+      receivedContributions: (json['receivedContributions'] as num?)?.toDouble(),
+      fixedWalletAmount: (json['fixedWalletAmount'] as num?)?.toDouble(),
+      needsRechargeReminder: json['needsRechargeReminder'],
+
+>>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
       isAlive: json['isAlive'],
       status: json['status'],
       isPrivate: json['isPrivate'],
       image: json['image'],
       location: json['location'],
       isRegistered: json['isRegistered'],
+<<<<<<< HEAD
       isFamilyAdmin: json['isFamilyAdmin']
+=======
+>>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
     );
   }
 
@@ -225,17 +276,27 @@ class UserModel {
       'receivedContributions': receivedContributions,
       'fixedWalletAmount': fixedWalletAmount,
       'needsRechargeReminder': needsRechargeReminder,
+<<<<<<< HEAD
+=======
+
+>>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
       'isAlive': isAlive,
       'status': status,
       'isPrivate': isPrivate,
       'image': image,
       'location': location,
       'isRegistered': isRegistered,
+<<<<<<< HEAD
       'isFamilyAdmin':isFamilyAdmin
     };
   }
 }
 
+=======
+    };
+  }
+}
+>>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
 class Media {
   final String? url;
   final String? caption;
@@ -271,6 +332,7 @@ class Media {
     return Media(
       url: json['url'],
       caption: json['caption'],
+<<<<<<< HEAD
       notes: json['notes'] != null
           ? Map<String, dynamic>.from(json['notes'])
           : null,
@@ -278,6 +340,11 @@ class Media {
       uploadDate: json['uploadDate'] != null
           ? DateTime.tryParse(json['uploadDate'])
           : null,
+=======
+      notes: json['notes'] != null ? Map<String, dynamic>.from(json['notes']) : null,
+      metadata: json['metadata'],
+      uploadDate: json['uploadDate'] != null ? DateTime.tryParse(json['uploadDate']) : null,
+>>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
     );
   }
 
@@ -289,7 +356,10 @@ class Media {
         'uploadDate': uploadDate?.toIso8601String(),
       };
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
 class Link {
   final String? name;
   final String? link;

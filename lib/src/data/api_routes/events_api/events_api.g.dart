@@ -6,6 +6,7 @@ part of 'events_api.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+<<<<<<< HEAD
 String _$fetchEventWithPersonHash() =>
     r'1ba4394a6abd76a1942cd1f7548e8884060d04f1';
 
@@ -18,14 +19,31 @@ final fetchEventWithPersonProvider =
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
       : _$fetchEventWithPersonHash,
+=======
+String _$fetchEventsHash() => r'f51e6e106d03bc4c8aa6ef01440408159a7a85b1';
+
+/// See also [fetchEvents].
+@ProviderFor(fetchEvents)
+final fetchEventsProvider = AutoDisposeFutureProvider<List<Event>>.internal(
+  fetchEvents,
+  name: r'fetchEventsProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$fetchEventsHash,
+>>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
+<<<<<<< HEAD
 typedef FetchEventWithPersonRef = AutoDisposeFutureProviderRef<EventWithPerson>;
 String _$filteredEventsHash() => r'0cb6dd87cbd3b336db0782d145176960f3376d9e';
+=======
+typedef FetchEventsRef = AutoDisposeFutureProviderRef<List<Event>>;
+String _$fetchEventAttendanceHash() =>
+    r'397e3f49d647ff82387140ee04796e804c3cecf1';
+>>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -48,6 +66,7 @@ class _SystemHash {
   }
 }
 
+<<<<<<< HEAD
 /// See also [filteredEvents].
 @ProviderFor(filteredEvents)
 const filteredEventsProvider = FilteredEventsFamily();
@@ -335,6 +354,8 @@ typedef FetchEventsRef = AutoDisposeFutureProviderRef<List<Event>>;
 String _$fetchEventAttendanceHash() =>
     r'397e3f49d647ff82387140ee04796e804c3cecf1';
 
+=======
+>>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
 /// See also [fetchEventAttendance].
 @ProviderFor(fetchEventAttendance)
 const fetchEventAttendanceProvider = FetchEventAttendanceFamily();

@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 import 'package:familytree/src/data/globals.dart';
 import 'package:familytree/src/data/models/user_model.dart';
 import 'package:familytree/src/interface/components/report/showReportBlockPopup.dart';
+=======
+import 'package:familytree/src/data/models/user_model.dart';
+>>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -525,6 +529,7 @@ class _IndividualPageState extends State<IndividualPage>
                 ],
               ),
             ),
+<<<<<<< HEAD
 
                 const Spacer(),
             Column(
@@ -549,6 +554,23 @@ class _IndividualPageState extends State<IndividualPage>
           ],
         ),
        
+=======
+          ],
+        ),
+        actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert, color: kWhite),
+            onSelected: (value) {
+              // Handle menu actions
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(value: 'view_contact', child: Text('View Contact')),
+              const PopupMenuItem(value: 'search', child: Text('Search')),
+              const PopupMenuItem(value: 'mute', child: Text('Mute Notifications')),
+            ],
+          ),
+        ],
+>>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
       ),
       body: Container(
         decoration: BoxDecoration(

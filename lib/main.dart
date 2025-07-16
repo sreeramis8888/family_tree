@@ -7,7 +7,7 @@ import 'package:familytree/src/data/constants/style_constants.dart';
 import 'package:familytree/src/data/services/navgitor_service.dart';
 import 'package:familytree/src/data/services/notification_service.dart';
 import 'package:familytree/src/data/services/snackbar_service.dart';
-import 'package:familytree/src/data/router/router.dart' as router; 
+import 'package:familytree/src/data/router/router.dart' as router;
 import 'package:familytree/src/data/utils/secure_storage.dart';
 
 Future<void> main() async {
@@ -48,3 +48,4 @@ class MyApp extends ConsumerWidget {
     );
   }
 }
+>>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9

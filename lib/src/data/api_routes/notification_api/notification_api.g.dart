@@ -6,6 +6,7 @@ part of 'notification_api.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+<<<<<<< HEAD
 String _$getSingleNotificationByIdHash() =>
     r'386c7cdbca9ad84481e7251cf0b2cba273d12fba';
 
@@ -335,6 +336,12 @@ String _$fetchNotificationsHash() =>
 /// ✅ Fetch all user notifications
 ///
 /// Copied from [fetchNotifications].
+=======
+String _$fetchNotificationsHash() =>
+    r'7cbc77ca28b3ebbc72b6c3592888829204d34487';
+
+/// See also [fetchNotifications].
+>>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
 @ProviderFor(fetchNotifications)
 final fetchNotificationsProvider =
     AutoDisposeFutureProvider<List<NotificationModel>>.internal(

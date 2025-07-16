@@ -36,6 +36,7 @@ class _CropImageScreenState extends State<CropImageScreen> {
     });
 
     // Method 1: Try the standard approach
+<<<<<<< HEAD
     final MemoryImage? croppedResult = await controller.onCropImage();
 
     if (croppedResult != null) {
@@ -44,6 +45,13 @@ class _CropImageScreenState extends State<CropImageScreen> {
       setState(() {
         _isLoading = false;
       });
+=======
+    final croppedResult = await controller.onCropImage();
+
+    if (croppedResult != null) {
+      final Uint8List imageBytes = croppedResult.bytes;
+      Navigator.of(context).pop(imageBytes);
+>>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
     }
   }
 
