@@ -185,12 +185,8 @@ class _ShowAdddBusinessSheetState extends State<ShowAdddBusinessSheet> {
                           );
                         }
 
-<<<<<<< HEAD
                          await createFeed(
                           type: 'post',
-=======
-                        await uploadBusiness(
->>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
                           media: mediaUrl,
                           content: widget.textController.text,
                         );

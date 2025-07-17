@@ -12,13 +12,6 @@ import 'package:familytree/src/data/models/user_model.dart';
 import 'package:familytree/src/data/services/navgitor_service.dart';
 import 'package:familytree/src/data/utils/secure_storage.dart';
 import 'package:familytree/src/interface/components/Dialogs/premium_dialog.dart';
-<<<<<<< HEAD
-=======
-import 'package:familytree/src/interface/screens/main_pages/menuPages/levels/chapters.dart';
-import 'package:familytree/src/interface/screens/main_pages/menuPages/levels/district.dart';
-import 'package:familytree/src/interface/screens/main_pages/menuPages/levels/level_members.dart';
-import 'package:familytree/src/interface/screens/main_pages/menuPages/levels/zones.dart';
->>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
 import 'package:familytree/src/interface/screens/web_view_screen.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/financial_program/financial_program_page.dart';
 
@@ -58,10 +51,7 @@ Widget customDrawer(
                   ],
                 ),
                 const SizedBox(height: 10),
-<<<<<<< HEAD
               
-=======
->>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
                 Row(
                   children: [
                     CircleAvatar(
@@ -120,10 +110,7 @@ Widget customDrawer(
               padding: EdgeInsets.zero,
               children: [
                 const SizedBox(height: 8),
-<<<<<<< HEAD
                 
-=======
->>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
                 _buildDrawerItem(
                   icon: 'assets/svg/icons/financial_logo.svg',
                   label: 'Financial Program',
@@ -162,7 +149,6 @@ Widget customDrawer(
                     }
                   },
                 ),
-<<<<<<< HEAD
                if (user.isFamilyAdmin == true)
                   _buildDrawerItem(
                     icon: 'assets/svg/icons/approvals.svg',
@@ -173,8 +159,6 @@ Widget customDrawer(
                   ),
 
 
-=======
->>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
                 _buildDrawerItem(
                   icon: 'assets/svg/icons/my_products.svg',
                   label: 'My Products',

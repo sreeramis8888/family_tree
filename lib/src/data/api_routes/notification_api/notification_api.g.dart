@@ -6,9 +6,8 @@ part of 'notification_api.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-<<<<<<< HEAD
 String _$getSingleNotificationByIdHash() =>
-    r'386c7cdbca9ad84481e7251cf0b2cba273d12fba';
+    r'3a487caa7d34ac0bcea9f05c8cb80dccb69d70e2';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -180,25 +179,25 @@ class _GetSingleNotificationByIdProviderElement
 }
 
 String _$filteredNotificationsHash() =>
-    r'75ae9be0e40854d03dc733f8a09148d33d7be506';
+    r'd5c69a0d333061367e5320e19c74a5485557e8fa';
 
-/// ✅ Fetch filtered notifications by family admin memberIds
+/// ✅ Filtered notifications for specific member IDs
 ///
 /// Copied from [filteredNotifications].
 @ProviderFor(filteredNotifications)
 const filteredNotificationsProvider = FilteredNotificationsFamily();
 
-/// ✅ Fetch filtered notifications by family admin memberIds
+/// ✅ Filtered notifications for specific member IDs
 ///
 /// Copied from [filteredNotifications].
 class FilteredNotificationsFamily
     extends Family<AsyncValue<List<Map<String, dynamic>>>> {
-  /// ✅ Fetch filtered notifications by family admin memberIds
+  /// ✅ Filtered notifications for specific member IDs
   ///
   /// Copied from [filteredNotifications].
   const FilteredNotificationsFamily();
 
-  /// ✅ Fetch filtered notifications by family admin memberIds
+  /// ✅ Filtered notifications for specific member IDs
   ///
   /// Copied from [filteredNotifications].
   FilteredNotificationsProvider call(
@@ -233,12 +232,12 @@ class FilteredNotificationsFamily
   String? get name => r'filteredNotificationsProvider';
 }
 
-/// ✅ Fetch filtered notifications by family admin memberIds
+/// ✅ Filtered notifications for specific member IDs
 ///
 /// Copied from [filteredNotifications].
 class FilteredNotificationsProvider
     extends AutoDisposeFutureProvider<List<Map<String, dynamic>>> {
-  /// ✅ Fetch filtered notifications by family admin memberIds
+  /// ✅ Filtered notifications for specific member IDs
   ///
   /// Copied from [filteredNotifications].
   FilteredNotificationsProvider(
@@ -331,17 +330,9 @@ class _FilteredNotificationsProviderElement
 }
 
 String _$fetchNotificationsHash() =>
-    r'2208ca83815ca18f102f171da80d3651db287c21';
-
-/// ✅ Fetch all user notifications
-///
-/// Copied from [fetchNotifications].
-=======
-String _$fetchNotificationsHash() =>
-    r'7cbc77ca28b3ebbc72b6c3592888829204d34487';
+    r'016669aca6255b921b544a20e0add3e7ce00f4cd';
 
 /// See also [fetchNotifications].
->>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
 @ProviderFor(fetchNotifications)
 final fetchNotificationsProvider =
     AutoDisposeFutureProvider<List<NotificationModel>>.internal(

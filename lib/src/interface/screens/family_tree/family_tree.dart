@@ -5,41 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-// Dummy pages for navigation
-class FamilyTreePage extends StatelessWidget {
-  const FamilyTreePage({super.key});
+
+class FamilyTree extends StatefulWidget {
+  const FamilyTree({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Family Tree")),
-      body: const Center(child: Text("Family Tree Content")),
-    );
-  }
+  State<FamilyTree> createState() => _FamilyTreeState();
 }
 
-class MembersPage extends StatelessWidget {
-  const MembersPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Members")),
-      body: const Center(child: Text("Members Content")),
-    );
-  }
-}
-
-
-
-class CommunityPage extends StatefulWidget {
-  const CommunityPage({super.key});
-
-  @override
-  State<CommunityPage> createState() => _CommunityPageState();
-}
-
-class _CommunityPageState extends State<CommunityPage> {
+class _FamilyTreeState extends State<FamilyTree> {
   int currentIndex = 2;
 
   @override
@@ -193,19 +167,19 @@ class _CommunityPageState extends State<CommunityPage> {
                             Icons.account_tree,
                             "Family Tree",
                             () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const FamilyTreePage(),
-                                ),
-                              );
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) => const FamilyTreePage(),
+                              //   ),
+                              // );
                             },
                           ),
                           _buildFamilyOption(Icons.group, "Members", () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => HomeWithoutMember(),
+                                builder: (context) =>FamilyMembers(),
                               ),
                             );
                           }),

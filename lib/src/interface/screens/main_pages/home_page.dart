@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:familytree/src/interface/screens/family_tree/family_tree.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/campaigns/campaign_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
@@ -186,7 +187,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                                           'assets/pngs/familytree_logo.png'),
                                     ),
                                     const Spacer(),
-<<<<<<< HEAD
                                 Consumer(
                                       builder: (context, ref, child) {
                                         final asyncNotifications = ref
@@ -206,21 +206,6 @@ class _HomePageState extends ConsumerState<HomePage> {
 
                                             log("🔍 userExists: $userExists");
 
-=======
-                                    Consumer(
-                                      builder: (context, ref, child) {
-                                        final asyncNotifications = ref
-                                            .watch(fetchNotificationsProvider);
-                                        return asyncNotifications.when(
-                                          data: (notifications) {
-                                            bool userExists = notifications.any(
-                                                (notification) =>
-                                                    notification.users?.any(
-                                                        (user) =>
-                                                            user.userId ==
-                                                            id) ??
-                                                    false);
->>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
                                             return IconButton(
                                               icon: userExists
                                                   ? const Icon(
@@ -233,19 +218,13 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                 Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
-<<<<<<< HEAD
                                                     builder: (context) =>
                                                         const NotificationPage(),
                                                   ),
-=======
-                                                      builder: (context) =>
-                                                          const NotificationPage()),
->>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
                                                 );
                                               },
                                             );
                                           },
-<<<<<<< HEAD
                                           loading: () {
                                             log("⏳ Notifications are loading...");
                                             return const Center(
@@ -262,16 +241,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     ),
 
 
-=======
-                                          loading: () => const Center(
-                                              child: Icon(
-                                                  Icons.notifications_none)),
-                                          error: (error, stackTrace) =>
-                                              const SizedBox(),
-                                        );
-                                      },
-                                    ),
->>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
                                     // Menu button to open the right drawer
                                     InkWell(
                                       onTap: () =>
@@ -592,6 +561,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                                           icon:
                                               'assets/svg/icons/tree_icon.svg',
                                           text: 'Family Tree',
+                                           onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      FamilyTree()),
+                                            );
+                                          },
                                         ),
                                         CircleIconButton(
                                           icon:

@@ -163,12 +163,14 @@ class _ApprovalsPageState extends ConsumerState<ApprovalsPage>
         approvedApprovalsMap['Member'] = request
             .where((r) => r.status == 'approved')
             .map<Map<String, String>>((r) => {
+
                   'view': 'Member',
                   'title': '${r.fullName}',
                   'subtitle': r.email ?? '',
                   'status': r.status.capitalize(),
                   '_id': r.id ?? '',
                   'family': familyname??''
+            
                 })
             .toList();
         pendingApprovalsMap['Member'] = request

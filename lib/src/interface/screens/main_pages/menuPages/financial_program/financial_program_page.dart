@@ -1,3 +1,4 @@
+import 'package:familytree/src/data/services/payment_service/checkwalletapi.dart';
 import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/data/constants/style_constants.dart';
 import 'package:familytree/src/data/globals.dart';
@@ -130,8 +131,10 @@ class _BalanceCard extends ConsumerWidget {
                           return AlertDialog(
                             title: const Text('Top Up Wallet'),
                             content: TextField(
-                              keyboardType: TextInputType.numberWithOptions(decimal: true),
-                              decoration: const InputDecoration(hintText: 'Enter amount'),
+                              keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true),
+                              decoration: const InputDecoration(
+                                  hintText: 'Enter amount'),
                               onChanged: (value) {
                                 enteredAmount = double.tryParse(value);
                               },
@@ -141,34 +144,69 @@ class _BalanceCard extends ConsumerWidget {
                                 onPressed: () => Navigator.of(context).pop(),
                                 child: const Text('Cancel'),
                               ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  if (enteredAmount != null && enteredAmount! > 0) {
-                                    Navigator.of(context).pop(enteredAmount);
+
+                            ElevatedButton(
+                                onPressed: () async {
+                                  if (enteredAmount != null &&
+                                      enteredAmount! > 0) {
+                                    final amountToTopUp = enteredAmount!;
+                                    Navigator.of(context)
+                                        .pop(); // Close the dialog
+
+                                    final topupPayment = TopupPaymentService(
+                                      amount: amountToTopUp,
+                                      onSuccess: (msg) async {
+                                        await handleTopupSuccess(
+                                          ref: ref,
+                                          context: context,
+                                          id: id,
+                                          amount: amountToTopUp,
+                                        );
+                                      },
+                                      onError: (msg) {
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(content: Text(msg)),
+                                          );
+                                        }
+                                      },
+                                    );
+                                       topupPayment.init();
+                                    await topupPayment.startPayment();
                                   }
                                 },
-                                child: const Text('Top Up'),
-                              ),
+                                child: const Text("Top Up"),
+                              )
+
+                              // ElevatedButton(
+                              //   onPressed: () {
+                              //     if (enteredAmount != null && enteredAmount! > 0) {
+                              //       Navigator.of(context).pop(enteredAmount);
+                              //     }
+                              //   },
+                              //   child: const Text('Top Up'),
+                              // ),
                             ],
                           );
                         },
                       );
-                      if (amount != null && amount > 0) {
-                        final success = await ref.read(joinProgramProvider(
-                          memberId: id,
-                          amount: amount,
-                        ).future);
-                        if (success) {
-                          ref.invalidate(getProgramMemberByIdProvider(id));
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Wallet topped up successfully!')),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Failed to top up wallet.')),
-                          );
-                        }
-                      }
+                      // if (amount != null && amount > 0) {
+                      //   final success = await ref.read(joinProgramProvider(
+                      //     memberId: id,
+                      //     amount: amount,
+                      //   ).future);
+                      //   if (success) {
+                      //     ref.invalidate(getProgramMemberByIdProvider(id));
+                      //     ScaffoldMessenger.of(context).showSnackBar(
+                      //       const SnackBar(content: Text('Wallet topped up successfully!')),
+                      //     );
+                      //   } else {
+                      //     ScaffoldMessenger.of(context).showSnackBar(
+                      //       const SnackBar(content: Text('Failed to top up wallet.')),
+                      //     );
+                      //   }
+                      // }
                     },
                   ),
                 ),
@@ -190,6 +228,34 @@ class _BalanceCard extends ConsumerWidget {
     );
   }
 }
+Future<void> handleTopupSuccess({
+  required WidgetRef ref,
+  required BuildContext context,
+  required String id,
+  required double amount,
+}) async {
+  final success = await ref.read(joinProgramProvider(
+    memberId: id,
+    amount: amount,
+  ).future);
+
+  debugPrint("success1");
+
+  if (success) {
+    debugPrint("success2");
+
+    ref.invalidate(getProgramMemberByIdProvider(id));
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Wallet topped up successfully!')),
+    );
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Failed to top up wallet.')),
+    );
+  }
+}
+
 
 class _LowBalanceAlert extends StatelessWidget {
   const _LowBalanceAlert();
@@ -238,7 +304,8 @@ class _MembershipTab extends ConsumerWidget {
   const _MembershipTab();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {    final memberAsync = ref.watch(getProgramMemberByIdProvider(id));
+  Widget build(BuildContext context, WidgetRef ref) {
+    final memberAsync = ref.watch(getProgramMemberByIdProvider(id));
     return memberAsync.when(
       data: (member) {
         if (member == null) {
@@ -330,7 +397,8 @@ class _TransactionsTabState extends ConsumerState<_TransactionsTab> {
 
     return NotificationListener<ScrollNotification>(
       onNotification: (scrollInfo) {
-        if (!isLoading && hasMore &&
+        if (!isLoading &&
+            hasMore &&
             scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
           txNotifier.fetchMoreTransactions();
         }
@@ -354,7 +422,7 @@ class _TransactionsTabState extends ConsumerState<_TransactionsTab> {
                       }
                       final tx = transactions[index];
                       return _transactionCard(
-                        id: tx.transactionId,
+                        id: tx.id,
                         category: tx.type,
                         date: tx.date,
                         amount: tx.amount,
@@ -423,7 +491,7 @@ class _TransactionsTabState extends ConsumerState<_TransactionsTab> {
                       border: Border.all(color: statusColor),
                     ),
                     child: Text(
-                      status.toUpperCase() ,
+                      status.toUpperCase(),
                       style: TextStyle(
                         color: statusColor,
                         fontWeight: FontWeight.bold,
@@ -532,7 +600,8 @@ class _MembersTabState extends ConsumerState<_MembersTab> {
 
   void _onScroll() {
     final notifier = ref.read(membersNotifierProvider.notifier);
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 100) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 100) {
       if (!notifier.isLoading && notifier.hasMore) {
         notifier.fetchMoreMembers();
       }

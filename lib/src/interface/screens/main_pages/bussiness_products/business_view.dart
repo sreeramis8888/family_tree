@@ -2,10 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'package:familytree/src/data/models/chat_model.dart';
-<<<<<<< HEAD
 import 'package:familytree/src/interface/components/report/showReportBlockPopup.dart';
-=======
->>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -209,11 +206,7 @@ class _BusinessViewState extends ConsumerState<BusinessView> {
               child: GestureDetector(
                 onTap: () {
                   // if (subscriptionType != 'free') {
-<<<<<<< HEAD
                   _openModalSheet(sheet: 'post');
-=======
-                    _openModalSheet(sheet: 'post');
->>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
                   // } else {
                   //   showDialog(
                   //     context: context,
@@ -593,12 +586,8 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                   IconButton(
                     icon: const Icon(Icons.more_vert, color: Colors.grey),
                     onPressed: () {
-<<<<<<< HEAD
                       ShowReportPostDialog(context, widget.business.id.toString());
                       log(id);
-=======
-                      // Show options menu
->>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
                     },
                   ),
               ],

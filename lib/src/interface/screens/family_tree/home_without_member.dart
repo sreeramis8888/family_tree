@@ -1,182 +1,284 @@
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'dart:convert';
+import 'dart:io';
 
-class HomeWithoutMember extends StatefulWidget {
-  const HomeWithoutMember({super.key});
+import 'package:familytree/src/data/globals.dart';
+import 'package:familytree/src/data/models/user_model.dart';
+import 'package:familytree/src/interface/components/loading_indicator/loading_indicator.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
+
+class FamilyMembers extends StatefulWidget {
+  const FamilyMembers({super.key});
 
   @override
-  State<HomeWithoutMember> createState() => _HomeWithoutMemberState();
+  State<FamilyMembers> createState() => _FamilyMembersState();
 }
 
-class _HomeWithoutMemberState extends State<HomeWithoutMember> {
-  final Map<String, List<Map<String, String>>> pendingApprovals = {
-    'Member': [
-      {
-        'title': 'Member – Muhammed',
-        'subtitle': 'Aliyar Family',
-        'date': '02/02/1999-',
-      },
-      {
-        'title': 'Member – Ahmed',
-        'subtitle': 'Aliyar Family',
-        'date': '03/03/2000-',
-      },
-      {
-        'title': 'Member – Zainab',
-        'subtitle': 'Aliyar Family',
-        'date': '04/04/2001-',
-      },
-      {
-        'title': 'Member – Fatima',
-        'subtitle': 'Aliyar Family',
-        'date': '05/05/2002-',
-      },
-    ],
+class _FamilyMembersState extends State<FamilyMembers> {
+  Map<String, List<UserModel>> pendingApprovals = {
+    'Member': [],
   };
+
+  final String personId = id;
+  String? familyName;
+  bool isLoading = true; // ✅ loader state
+
+  @override
+  void initState() {
+    super.initState();
+    fetchFamilyMembersFromPerson();
+  }
+
+  Future<void> fetchFamilyMembersFromPerson() async {
+    try {
+      final personRes = await http.get(
+        Uri.parse('$baseUrl/people/$personId'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      if (personRes.statusCode != 200) return;
+      final personData = jsonDecode(personRes.body)['data'];
+
+      final dynamic familyField =
+          personData['family'] ?? personData['familyId'];
+      String? familyId;
+
+      if (familyField is String) {
+        familyId = familyField;
+      } else if (familyField is List && familyField.isNotEmpty) {
+        familyId = familyField.first;
+      } else {
+        familyId = null;
+      }
+
+      if (familyId == null) return;
+
+      final familyRes = await http.get(
+        Uri.parse('$baseUrl/families/$familyId'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      if (familyRes.statusCode != 200) return;
+      final familyData = jsonDecode(familyRes.body)['data'];
+      final List members = familyData['members'];
+
+      familyName = familyData['name'];
+
+      List<UserModel> memberList = [];
+
+      for (final member in members) {
+        final String id = member['_id'];
+
+        final memberRes = await http.get(
+          Uri.parse('$baseUrl/people/$id'),
+          headers: {'Authorization': 'Bearer $token'},
+        );
+
+        if (memberRes.statusCode == 200) {
+          final memberData = jsonDecode(memberRes.body)['data'];
+          final user = UserModel.fromJson(memberData);
+          memberList.add(user);
+        }
+      }
+
+      setState(() {
+        pendingApprovals['Member'] = memberList;
+        isLoading = false; // ✅ Hide loader when done
+      });
+    } catch (e) {
+      print('Error: $e');
+      setState(() {
+        isLoading = false; // ✅ Still hide loader on error
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar:AppBar(
-        
-        backgroundColor: Colors.white,
-        forceMaterialTransparency: true,
-  centerTitle: true,
-  title: Text(
-    "Kalathingal Family",
-    style: GoogleFonts.roboto(
-      fontSize: 16,
-      color: const Color(0xff272727),
-      fontWeight: FontWeight.w500,
-    ),
-  ),
-  leading: Padding(
-    padding: const EdgeInsets.only(left: 8.0),
-    child: IconButton(
-      padding: EdgeInsets.zero,
-      constraints: const BoxConstraints(),
-      icon: const Icon(
-        Icons.arrow_back_ios,
-        size: 12,
-        color: Colors.black,
-      ),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-    ),
-  ),
-  elevation: 1,
-  actions: [
-    SizedBox(width: 48), // Balances the leading icon space
-  ],
-),
-
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Kalathingal Family",
-                style: GoogleFonts.roboto(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                  color: Color(0xffE83A33)
+      body: Column(
+        children: [
+          // ✅ AppBar with shadow using a Container
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 6,
+                  offset: const Offset(0, 3),
                 ),
+              ],
+            ),
+            child: SafeArea(
+              bottom: false,
+              child: AppBar(
+                backgroundColor: Colors.white,
+                forceMaterialTransparency: true,
+                elevation: 0, // no default elevation
+                centerTitle: true,
+                title: Text(
+                  "$familyName Family",
+                  style: GoogleFonts.roboto(
+                    fontSize: 16,
+                    color: const Color(0xff272727),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                leading: Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon: const Icon(
+                      Icons.arrow_back_ios,
+                      size: 12,
+                      color: Colors.black,
+                    ),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ),
+                actions: [const SizedBox(width: 48)],
               ),
-              const SizedBox(height: 24),
-              // Loop through all pending approvals and display them
-              for (String category in pendingApprovals.keys)
-                for (Map<String, String> item in pendingApprovals[category]!)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 12.0),
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+            ),
+          ),
+
+          // ✅ Content with loading or members list
+          Expanded(
+            child: isLoading
+                ? const Center(child: LoadingAnimation())
+                : SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 0.0, vertical: 0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const CircleAvatar(
-                            radius: 20,
-                            backgroundImage: AssetImage(
-                              'assets/pngs/approval-profile.jpg',
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          // Title & Subtitle
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  item['title'] ?? '',
-                                  style: GoogleFonts.inter(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 12,
-                                    height: 1.31,
-                                    color: const Color(0xff272727),
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  item['subtitle'] ?? '',
-                                  style: GoogleFonts.inter(
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 11,
-                                    height: 1.31,
-                                     color: const Color(0xff272727)
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              
-                                Text(
-                                  item['date'] ?? '',
-                                  style: GoogleFonts.inter(
-                                    fontWeight: FontWeight.w300,
-                                    fontSize: 11,
-                                    height: 1.31,
-                                    color: const Color(0xff979797),
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          // More icon
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.more_vert,
-                                  color: Colors.grey,
-                                ),
-                                onPressed: () {
-                                  // Handle view tap
-                                },
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 16),
+                            child: Text(
+                              "$familyName Family",
+                              style: GoogleFonts.roboto(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                                color: const Color(0xffE83A33),
                               ),
-                            ],
+                            ),
                           ),
+                          const SizedBox(height: 24),
+                          for (String category in pendingApprovals.keys)
+                            for (UserModel user in pendingApprovals[category]!)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 0),
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border:
+                                        Border.all(color: Colors.grey.shade300),
+                                    borderRadius: BorderRadius.circular(0),
+                                  ),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      if (user.image != null)
+                                        CircleAvatar(
+                                          radius: 20,
+                                          backgroundImage: user.image!
+                                                  .startsWith("http")
+                                              ? NetworkImage(user.image!)
+                                              : File(user.image!).existsSync()
+                                                  ? FileImage(File(user.image!))
+                                                  : const AssetImage(
+                                                          'assets/pngs/approval-profile.jpg')
+                                                      as ImageProvider,
+                                        ),
+                                      if (user.image == null)
+                                        const CircleAvatar(
+                                          radius: 20,
+                                          backgroundImage: AssetImage(
+                                            'assets/pngs/approval-profile.jpg',
+                                          ),
+                                        ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              '${user.fullName ?? 'Unnamed'}',
+                                              style: GoogleFonts.inter(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 12,
+                                                height: 1.31,
+                                                color: const Color(0xff272727),
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            const SizedBox(height: 2),
+                                            Text(
+                                              familyName!,
+                                              style: GoogleFonts.inter(
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 11,
+                                                height: 1.31,
+                                                color: const Color(0xff272727),
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            const SizedBox(height: 2),
+                                            Text(
+                                              user.birthDate != null
+                                                  ? '${user.birthDate!.day}/${user.birthDate!.month}/${user.birthDate!.year}'
+                                                  : 'Unknown DOB',
+                                              style: GoogleFonts.inter(
+                                                fontWeight: FontWeight.w300,
+                                                fontSize: 11,
+                                                height: 1.31,
+                                                color: const Color(0xff272727),
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          IconButton(
+                                            icon: const Icon(
+                                              Icons.more_vert,
+                                              color: Colors.grey,
+                                            ),
+                                            onPressed: () {
+                                              // Show options
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                         ],
                       ),
                     ),
                   ),
-            ],
           ),
-        ),
+        ],
       ),
       floatingActionButton: RawMaterialButton(
         onPressed: () {
-          // Add media logic
+          // Add new member
         },
         fillColor: const Color(0xffE30613),
         shape: const CircleBorder(),

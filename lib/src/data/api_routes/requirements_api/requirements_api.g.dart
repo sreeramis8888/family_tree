@@ -6,11 +6,7 @@ part of 'requirements_api.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-<<<<<<< HEAD
 String _$filteredFeedsHash() => r'bab39d6391c444ea8515474d9de061dff162ab47';
-=======
-String _$fetchBusinessHash() => r'06d24739e35eb1fb17c82f73be44c91e3b36b625';
->>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -33,7 +29,6 @@ class _SystemHash {
   }
 }
 
-<<<<<<< HEAD
 /// See also [filteredFeeds].
 @ProviderFor(filteredFeeds)
 const filteredFeedsProvider = FilteredFeedsFamily();
@@ -169,8 +164,6 @@ class _FilteredFeedsProviderElement
 
 String _$fetchBusinessHash() => r'5204abaa072b373b3752dbad2e58344e99130f2a';
 
-=======
->>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
 /// See also [fetchBusiness].
 @ProviderFor(fetchBusiness)
 const fetchBusinessProvider = FetchBusinessFamily();
@@ -317,11 +310,7 @@ class _FetchBusinessProviderElement
   int get limit => (origin as FetchBusinessProvider).limit;
 }
 
-<<<<<<< HEAD
 String _$fetchMyBusinessesHash() => r'6d7f1f85eb2b2e11029bdc087634522d721eabf4';
-=======
-String _$fetchMyBusinessesHash() => r'840a62daf1026e171c973bbf6208868ad22dbb73';
->>>>>>> ccf1ac7535973b49113bf24d09d50ffbe2d9cba9
 
 /// See also [fetchMyBusinesses].
 @ProviderFor(fetchMyBusinesses)
