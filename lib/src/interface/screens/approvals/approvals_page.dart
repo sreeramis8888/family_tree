@@ -363,22 +363,31 @@ class _ApprovalsPageState extends ConsumerState<ApprovalsPage>
               style: GoogleFonts.roboto(fontSize: 12, color: Colors.black),
             ),
             centerTitle: true,
-            actions: [
-              IconButton(
-                icon: SvgPicture.asset('assets/svg/icons/search.svg',
-                    width: 16, height: 16, color: Colors.grey),
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => ApprovalSearchPage(
-                      pending: pendingApprovalsMap,
-                      approved: approvedApprovalsMap,
-                      rejected: rejectedApprovalsMap,
+            actions: _isLoading
+                ? [] 
+                : [
+                    IconButton(
+                      icon: SvgPicture.asset(
+                        'assets/svg/icons/search.svg',
+                        width: 16,
+                        height: 16,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ApprovalSearchPage(
+                              pending: pendingApprovalsMap,
+                              approved: approvedApprovalsMap,
+                              rejected: rejectedApprovalsMap,
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  ),
-                ),
-              ),
-            ],
+                  ],
+
             bottom: TabBar(
               controller: _tabController,
               tabs: const [

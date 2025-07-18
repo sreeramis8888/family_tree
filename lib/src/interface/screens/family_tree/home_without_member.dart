@@ -5,7 +5,6 @@ import 'package:familytree/src/data/globals.dart';
 import 'package:familytree/src/data/models/user_model.dart';
 import 'package:familytree/src/interface/components/loading_indicator/loading_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
@@ -23,7 +22,7 @@ class _FamilyMembersState extends State<FamilyMembers> {
 
   final String personId = id;
   String? familyName;
-  bool isLoading = true; // ✅ loader state
+  bool isLoading = true; 
 
   @override
   void initState() {
