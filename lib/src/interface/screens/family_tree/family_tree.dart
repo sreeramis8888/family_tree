@@ -4,6 +4,7 @@ import 'package:familytree/src/interface/screens/family_tree/media.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:familytree/src/interface/screens/family_tree/family_tree_webview.dart';
 
 
 class FamilyTree extends StatefulWidget {
@@ -167,12 +168,12 @@ class _FamilyTreeState extends State<FamilyTree> {
                             Icons.account_tree,
                             "Family Tree",
                             () {
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     builder: (context) => const FamilyTreePage(),
-                              //   ),
-                              // );
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const FamilyTreeWebView(),
+                                ),
+                              );
                             },
                           ),
                           _buildFamilyOption(Icons.group, "Members", () {
