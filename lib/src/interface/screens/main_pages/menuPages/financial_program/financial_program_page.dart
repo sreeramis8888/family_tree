@@ -1,3 +1,4 @@
+// your imports stay the same
 import 'package:familytree/src/data/services/payment_service/checkwalletapi.dart';
 import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/data/constants/style_constants.dart';
@@ -63,7 +64,7 @@ class _FinancialProgramPageState extends ConsumerState<FinancialProgramPage>
           const SizedBox(height: 8),
           _BalanceCard(),
           const SizedBox(height: 8),
-          _LowBalanceAlert(),
+          const _LowBalanceAlert(),
           const SizedBox(height: 8),
           TabBar(
             controller: _tabController,
@@ -187,8 +188,7 @@ class _BalanceCard extends ConsumerWidget {
                                 onPressed: () async {
                                   if (enteredAmount != null &&
                                       enteredAmount! > 0) {
-                                    Navigator.of(context)
-                                        .pop(); // Close the dialog
+                                    Navigator.of(context).pop();
                                     final amountToTopUp = enteredAmount!;
 
                                     final topupPayment = TopupPaymentService(
@@ -213,11 +213,14 @@ class _BalanceCard extends ConsumerWidget {
                                     topupPayment.init();
                                     await topupPayment.startPayment();
                                   } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text(
-                                              'Please enter a valid amount.')),
-                                    );
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                            content: Text(
+                                                'Please enter a valid amount.')),
+                                      );
+                                    }
                                   }
                                 },
                               ),
@@ -227,7 +230,6 @@ class _BalanceCard extends ConsumerWidget {
                       );
                     },
                   ),
-
                 ),
               ],
             ),
@@ -247,6 +249,7 @@ class _BalanceCard extends ConsumerWidget {
     );
   }
 }
+
 Future<void> handleTopupSuccess({
   required WidgetRef ref,
   required BuildContext context,
@@ -265,13 +268,17 @@ Future<void> handleTopupSuccess({
 
     ref.invalidate(getProgramMemberByIdProvider(id));
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Wallet topped up successfully!')),
-    );
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Wallet topped up successfully!')),
+      );
+    }
   } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Failed to top up wallet.')),
-    );
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to top up wallet.')),
+      );
+    }
   }
 }
 
