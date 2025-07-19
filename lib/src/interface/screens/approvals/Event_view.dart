@@ -120,12 +120,11 @@ class EventDetailsSheet extends StatelessWidget {
                          
                         },
                         child: Image.network(
-                        Event.image.toString()  ,
+                        Event.image!  ,
                           width: 40,
                           height: 40,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) =>
-                              const Icon(Icons.image_not_supported),
+                         
                         ),
                       ),
                     ),

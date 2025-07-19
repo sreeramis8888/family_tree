@@ -83,7 +83,7 @@ class Event {
       platform: json['platform'] as String?,
       link: json['link'] as String?,
       venue: json['venue'] as String?,
-      organiserName: json['organiserName'] as String?,
+      organiserName: json['organiser_name'] as String?,
 
       speakers: (json['speakers'] as List?)
           ?.map((e) => Speaker.fromJson(e as Map<String, dynamic>))
