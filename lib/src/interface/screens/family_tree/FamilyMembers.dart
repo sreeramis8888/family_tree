@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:familytree/src/data/globals.dart';
 import 'package:familytree/src/data/models/user_model.dart';
 import 'package:familytree/src/interface/components/loading_indicator/loading_indicator.dart';
@@ -9,7 +8,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
 class FamilyMembers extends StatefulWidget {
-  const FamilyMembers({super.key});
+  final String familyId;
+  
+  final String familyname;
+  const FamilyMembers({super.key, required this.familyId,required this.familyname});
 
   @override
   State<FamilyMembers> createState() => _FamilyMembersState();
@@ -20,49 +22,26 @@ class _FamilyMembersState extends State<FamilyMembers> {
     'Member': [],
   };
 
-  final String personId = id;
   String? familyName;
-  bool isLoading = true; 
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    fetchFamilyMembersFromPerson();
+    fetchFamilyMembers(widget.familyId);
   }
 
-  Future<void> fetchFamilyMembersFromPerson() async {
+  Future<void> fetchFamilyMembers(String familyId) async {
     try {
-      final personRes = await http.get(
-        Uri.parse('$baseUrl/people/$personId'),
-        headers: {'Authorization': 'Bearer $token'},
-      );
-
-      if (personRes.statusCode != 200) return;
-      final personData = jsonDecode(personRes.body)['data'];
-
-      final dynamic familyField =
-          personData['family'] ?? personData['familyId'];
-      String? familyId;
-
-      if (familyField is String) {
-        familyId = familyField;
-      } else if (familyField is List && familyField.isNotEmpty) {
-        familyId = familyField.first;
-      } else {
-        familyId = null;
-      }
-
-      if (familyId == null) return;
-
       final familyRes = await http.get(
         Uri.parse('$baseUrl/families/$familyId'),
         headers: {'Authorization': 'Bearer $token'},
       );
 
       if (familyRes.statusCode != 200) return;
+
       final familyData = jsonDecode(familyRes.body)['data'];
       final List members = familyData['members'];
-
       familyName = familyData['name'];
 
       List<UserModel> memberList = [];
@@ -84,16 +63,15 @@ class _FamilyMembersState extends State<FamilyMembers> {
 
       setState(() {
         pendingApprovals['Member'] = memberList;
-        isLoading = false; // ✅ Hide loader when done
+        isLoading = false;
       });
     } catch (e) {
       print('Error: $e');
       setState(() {
-        isLoading = false; // ✅ Still hide loader on error
+        isLoading = false;
       });
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -120,7 +98,7 @@ class _FamilyMembersState extends State<FamilyMembers> {
                 elevation: 0, // no default elevation
                 centerTitle: true,
                 title: Text(
-                  "$familyName Family",
+                  "${widget.familyname} Family",
                   style: GoogleFonts.roboto(
                     fontSize: 16,
                     color: const Color(0xff272727),

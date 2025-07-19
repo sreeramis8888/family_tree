@@ -128,30 +128,68 @@ class _BalanceCard extends ConsumerWidget {
                         context: context,
                         builder: (context) {
                           double? enteredAmount;
+                          final controller = TextEditingController();
                           return AlertDialog(
-                            title: const Text('Top Up Wallet'),
-                            content: TextField(
-                              keyboardType: TextInputType.numberWithOptions(
-                                  decimal: true),
-                              decoration: const InputDecoration(
-                                  hintText: 'Enter amount'),
-                              onChanged: (value) {
-                                enteredAmount = double.tryParse(value);
-                              },
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            title: Row(
+                              children: const [
+                                Icon(Icons.account_balance_wallet,
+                                    color: Colors.red),
+                                SizedBox(width: 8),
+                                Text('Top Up Wallet'),
+                              ],
+                            ),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Text(
+                                  'Enter the amount you want to add to your wallet:',
+                                  style: TextStyle(fontSize: 14),
+                                ),
+                                const SizedBox(height: 12),
+                                TextFormField(
+                                  controller: controller,
+                                  keyboardType:
+                                      const TextInputType.numberWithOptions(
+                                          decimal: true),
+                                  decoration: InputDecoration(
+                                    prefixIcon:
+                                        const Icon(Icons.currency_rupee),
+                                    hintText: 'Amount',
+                                    border: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                  ),
+                                  onChanged: (value) {
+                                    enteredAmount = double.tryParse(value);
+                                  },
+                                ),
+                              ],
                             ),
                             actions: [
-                              TextButton(
+                              TextButton.icon(
                                 onPressed: () => Navigator.of(context).pop(),
-                                child: const Text('Cancel'),
+                                icon: const Icon(Icons.cancel),
+                                label: const Text('Cancel'),
                               ),
-
-                            ElevatedButton(
+                              ElevatedButton.icon(
+                                icon: const Icon(Icons.check_circle_outline),
+                                label: const Text("Top Up"),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
                                 onPressed: () async {
                                   if (enteredAmount != null &&
                                       enteredAmount! > 0) {
-                                    final amountToTopUp = enteredAmount!;
                                     Navigator.of(context)
                                         .pop(); // Close the dialog
+                                    final amountToTopUp = enteredAmount!;
 
                                     final topupPayment = TopupPaymentService(
                                       amount: amountToTopUp,
@@ -172,43 +210,24 @@ class _BalanceCard extends ConsumerWidget {
                                         }
                                       },
                                     );
-                                       topupPayment.init();
+                                    topupPayment.init();
                                     await topupPayment.startPayment();
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              'Please enter a valid amount.')),
+                                    );
                                   }
                                 },
-                                child: const Text("Top Up"),
-                              )
-
-                              // ElevatedButton(
-                              //   onPressed: () {
-                              //     if (enteredAmount != null && enteredAmount! > 0) {
-                              //       Navigator.of(context).pop(enteredAmount);
-                              //     }
-                              //   },
-                              //   child: const Text('Top Up'),
-                              // ),
+                              ),
                             ],
                           );
                         },
                       );
-                      // if (amount != null && amount > 0) {
-                      //   final success = await ref.read(joinProgramProvider(
-                      //     memberId: id,
-                      //     amount: amount,
-                      //   ).future);
-                      //   if (success) {
-                      //     ref.invalidate(getProgramMemberByIdProvider(id));
-                      //     ScaffoldMessenger.of(context).showSnackBar(
-                      //       const SnackBar(content: Text('Wallet topped up successfully!')),
-                      //     );
-                      //   } else {
-                      //     ScaffoldMessenger.of(context).showSnackBar(
-                      //       const SnackBar(content: Text('Failed to top up wallet.')),
-                      //     );
-                      //   }
-                      // }
                     },
                   ),
+
                 ),
               ],
             ),

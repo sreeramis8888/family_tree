@@ -1,10 +1,17 @@
-
-import 'package:familytree/src/interface/screens/family_tree/home_without_member.dart';
+import 'dart:convert';
+import 'package:familytree/src/data/constants/style_constants.dart';
+import 'package:familytree/src/interface/components/loading_indicator/loading_indicator.dart';
+import 'package:familytree/src/interface/screens/family_tree/FamilyMembers.dart';
+import 'package:familytree/src/interface/screens/family_tree/media.dart';
+import 'dart:convert';
+import 'package:familytree/src/data/constants/style_constants.dart';
+import 'package:familytree/src/interface/screens/family_tree/FamilyMembers.dart';
 import 'package:familytree/src/interface/screens/family_tree/media.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'package:http/http.dart' as http;
+import 'package:familytree/src/data/globals.dart'; // for baseUrl, token, personId
 
 class FamilyTree extends StatefulWidget {
   const FamilyTree({super.key});
@@ -15,13 +22,75 @@ class FamilyTree extends StatefulWidget {
 
 class _FamilyTreeState extends State<FamilyTree> {
   int currentIndex = 2;
+  String? familyId;
+  String? familyName;
+  bool isLoading = true;
+
+  String? personId = id;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchFamilyId();
+  }
+
+  Future<void> fetchFamilyId() async {
+    try {
+      final personRes = await http.get(
+        Uri.parse('$baseUrl/people/$personId'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      if (personRes.statusCode != 200) return;
+
+      final personData = jsonDecode(personRes.body)['data'];
+      final dynamic familyField =
+          personData['family'] ?? personData['familyId'];
+
+      String? id;
+      if (familyField is String) {
+        id = familyField;
+      } else if (familyField is List && familyField.isNotEmpty) {
+        id = familyField.first;
+      }
+
+      if (id == null) return;
+
+      final familyRes = await http.get(
+        Uri.parse('$baseUrl/families/$id'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      if (familyRes.statusCode != 200) return;
+
+      final familyData = jsonDecode(familyRes.body)['data'];
+
+      if (mounted) {
+        setState(() {
+          familyId = id;
+          familyName = familyData['name'];
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Error fetching familyId: $e');
+      if (mounted) setState(() => isLoading = false);
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(
+        body: Center(child:LoadingAnimation()),
+      );
+    }
+
     return Scaffold(
-     appBar: AppBar(
+      appBar: AppBar(
         backgroundColor: Colors.white,
-        forceMaterialTransparency:true ,
+        forceMaterialTransparency: true,
         elevation: 1,
         leading: const Padding(
           padding: EdgeInsets.only(left: 16, top: 12),
@@ -35,9 +104,7 @@ class _FamilyTreeState extends State<FamilyTree> {
             fontWeight: FontWeight.w500,
           ),
         ),
-        iconTheme: const IconThemeData(
-          color: Colors.black,
-        ), // sets default icon color
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
 
       body: SafeArea(
@@ -56,6 +123,7 @@ class _FamilyTreeState extends State<FamilyTree> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
+                  // Header Container with family info
                   Container(
                     width: 398,
                     height: 152,
@@ -71,12 +139,10 @@ class _FamilyTreeState extends State<FamilyTree> {
                               width: 165,
                               height: 62,
                               child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "Kalathingal Family",
+                                    "Kalathingal Family", // Optional: fetch from API too
                                     style: GoogleFonts.roboto(
                                       color: const Color(0XFF272727),
                                       fontWeight: FontWeight.w500,
@@ -87,22 +153,19 @@ class _FamilyTreeState extends State<FamilyTree> {
                                     height: 35,
                                     width: 200,
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFFFFFFFF),
+                                      color: Colors.white,
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                     padding: const EdgeInsets.all(8),
                                     child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
                                       children: [
                                         SizedBox(
                                           width: 85,
                                           child: Center(
                                             child: Stack(
                                               clipBehavior: Clip.none,
-                                              children: List.generate(5, (
-                                                index,
-                                              ) {
+                                              children:
+                                                  List.generate(5, (index) {
                                                 return Positioned(
                                                   left: index * 17.0,
                                                   top: -2,
@@ -150,49 +213,41 @@ class _FamilyTreeState extends State<FamilyTree> {
                     ),
                   ),
 
-                  // Bottom options
+                  // Option Buttons (Tree / Members / Media)
                   Container(
                     height: 81,
-                    color: const Color.fromARGB(255, 255, 255, 255),
                     width: 398,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20.0,
-                        vertical: 10,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          _buildFamilyOption(
-                            Icons.account_tree,
-                            "Family Tree",
-                            () {
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     builder: (context) => const FamilyTreePage(),
-                              //   ),
-                              // );
-                            },
-                          ),
-                          _buildFamilyOption(Icons.group, "Members", () {
+                    color: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0, vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _buildFamilyOption(
+                          Icons.account_tree,
+                          "Family Tree",
+                          () {},
+                        ),
+                        _buildFamilyOption(Icons.group, "Members", () {
+                          if (familyId != null) {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>FamilyMembers(),
+                                builder: (context) =>
+                                    FamilyMembers(familyId: familyId!, familyname: familyName!,),
                               ),
                             );
-                          }),
-                          _buildFamilyOption(Icons.photo, "Media", () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>  PhotoGalleryPage(),
-                              ),
-                            );
-                          }),
-                        ],
-                      ),
+                          }
+                        }),
+                        _buildFamilyOption(Icons.photo, "Media", () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PhotoGalleryPage(),
+                            ),
+                          );
+                        }),
+                      ],
                     ),
                   ),
                 ],
@@ -201,6 +256,8 @@ class _FamilyTreeState extends State<FamilyTree> {
           ),
         ),
       ),
+
+      // Bottom Navigation
       bottomNavigationBar: Container(
         height: 80,
         decoration: BoxDecoration(
@@ -218,32 +275,20 @@ class _FamilyTreeState extends State<FamilyTree> {
           children: List.generate(5, (index) {
             final isSelected = index == currentIndex;
             final List<Widget> icons = [
-              Icon(
-                Icons.home,
-                color: isSelected ? Colors.white : Colors.grey,
-                size: 26,
-              ),
-              Icon(
-                Icons.business_center,
-                color: isSelected ? Colors.white : Colors.grey,
-                size: 26,
-              ),
-              Icon(
-                Icons.account_tree,
-                color: isSelected ? Colors.white : Colors.grey,
-                size: 26,
-              ),
+              Icon(Icons.home,
+                  color: isSelected ? Colors.white : Colors.grey, size: 26),
+              Icon(Icons.business_center,
+                  color: isSelected ? Colors.white : Colors.grey, size: 26),
+              Icon(Icons.account_tree,
+                  color: isSelected ? Colors.white : Colors.grey, size: 26),
               SvgPicture.asset(
                 'assets/svg/icons/iconamoon_news-fill.svg',
                 width: 26,
                 height: 26,
                 color: isSelected ? Colors.white : Colors.grey,
               ),
-              Icon(
-                Icons.groups,
-                color: isSelected ? Colors.white : Colors.grey,
-                size: 26,
-              ),
+              Icon(Icons.groups,
+                  color: isSelected ? Colors.white : Colors.grey, size: 26),
             ];
 
             return GestureDetector(

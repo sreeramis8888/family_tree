@@ -110,7 +110,7 @@ class EventDetailsSheet extends StatelessWidget {
                     const SizedBox(height: 12),
                     _buildDetailRow('Location', Event.venue.toString()),
                     const SizedBox(height: 12),
-                    _buildDetailRow('Organizer Name', Event.organiserName.toString()),
+                    _buildDetailRow('Organizer Name', Event.organiserName!),
                     const SizedBox(height: 12),
                     _buildDetailRow(
                       'Media',

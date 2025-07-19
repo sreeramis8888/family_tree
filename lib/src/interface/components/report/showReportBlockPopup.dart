@@ -13,8 +13,8 @@ void showReportOrBlockDialog(BuildContext context, reported_user_id) {
       return Stack(
         children: [
           Positioned(
-            top: 60,
-            right: 16,
+            top: 90,
+            right: 40,
             child: Material(
               color: Colors.transparent,
               child: Container(
@@ -37,7 +37,7 @@ void showReportOrBlockDialog(BuildContext context, reported_user_id) {
                     InkWell(
                       onTap: () {
                         Navigator.pop(context);
-                        showReportDetailDialog(context,reported_user_id);
+                         showReportReasonDialog(context, reported_user_id,"User");
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -95,72 +95,9 @@ void showReportOrBlockDialog(BuildContext context, reported_user_id) {
     },
   );
 }
-void showReportDetailDialog(
-    BuildContext context, String reportedUserId) {
-  final TextEditingController detailController = TextEditingController();
-  final reportService = ReportApiService();
-
-  showDialog(
-    context: context,
-    builder: (_) => AlertDialog(
-      title: const Text("Report Issue"),
-      content: TextField(
-        controller: detailController,
-        maxLines: 3,
-        decoration: const InputDecoration(
-          hintText: "Describe the issue",
-          border: OutlineInputBorder(),
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text("Cancel"),
-        ),
-        ElevatedButton(
-          onPressed: () async {
-            final details = detailController.text.trim();
-
-            if (details.isEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Please enter some details")),
-              );
-              return;
-            }
-
-            Navigator.pop(context); // Close the dialog
-
-            final reportData = {
-              "content": reportedUserId, // Reported user ID
-              "reportBy": id, // Your user ID
-              "reportType": "User", // Type of report
-              "reason": details, // Reason from input
-            };
-
-            final result = await reportService.postReport(data: reportData);
-
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  result == 'success'
-                      ? "Report submitted successfully"
-                      : "Failed to submit report: $result",
-                ),
-              ),
-            );
-          },
-          child: const Text("Submit"),
-        ),
-      ],
-    ),
-  );
-}
 
 
-
-
-
-void ShowReportPostDialog(BuildContext context, String postId){
+void ShowReportPostDialog(BuildContext context, String postId) {
   showGeneralDialog(
     context: context,
     barrierDismissible: true,
@@ -170,13 +107,12 @@ void ShowReportPostDialog(BuildContext context, String postId){
         children: [
           Positioned(
             top: 60,
-            right: 16,
+            right: 25,
             child: Material(
               color: Colors.transparent,
               child: Container(
-                width: 80,
-                height: 40,
-                padding: const EdgeInsets.all(8), // tighter padding
+                width: 100,
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(8),
@@ -187,24 +123,19 @@ void ShowReportPostDialog(BuildContext context, String postId){
                     ),
                   ],
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                        showReportpostDialog(context, postId);
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: const [
-                          Text("Report ", style: TextStyle(fontSize: 13)),
-                          Icon(Icons.report, color: Colors.black, size: 17),
-                          SizedBox(height: 2),
-                        ],
-                      ),
-                    ),
-                  ],
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                    showReportReasonDialog(context, postId,"Feeds");
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(Icons.report, color: Colors.black, size: 17),
+                      SizedBox(width: 6),
+                      Text("Report", style: TextStyle(fontSize: 13)),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -215,63 +146,104 @@ void ShowReportPostDialog(BuildContext context, String postId){
   );
 }
 
-void showReportpostDialog(BuildContext context, String postId) {
-  final TextEditingController detailController = TextEditingController();
-  final reportService = ReportApiService();
+
+
+
+void showReportReasonDialog(BuildContext context, String Id, String reportType) {
+  final reasons = [
+    "I just don't like it",
+    "Bullying or unwanted contact",
+    "Suicide, self-injury or eating disorders",
+    "Violence, hate or exploitation",
+    "Selling or promoting restricted items",
+    "Nudity or sexual activity",
+    "Scam, fraud or spam",
+    "False information",
+  ];
 
   showDialog(
     context: context,
     builder: (_) => AlertDialog(
-      title: const Text("Report Post"),
-      content: TextField(
-        controller: detailController,
-        maxLines: 3,
-        decoration: const InputDecoration(
-          hintText: "Describe the issue with the post",
-          border: OutlineInputBorder(),
+               title: Text(
+          "Why are you reporting this ${reportType == 'Feeds' ? 'post' : 'User'}?"),
+
+      content: SizedBox(
+        width: double.maxFinite,
+        child: ListView.builder(
+          shrinkWrap: true,
+          itemCount: reasons.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              title: Text(reasons[index]),
+              onTap: () async {
+                Navigator.pop(context); // Close reason dialog
+
+                // Capture safe context
+                final safeContext =
+                    Navigator.of(context, rootNavigator: true).context;
+
+                final reportData = {
+                  "content": Id,
+                  "reportBy": id, // Use your user ID from globals.dart
+                  "reportType":reportType ,
+                  "reason": reasons[index],
+                };
+
+                final result =
+                    await ReportApiService().postReport(data: reportData);
+
+                // Use Future.microtask to ensure dialog stack is restored
+                Future.microtask(() {
+                  showReportFeedbackDialog(safeContext, result == 'success');
+                });
+              },
+            );
+          },
         ),
+      ),
+    ),
+  );
+}
+
+
+
+
+void showReportFeedbackDialog(BuildContext context, bool isSuccess) {
+  showDialog(
+    context: context,
+    builder: (_) => AlertDialog(
+      backgroundColor: Colors.grey[900],
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      title: Column(
+        children: [
+          Icon(Icons.check_circle, color: Colors.green, size: 48),
+          const SizedBox(height: 12),
+          const Text(
+            "Thanks for your feedback",
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+      content: const Text(
+        "When you see something you don't like on Community, you can report it if it doesn't follow our Community Standards, or you can remove the person who shared it from your experience.",
+        style: TextStyle(color: Colors.white70),
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text("Cancel"),
-        ),
-        ElevatedButton(
-          onPressed: () async {
-            final details = detailController.text.trim();
-
-            if (details.isEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Please enter some details")),
-              );
-              return;
-            }
-
-            Navigator.pop(context); // Close the dialog
-
-            final reportData = {
-              "content": postId, // Post ID being reported
-              "reportBy": id, // Current user ID (from globals.dart)
-              "reportType": "Feeds", // Differentiate from User reports
-              "reason": details,
-            };
-
-            final result = await reportService.postReport(data: reportData);
-
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  result == 'success'
-                      ? "Post reported successfully"
-                      : "Failed to report post: $result",
-                ),
-              ),
-            );
+          onPressed: () {
+           
+            Navigator.pop(context);
           },
-          child: const Text("Submit"),
+          child: const Text("Block user",
+              style: TextStyle(color: Colors.redAccent)),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child:
+              const Text("Close", style: TextStyle(color: Colors.blueAccent)),
         ),
       ],
     ),
   );
 }
-
