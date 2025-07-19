@@ -396,6 +396,8 @@ class _ApprovalsPageState extends ConsumerState<ApprovalsPage>
                 Tab(text: 'Rejected')
               ],
               labelColor: Colors.red,
+               indicatorColor: Colors.red, 
+              indicatorWeight: 3.0,   
               unselectedLabelColor: Colors.grey,
             ),
           ),
