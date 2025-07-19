@@ -151,7 +151,7 @@ class _BalanceCard extends ConsumerWidget {
                                       enteredAmount! > 0) {
                                     final amountToTopUp = enteredAmount!;
                                     Navigator.of(context)
-                                        .pop(); // Close the dialog
+                                        .pop();
 
                                     final topupPayment = TopupPaymentService(
                                       amount: amountToTopUp,

@@ -1,5 +1,9 @@
+import 'package:familytree/src/data/constants/color_constants.dart';
+import 'package:familytree/src/data/constants/style_constants.dart';
+import 'package:familytree/src/interface/components/loading_indicator/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:familytree/src/interface/components/ModalSheets/user_details_modal_sheet.dart';
 
 class FamilyTreeWebView extends StatefulWidget {
   const FamilyTreeWebView({Key? key}) : super(key: key);
@@ -16,7 +20,29 @@ class _FamilyTreeWebViewState extends State<FamilyTreeWebView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Family Tree'),
+        automaticallyImplyLeading: false,
+        backgroundColor: kWhite,
+        forceMaterialTransparency: true,
+        scrolledUnderElevation: 0,
+        elevation: 0,
+        title: GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: Row(
+            children: [
+              Icon(
+                Icons.arrow_back_ios,
+                size: 15,
+              ),
+              const SizedBox(width: 8),
+              const Icon(Icons.account_tree, color: Colors.red, size: 20),
+              const SizedBox(width: 8),
+              Text("Family Tree", style: kHeadTitleB),
+            ],
+          ),
+        ),
+        iconTheme: const IconThemeData(
+          color: Colors.black,
+        ),
       ),
       body: Stack(
         children: [
@@ -39,15 +65,10 @@ class _FamilyTreeWebViewState extends State<FamilyTreeWebView> {
                   // Show dummy modal sheet
                   showModalBottomSheet(
                     context: context,
-                    builder: (context) => Container(
-                      height: 200,
-                      alignment: Alignment.center,
-                      child: Text(
-                        'Dummy Modal for userId: '
-                        '${userId ?? "Unknown"}',
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                    ),
+                    isScrollControlled: true,
+                    backgroundColor: kWhite,
+                    builder: (context) =>
+                        UserDetailsModalSheet(userId: userId ?? ""),
                   );
                   // You can also navigate using Navigator if needed
                   return null;
@@ -69,10 +90,9 @@ class _FamilyTreeWebViewState extends State<FamilyTreeWebView> {
               debugPrint('Console: \\${consoleMessage.message}');
             },
           ),
-          if (_isLoading)
-            const Center(child: CircularProgressIndicator()),
+          if (_isLoading) const Center(child: LoadingAnimation()),
         ],
       ),
     );
   }
-} 
+}

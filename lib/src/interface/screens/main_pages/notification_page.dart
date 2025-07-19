@@ -45,7 +45,6 @@ class NotificationPage extends StatelessWidget {
                 children: [
                   asyncNotification.when(
                     data: (notifications) {
-                      // ✅ Filter to only show approved notifications
                       final approvedNotifications = notifications
                           .where((notif) => notif.status == 'approved')
                           .toList();

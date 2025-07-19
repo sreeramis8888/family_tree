@@ -1,6 +1,7 @@
 import 'package:familytree/src/interface/screens/approvals/approvals_page.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/financial_program/program_join_onboarding_page.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/financial_program/program_join_request.dart';
+import 'package:familytree/src/interface/screens/main_pages/profile/profile_preview_withUserModel.dart';
 import 'package:flutter/material.dart';
 import 'package:familytree/src/data/models/chat_model.dart';
 import 'package:familytree/src/data/models/events_model.dart';
@@ -31,7 +32,6 @@ import 'package:familytree/src/interface/screens/main_pages/notification_page.da
 import 'package:familytree/src/interface/screens/main_pages/profile/editUser.dart';
 import 'package:familytree/src/interface/screens/main_pages/profile/idcard.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/my_subscription.dart';
-import 'package:familytree/src/interface/screens/main_pages/profile/profile_preview.dart';
 import 'package:familytree/src/interface/screens/main_pages/profile/profile_preview_withUserId.dart';
 
 import 'package:familytree/src/interface/screens/splash_screen.dart';
@@ -58,7 +58,7 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
     case 'ProfilePreview':
       UserModel user = settings?.arguments as UserModel;
       return MaterialPageRoute(
-          builder: (context) => ProfilePreview(
+          builder: (context) => ProfilePreviewWithUserModel(
                 user: user,
               ));
     case 'ProfilePreviewUsingID':

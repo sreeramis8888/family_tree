@@ -28,6 +28,7 @@ class DonatedMember {
     };
   }
 }
+
 class CampaignModel {
   final String id;
   final String title;
@@ -35,6 +36,7 @@ class CampaignModel {
   final DateTime deadline;
   final String tagType;
   final String organizedBy;
+  final String description;
   final String status;
   final DateTime createdAt;
   final int donatedAmount;
@@ -42,6 +44,7 @@ class CampaignModel {
 
   CampaignModel({
     required this.id,
+    required this.description,
     required this.title,
     required this.targetAmount,
     required this.deadline,
@@ -55,7 +58,7 @@ class CampaignModel {
 
   factory CampaignModel.fromJson(Map<String, dynamic>? json) {
     if (json == null) {
-      return CampaignModel(
+      return CampaignModel(description: '',
         id: '',
         title: '',
         targetAmount: 0,
@@ -69,7 +72,7 @@ class CampaignModel {
       );
     }
 
-    return CampaignModel(
+    return CampaignModel( description:json['description'] as String? ?? '', 
       id: json['_id'] as String? ?? '',
       title: json['title'] as String? ?? '',
       targetAmount: json['targetAmount'] as int? ?? 0,

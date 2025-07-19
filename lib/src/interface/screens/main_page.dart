@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:familytree/src/interface/screens/family_tree/family_tree.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -73,17 +74,13 @@ class MainPage extends ConsumerStatefulWidget {
 }
 
 class _MainPageState extends ConsumerState<MainPage> {
-
-
   @override
   void initState() {
     super.initState();
-
   }
 
   @override
   void dispose() {
-
     super.dispose();
   }
 
@@ -107,6 +104,7 @@ class _MainPageState extends ConsumerState<MainPage> {
       ),
       // BusinessPage(),
       ProfilePage(user: user),
+      FamilyTree(),
       NewsListPage(),
       PeoplePage(),
     ];
@@ -114,6 +112,7 @@ class _MainPageState extends ConsumerState<MainPage> {
       'assets/svg/icons/active_home.svg',
       // 'assets/svg/icons/active_business.svg',
       'assets/svg/icons/active_analytics.svg',
+      'assets/svg/icons/active_family_tree_icon.svg',
       'assets/svg/icons/active_news.svg',
       'assets/svg/icons/active_chat.svg',
     ];
@@ -121,6 +120,7 @@ class _MainPageState extends ConsumerState<MainPage> {
       'assets/svg/icons/inactive_home.svg',
       // 'assets/svg/icons/inactive_business.svg',
       'assets/svg/icons/inactive_analytics.svg',
+      'assets/svg/icons/inactive_family_tree_icon.svg',
       'assets/svg/icons/inactive_news.svg',
       'assets/svg/icons/inactive_chat.svg',
     ];
@@ -161,9 +161,9 @@ class _MainPageState extends ConsumerState<MainPage> {
                 ),
                 child: BottomNavigationBar(
                   type: BottomNavigationBarType.fixed,
-                  items: List.generate(4, (index) {
+                  items: List.generate(5, (index) {
                     final isSelected = selectedIndex == index;
-                    final isProfile = index == 2;
+                    final isProfile = index == 1;
 
                     Widget iconWidget;
 

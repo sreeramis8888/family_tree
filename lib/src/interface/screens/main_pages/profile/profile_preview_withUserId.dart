@@ -133,9 +133,16 @@ class ProfilePreviewUsingId extends ConsumerWidget {
             backgroundColor: kWhite,
             body: asyncUser.when(
               data: (user) {
-                List<Media> videos = user.media?.where((m) => m.metadata == 'video').toList() ?? [];
-                List<Media> certificates = user.media?.where((m) => m.metadata == 'certificate').toList() ?? [];
-                List<Media> awards = user.media?.where((m) => m.metadata == 'award').toList() ?? [];
+                List<Media> videos =
+                    user.media?.where((m) => m.metadata == 'video').toList() ??
+                        [];
+                List<Media> certificates = user.media
+                        ?.where((m) => m.metadata == 'certificate')
+                        .toList() ??
+                    [];
+                List<Media> awards =
+                    user.media?.where((m) => m.metadata == 'award').toList() ??
+                        [];
 
                 // final designations = user.company!
                 //     .map((i) => i.designation)
@@ -173,13 +180,12 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                     defaultAvatarAsset:
                                         'assets/svg/icons/dummy_person_large.svg',
                                     size: 110,
-                                    glowColor: kWhite,
+                                    glowColor: kRed,
                                     borderColor: kWhite,
                                     borderWidth: 3.0,
                                   ),
                                   Text(
-                          
-                                user.fullName ?? '',
+                                    user.fullName ?? '',
                                     style: kHeadTitleSB,
                                   ),
                                   const SizedBox(height: 5),
@@ -248,12 +254,12 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                                       const EdgeInsets.only(
                                                           left: 10),
                                                   child: Image.asset(
-                                                      scale: 30,
+                                                      scale: 40,
                                                       'assets/pngs/familytree_logo.png'),
                                                 ),
                                                 const SizedBox(width: 10),
                                                 Text(
-                                                    'Member ID: ${user.email}',
+                                                    'BirthDate: ${DateFormat('yyyy-MM-dd').format(user.birthDate!)}',
                                                     style:
                                                         kSmallerTitleB.copyWith(
                                                             color:
@@ -563,8 +569,7 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                                 index++)
                                               customSocialPreview(index,
                                                   isWebsite: true,
-                                                  social:
-                                                      user.website![index]),
+                                                  social: user.website![index]),
                                         ],
                                       ),
                                     ),
@@ -585,9 +590,11 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                         itemCount: videos.length,
                                         physics: const PageScrollPhysics(),
                                         itemBuilder: (context, index) {
-                                          return profileVideo(   title: videos[index].caption??'',
+                                          return profileVideo(
+                                              title:
+                                                  videos[index].caption ?? '',
                                               context: context,
-                                              url: videos[index].url??'');
+                                              url: videos[index].url ?? '');
                                         },
                                       ),
                                     ),
@@ -612,7 +619,7 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                 const SizedBox(
                                   height: 30,
                                 ),
-      
+
                               SizedBox(
                                 height: 20,
                               ),
@@ -641,9 +648,8 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                         return CertificateCard(
                                           onEdit: null,
                                           name:
-                                              certificates[index].caption??'',
-                                          url:
-                                              certificates[index].url??'',
+                                              certificates[index].caption ?? '',
+                                          url: certificates[index].url ?? '',
                                           onRemove: null,
                                         );
                                       },
@@ -771,11 +777,12 @@ class ProfilePreviewUsingId extends ConsumerWidget {
     );
   }
 
-  Widget profileVideo({required BuildContext context, required String url,required String title}) {
-  
-
+  Widget profileVideo(
+      {required BuildContext context,
+      required String url,
+      required String title}) {
     final ytController = YoutubePlayerController.fromVideoId(
-      videoId: YoutubePlayerController.convertUrlToId(url )!,
+      videoId: YoutubePlayerController.convertUrlToId(url)!,
       autoPlay: false,
       params: const YoutubePlayerParams(
         enableJavaScript: true,

@@ -22,7 +22,7 @@ class _FamilyMembersState extends State<FamilyMembers> {
 
   final String personId = id;
   String? familyName;
-  bool isLoading = true; 
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -117,10 +117,10 @@ class _FamilyMembersState extends State<FamilyMembers> {
               child: AppBar(
                 backgroundColor: Colors.white,
                 forceMaterialTransparency: true,
-                elevation: 0, // no default elevation
+                elevation: 0,
                 centerTitle: true,
                 title: Text(
-                  "$familyName Family",
+                  "Family Members",
                   style: GoogleFonts.roboto(
                     fontSize: 16,
                     color: const Color(0xff272727),

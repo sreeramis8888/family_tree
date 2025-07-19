@@ -3,12 +3,9 @@ import 'package:familytree/src/interface/screens/main_pages/notification_page.da
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:familytree/src/data/constants/color_constants.dart';
-import 'package:familytree/src/data/constants/style_constants.dart';
 import 'package:familytree/src/data/models/news_model.dart';
 import 'package:familytree/src/interface/components/loading_indicator/loading_indicator.dart';
-import 'package:intl/intl.dart';
-import 'news_page.dart'; // This now refers to NewsDetailView
-import 'bookmark_page.dart';
+import 'news_page.dart';
 
 class NewsListPage extends ConsumerWidget {
   const NewsListPage({super.key});
@@ -20,6 +17,7 @@ class NewsListPage extends ConsumerWidget {
     return Scaffold(
         backgroundColor: kWhite,
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           backgroundColor: kWhite,
           scrolledUnderElevation: 0,
           titleSpacing: 0,
@@ -36,45 +34,45 @@ class NewsListPage extends ConsumerWidget {
               ],
             ),
           ),
-          actions: [
-            Stack(
-              children: [
-                IconButton(
-                  icon: Icon(Icons.bookmark, color: kPrimaryColor, size: 22),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => BookmarkPage()),
-                    );
-                  },
-                ),
-                Positioned(
-                  right: 5,
-                  top: 5,
-                  child: Container(
-                    padding: EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    constraints: BoxConstraints(
-                      minWidth: 14,
-                      minHeight: 14,
-                    ),
-                    child: Text(
-                      '3', // Placeholder for bookmark count
-                      style: TextStyle(
-                        color: kWhite,
-                        fontSize: 10,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                )
-              ],
-            ),
-            SizedBox(width: 16),
-          ],
+          // actions: [
+          //   Stack(
+          //     children: [
+          //       IconButton(
+          //         icon: Icon(Icons.bookmark, color: kPrimaryColor, size: 22),
+          //         onPressed: () {
+          //           Navigator.push(
+          //             context,
+          //             MaterialPageRoute(builder: (context) => BookmarkPage()),
+          //           );
+          //         },
+          //       ),
+          //       Positioned(
+          //         right: 5,
+          //         top: 5,
+          //         child: Container(
+          //           padding: EdgeInsets.all(2),
+          //           decoration: BoxDecoration(
+          //             color: Colors.red,
+          //             borderRadius: BorderRadius.circular(10),
+          //           ),
+          //           constraints: BoxConstraints(
+          //             minWidth: 14,
+          //             minHeight: 14,
+          //           ),
+          //           child: Text(
+          //             '3', // Placeholder for bookmark count
+          //             style: TextStyle(
+          //               color: kWhite,
+          //               fontSize: 10,
+          //             ),
+          //             textAlign: TextAlign.center,
+          //           ),
+          //         ),
+          //       )
+          //     ],
+          //   ),
+          //   SizedBox(width: 16),
+          // ],
         ),
         body: asyncNews.when(
           data: (news) {
@@ -89,16 +87,16 @@ class NewsListPage extends ConsumerWidget {
                         hintText: 'Search News',
                         hintStyle: TextStyle(color: Colors.grey[600]),
                         prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            Icons.filter_alt_outlined,
-                            color: Colors.red[400],
-                            size: 22,
-                          ),
-                          onPressed: () {
-                            // Filter action
-                          },
-                        ),
+                        // suffixIcon: IconButton(
+                        //   icon: Icon(
+                        //     Icons.filter_alt_outlined,
+                        //     color: Colors.red[400],
+                        //     size: 22,
+                        //   ),
+                        //   onPressed: () {
+                        //     // Filter action
+                        //   },
+                        // ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(25),
                           borderSide:
