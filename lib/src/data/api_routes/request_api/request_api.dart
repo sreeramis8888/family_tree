@@ -10,6 +10,7 @@ part 'request_api.g.dart';
 
 @riverpod
 Future<RequestWithPerson> fetchRequestWithPersonAndRelationships(
+  Ref ref,
   String requestId,
 ) async {
   final requestRes = await http.get(

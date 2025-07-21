@@ -3,6 +3,7 @@ import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/data/constants/style_constants.dart';
 import 'package:familytree/src/data/globals.dart';
 import 'package:familytree/src/data/models/transaction_model.dart';
+import 'package:familytree/src/data/models/finance_model.dart';
 import 'package:familytree/src/interface/components/Buttons/primary_button.dart';
 import 'package:familytree/src/interface/components/custom_widgets/custom_choicechip.dart';
 import 'package:familytree/src/interface/components/loading_indicator/loading_indicator.dart';
@@ -12,6 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:familytree/src/data/api_routes/finance_api/finance_api.dart';
 import 'package:familytree/src/data/notifiers/members_notifier.dart';
 import 'package:familytree/src/data/notifiers/transactions_notifier.dart';
+import 'package:familytree/src/interface/screens/main_page.dart';
 
 class FinancialProgramPage extends ConsumerStatefulWidget {
   const FinancialProgramPage({Key? key}) : super(key: key);
@@ -49,7 +51,13 @@ class _FinancialProgramPageState extends ConsumerState<FinancialProgramPage>
             Icons.arrow_back_ios,
             size: 15,
           ),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const MainPage()),
+              (route) => false,
+            );
+          },
         ),
         title: const Text(
           'Financial Assistance Program',
@@ -58,176 +66,155 @@ class _FinancialProgramPageState extends ConsumerState<FinancialProgramPage>
         centerTitle: true,
         elevation: 0,
       ),
-      body: Column(
-        children: [
-          const SizedBox(height: 8),
-          _BalanceCard(),
-          const SizedBox(height: 8),
-          _LowBalanceAlert(),
-          const SizedBox(height: 8),
-          TabBar(
-            controller: _tabController,
-            labelColor: Colors.red,
-            unselectedLabelColor: Colors.grey,
-            indicatorColor: Colors.red,
-            tabs: const [
-              Tab(text: 'Membership'),
-              Tab(text: 'Transactions'),
-              Tab(text: 'Members'),
+      body: Consumer(
+        builder: (context, ref, child) {
+          final memberAsync = ref.watch(getProgramMemberByIdProvider(id));
+          final minBalanceAsync = ref.watch(getMinimumBalanceProvider);
+
+          if (memberAsync.isLoading || minBalanceAsync.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (memberAsync.hasError || minBalanceAsync.hasError) {
+            return const SizedBox.shrink();
+          }
+
+          final member = memberAsync.value;
+          final minBalance = minBalanceAsync.value;
+
+          final walletBalance = member?.memberId.walletBalance ?? 0.0;
+          final minimumAmount = minBalance?.minimumAmount ?? 0.0;
+
+          return Column(
+            children: [
+              const SizedBox(height: 8),
+              _BalanceCard(member: member, ref: ref),
+              const SizedBox(height: 8),
+              if (walletBalance < minimumAmount)
+                _LowBalanceAlert(minimumBalance: minimumAmount),
+              const SizedBox(height: 8),
+              TabBar(
+                controller: _tabController,
+                labelColor: Colors.red,
+                unselectedLabelColor: Colors.grey,
+                indicatorColor: Colors.red,
+                tabs: const [
+                  Tab(text: 'Membership'),
+                  Tab(text: 'Transactions'),
+                  Tab(text: 'Members'),
+                ],
+              ),
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: const [
+                    _MembershipTab(),
+                    _TransactionsTab(),
+                    _MembersTab(),
+                  ],
+                ),
+              ),
             ],
-          ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: const [
-                _MembershipTab(),
-                _TransactionsTab(),
-                _MembersTab(),
-              ],
-            ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
 }
 
 class _BalanceCard extends ConsumerWidget {
-  const _BalanceCard();
+  final FinancialAssistance? member;
+  const _BalanceCard({this.member, required this.ref, Key? key}) : super(key: key);
+  final WidgetRef ref;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final memberAsync = ref.watch(getProgramMemberByIdProvider(id));
-    return memberAsync.when(
-      data: (member) {
-        final walletBalance = member?.memberId.walletBalance ?? 0.0;
-        return Container(
-          margin: const EdgeInsets.symmetric(horizontal: 35),
-          decoration: BoxDecoration(
-              border: Border.all(color: kTertiary),
-              color: kSecondaryColor,
-              borderRadius: BorderRadius.circular(12)),
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              children: [
-                const Text('Current Balance', style: kSmallTitleR),
-                const SizedBox(height: 8),
-                Text('₹${walletBalance.toStringAsFixed(0)}',
-                    style: const TextStyle(
-                        fontSize: 36,
-                        color: kPrimaryColor,
-                        fontWeight: FontWeight.bold)),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: customButton(
-                    label: '+ Top Up Wallet',
-                    onPressed: () async {
-                      final amount = await showDialog<double>(
-                        context: context,
-                        builder: (context) {
-                          double? enteredAmount;
-                          return AlertDialog(
-                            title: const Text('Top Up Wallet'),
-                            content: TextField(
-                              keyboardType: TextInputType.numberWithOptions(
-                                  decimal: true),
-                              decoration: const InputDecoration(
-                                  hintText: 'Enter amount'),
-                              onChanged: (value) {
-                                enteredAmount = double.tryParse(value);
-                              },
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                child: const Text('Cancel'),
-                              ),
-
-                            ElevatedButton(
-                                onPressed: () async {
-                                  if (enteredAmount != null &&
-                                      enteredAmount! > 0) {
-                                    final amountToTopUp = enteredAmount!;
-                                    Navigator.of(context)
-                                        .pop();
-
-                                    final topupPayment = TopupPaymentService(
-                                      amount: amountToTopUp,
-                                      onSuccess: (msg) async {
-                                        await handleTopupSuccess(
-                                          ref: ref,
-                                          context: context,
-                                          id: id,
-                                          amount: amountToTopUp,
-                                        );
-                                      },
-                                      onError: (msg) {
-                                        if (context.mounted) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(content: Text(msg)),
-                                          );
-                                        }
-                                      },
-                                    );
-                                       topupPayment.init();
-                                    await topupPayment.startPayment();
-                                  }
-                                },
-                                child: const Text("Top Up"),
-                              )
-
-                              // ElevatedButton(
-                              //   onPressed: () {
-                              //     if (enteredAmount != null && enteredAmount! > 0) {
-                              //       Navigator.of(context).pop(enteredAmount);
-                              //     }
-                              //   },
-                              //   child: const Text('Top Up'),
-                              // ),
-                            ],
-                          );
-                        },
-                      );
-                      // if (amount != null && amount > 0) {
-                      //   final success = await ref.read(joinProgramProvider(
-                      //     memberId: id,
-                      //     amount: amount,
-                      //   ).future);
-                      //   if (success) {
-                      //     ref.invalidate(getProgramMemberByIdProvider(id));
-                      //     ScaffoldMessenger.of(context).showSnackBar(
-                      //       const SnackBar(content: Text('Wallet topped up successfully!')),
-                      //     );
-                      //   } else {
-                      //     ScaffoldMessenger.of(context).showSnackBar(
-                      //       const SnackBar(content: Text('Failed to top up wallet.')),
-                      //     );
-                      //   }
-                      // }
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, st) => Container(
-        margin: const EdgeInsets.symmetric(horizontal: 35),
+    final walletBalance = member?.memberId.walletBalance ?? 0.0;
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 35),
+      decoration: BoxDecoration(
+          border: Border.all(color: kTertiary),
+          color: kSecondaryColor,
+          borderRadius: BorderRadius.circular(12)),
+      child: Padding(
         padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-            border: Border.all(color: kTertiary),
-            color: kSecondaryColor,
-            borderRadius: BorderRadius.circular(12)),
-        child: const Text('Failed to load balance'),
+        child: Column(
+          children: [
+            const Text('Current Balance', style: kSmallTitleR),
+            const SizedBox(height: 8),
+            Text('₹${walletBalance.toStringAsFixed(0)}',
+                style: const TextStyle(
+                    fontSize: 36,
+                    color: kPrimaryColor,
+                    fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: customButton(
+                label: '+ Top Up Wallet',
+                onPressed: () async {
+                  double? enteredAmount;
+                  final amount = await showDialog<double>(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text('Top Up Wallet'),
+                        content: TextField(
+                          keyboardType: TextInputType.numberWithOptions(decimal: true),
+                          decoration: const InputDecoration(hintText: 'Enter amount'),
+                          onChanged: (value) {
+                            enteredAmount = double.tryParse(value);
+                          },
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Cancel'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () async {
+                              if (enteredAmount != null && enteredAmount! > 0) {
+                                final amountToTopUp = enteredAmount!;
+                                Navigator.of(context).pop();
+
+                                final topupPayment = TopupPaymentService(
+                                  amount: amountToTopUp,
+                                  onSuccess: (msg) async {
+                                    await handleTopupSuccess(
+                                      ref: ref,
+                                      context: context,
+                                      id: id,
+                                      amount: amountToTopUp,
+                                    );
+                                  },
+                                  onError: (msg) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(content: Text(msg)),
+                                      );
+                                    }
+                                  },
+                                );
+                                topupPayment.init();
+                                await topupPayment.startPayment();
+                              }
+                            },
+                            child: const Text("Top Up"),
+                          )
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
+
 Future<void> handleTopupSuccess({
   required WidgetRef ref,
   required BuildContext context,
@@ -256,9 +243,9 @@ Future<void> handleTopupSuccess({
   }
 }
 
-
 class _LowBalanceAlert extends StatelessWidget {
-  const _LowBalanceAlert();
+  final double minimumBalance;
+  const _LowBalanceAlert({required this.minimumBalance});
 
   @override
   Widget build(BuildContext context) {

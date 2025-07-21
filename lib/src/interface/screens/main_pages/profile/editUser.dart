@@ -29,6 +29,11 @@ import 'package:familytree/src/interface/components/loading_indicator/loading_in
 import 'package:familytree/src/interface/components/permission_check_wrapper.dart';
 import 'package:familytree/src/interface/components/shimmers/edit_user_shimmer.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/preimum_plan.dart';
+import 'package:familytree/src/data/api_routes/family_api.dart/family_api.dart';
+import 'package:familytree/src/interface/components/DropDown/selectionDropdown.dart';
+import 'package:familytree/src/data/constants/color_constants.dart';
+import 'package:familytree/src/interface/components/loading_indicator/loading_indicator.dart';
+import 'package:familytree/src/data/api_routes/user_api/user_data/relationship_api.dart';
 
 import 'package:image_picker/image_picker.dart';
 import 'dart:async';
@@ -175,6 +180,26 @@ class _EditUserState extends ConsumerState<EditUser> {
 
   bool _isProfileImageLoading = false;
   Map<int, bool> _companyLogoLoadingStates = {};
+
+  // Relation logic
+  String? _linkedMember;
+  String? _relationship;
+  List<Map<String, String?>> _relations = [];
+  final List<String> _relationships = ["spouse", "parent", "sibling", "child"];
+
+  void _addRelation(String memberName) {
+    if (_linkedMember != null && _relationship != null) {
+      setState(() {
+        _relations.add({
+          'memberId': _linkedMember,
+          'memberName': memberName,
+          'relationship': _relationship,
+        });
+        _linkedMember = null;
+        _relationship = null;
+      });
+    }
+  }
 
   Future<File?> _pickFile(
       {required String imageType, int? companyIndex}) async {
@@ -616,6 +641,191 @@ class _EditUserState extends ConsumerState<EditUser> {
                       ?.where((m) => m.metadata == 'certificate')
                       .toList() ??
                   [];
+              Widget relationSection = SizedBox.shrink();
+              if (user.familyId != null && user.familyId!.isNotEmpty) {
+                relationSection = Consumer(
+                  builder: (context, ref, child) {
+                    final asyncFamily = ref.watch(fetchSingleFamilyProvider(
+                        familyId: user.familyId!.first));
+                    return asyncFamily.when(
+                      data: (family) {
+                        final hasMembers = family.members != null &&
+                            family.members!.isNotEmpty;
+                        if (!hasMembers) {
+                          return Text('No Members exists in this family');
+                        } else {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 24),
+                              Text('Link to Family Member',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              SizedBox(height: 16),
+                              SelectionDropDown(
+                                label: null,
+                                hintText: 'Select existing family member',
+                                value: _linkedMember,
+                                items: family.members!
+                                    .where((m) => m.id != user.id && !_relations.any((rel) => rel['memberId'] == m.id))
+                                    .map((m) => DropdownMenuItem(
+                                        value: m.id,
+                                        child: Text(m.fullName ?? '')))
+                                    .toList(),
+                                onChanged: (val) =>
+                                    setState(() => _linkedMember = val),
+                                // validator removed to make selection optional
+                              ),
+                              SizedBox(height: 16),
+                              Text('Relationship',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              SizedBox(height: 16),
+                              SelectionDropDown(
+                                label: null,
+                                hintText: 'Select Relationship',
+                                value: _relationship,
+                                items: _relationships
+                                    .map((r) => DropdownMenuItem(
+                                        value: r, child: Text(r.toUpperCase())))
+                                    .toList(),
+                                onChanged: (val) =>
+                                    setState(() => _relationship = val),
+                                // validator removed to make selection optional
+                              ),
+                              SizedBox(height: 8),
+                              TextButton(
+                                onPressed: () {
+                                  final selectedMember = family.members!
+                                      .firstWhere((m) => m.id == _linkedMember);
+                                  _addRelation(selectedMember.fullName ?? '');
+                                },
+                                child: Text('+ Add Relation',
+                                    style: TextStyle(
+                                        color: kRed,
+                                        fontWeight: FontWeight.bold)),
+                              ),
+                              ..._relations
+                                  .asMap()
+                                  .entries
+                                  .map((entry) => ListTile(
+                                        title: Text(
+                                            'Member: ${entry.value['memberName']}'),
+                                        subtitle: Text(
+                                            'Relationship: ${entry.value['relationship']}'),
+                                        trailing: IconButton(
+                                          icon: Icon(Icons.delete,
+                                              color: Colors.red),
+                                          onPressed: () {
+                                            setState(() {
+                                              _relations.removeAt(entry.key);
+                                            });
+                                          },
+                                        ),
+                                      )),
+                            ],
+                          );
+                        }
+                      },
+                      loading: () => const Center(child: LoadingAnimation()),
+                      error: (error, stackTrace) {
+                        log(error.toString());
+                        return const Center(child: SizedBox.shrink());
+                      },
+                    );
+                  },
+                );
+              }
+              // Insert after social media section, before relation-adding UI
+              Widget relationshipsSection = SizedBox.shrink();
+              if (user.id != null) {
+                relationshipsSection = Consumer(
+                  builder: (context, ref, child) {
+                    final asyncRelationships =
+                        ref.watch(fetchRelationshipsProvider(user.id!));
+                    return asyncRelationships.when(
+                      data: (relationships) {
+                        if (relationships.isEmpty) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Text('No relationships found.'),
+                          );
+                        }
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: Text('Existing Relationships',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                            ),
+                            ...relationships.map((rel) {
+                              final isPerson1 =
+                                  rel['person1']['_id'] == user.id;
+                              final otherPerson =
+                                  isPerson1 ? rel['person2'] : rel['person1'];
+                              final type = rel['type'] ?? '';
+                              final imageUrl = otherPerson['image'] as String?;
+                              final relationshipId = rel['_id'] as String?;
+                              return StatefulBuilder(
+                                builder: (context, setState) {
+                                  bool isDeleting = false;
+                                  return ListTile(
+                                    leading: imageUrl != null
+                                        ? CircleAvatar(
+                                            backgroundImage:
+                                                NetworkImage(imageUrl))
+                                        : CircleAvatar(
+                                            child: Icon(Icons.person)),
+                                    title: Text(otherPerson['fullName'] ?? ''),
+                                    subtitle: Text('Relationship: $type'),
+                                    trailing: relationshipId != null
+                                        ? isDeleting
+                                            ? SizedBox(
+                                                width: 24,
+                                                height: 24,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                        strokeWidth: 2))
+                                            : IconButton(
+                                                icon: Icon(Icons.delete,
+                                                    color: Colors.red),
+                                                onPressed: () async {
+                                                  setState(
+                                                      () => isDeleting = true);
+                                                  await RelationshipApi
+                                                      .deleteRelationship(
+                                                          relationshipId:
+                                                              relationshipId);
+                                                  setState(
+                                                      () => isDeleting = false);
+                                                  ref.invalidate(
+                                                      fetchRelationshipsProvider(
+                                                          user.id!));
+                                                },
+                                              )
+                                        : null,
+                                  );
+                                },
+                              );
+                            }).toList(),
+                          ],
+                        );
+                      },
+                      loading: () => const Center(child: LoadingAnimation()),
+                      error: (error, stackTrace) {
+                        log(error.toString());
+                        return const Center(child: SizedBox.shrink());
+                      },
+                    );
+                  },
+                );
+              }
               return PopScope(
                 onPopInvoked: (didPop) {
                   if (didPop) {
@@ -997,6 +1207,18 @@ class _EditUserState extends ConsumerState<EditUser> {
                                   //   },
                                   // ),
                                 ],
+                              ),
+                              // Show relationships section here
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 20, right: 20, top: 10, bottom: 10),
+                                child: relationshipsSection,
+                              ),
+                              // Place relation section here
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 20, right: 20, top: 10, bottom: 10),
+                                child: relationSection,
                               ),
 
                               // Padding(
@@ -1767,16 +1989,17 @@ class _EditUserState extends ConsumerState<EditUser> {
                                           SnackbarService();
                                       String response =
                                           await _submitData(user: user);
-                                      // ref
-                                      //     .read(userProvider.notifier)
-                                      //     .refreshUser();
-
-                                      // Navigator.pushReplacement(
-                                      //     context,
-                                      //     MaterialPageRoute(
-                                      //         builder: (BuildContext context) =>
-                                      //             MainPage()
-                                      //             ));
+                                      // Call createRelationship for each relation
+                                      if (_relations.isNotEmpty) {
+                                        for (final rel in _relations) {
+                                          await RelationshipApi
+                                              .createRelationship(
+                                            person1: user.id!,
+                                            person2: rel['memberId']!,
+                                            type: rel['relationship']!,
+                                          );
+                                        }
+                                      }
                                       if (response.contains('success')) {
                                         snackbarService.showSnackBar(response);
                                         ref.invalidate(

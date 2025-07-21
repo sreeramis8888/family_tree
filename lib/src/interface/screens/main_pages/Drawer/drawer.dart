@@ -51,7 +51,6 @@ Widget customDrawer(
                   ],
                 ),
                 const SizedBox(height: 10),
-              
                 Row(
                   children: [
                     CircleAvatar(
@@ -110,7 +109,7 @@ Widget customDrawer(
               padding: EdgeInsets.zero,
               children: [
                 const SizedBox(height: 8),
-                
+
                 _buildDrawerItem(
                   icon: 'assets/svg/icons/financial_logo.svg',
                   label: 'Financial Program',
@@ -149,7 +148,7 @@ Widget customDrawer(
                     }
                   },
                 ),
-               if (user.isFamilyAdmin == true)
+                if (user.isFamilyAdmin == true)
                   _buildDrawerItem(
                     icon: 'assets/svg/icons/approvals.svg',
                     label: 'Approvals',
@@ -157,7 +156,6 @@ Widget customDrawer(
                       navigationService.pushNamed('Approvals');
                     },
                   ),
-
 
                 _buildDrawerItem(
                   icon: 'assets/svg/icons/my_products.svg',

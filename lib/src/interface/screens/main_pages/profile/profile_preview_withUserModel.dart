@@ -132,7 +132,8 @@ class ProfilePreviewWithUserModel extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: Column(
                             children: [
-                              Text('${user.occupation}'),
+                              if (user.occupation != 'null')
+                                Text('${user.occupation}'),
                               const SizedBox(height: 5),
                               SizedBox(
                                 height: 20,

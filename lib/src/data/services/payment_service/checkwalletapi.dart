@@ -34,12 +34,12 @@ class TopupPaymentService {
   Future<void> startPayment() async {
     try {
       final user = await UserService.fetchUserDetails(id);
-      donorName = user.fullName ?? "User";
-      donorEmail = user.email ?? "unknown@example.com";
-      donorPhone = user.phone ?? "+911234567890";
+      donorName = user.fullName ?? "";
+      donorEmail = user.email ?? "";
+      donorPhone = user.phone ?? "";
 
       final options = {
-        'key': 'rzp_test_lDODXN89x37kcK', // Replace with live key in production
+        'key': 'rzp_test_lDODXN89x37kcK',
         'amount': (amount * 100).toInt(),
         'currency': 'INR',
         'name': 'Wallet Top-Up',

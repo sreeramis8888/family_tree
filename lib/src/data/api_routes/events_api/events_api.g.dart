@@ -7,25 +7,7 @@ part of 'events_api.dart';
 // **************************************************************************
 
 String _$fetchEventWithPersonHash() =>
-    r'1ba4394a6abd76a1942cd1f7548e8884060d04f1';
-
-/// See also [fetchEventWithPerson].
-@ProviderFor(fetchEventWithPerson)
-final fetchEventWithPersonProvider =
-    AutoDisposeFutureProvider<EventWithPerson>.internal(
-  fetchEventWithPerson as Create<FutureOr<EventWithPerson>, AutoDisposeFutureProviderRef<EventWithPerson>>,
-  name: r'fetchEventWithPersonProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$fetchEventWithPersonHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef FetchEventWithPersonRef = AutoDisposeFutureProviderRef<EventWithPerson>;
-String _$filteredEventsHash() => r'0cb6dd87cbd3b336db0782d145176960f3376d9e';
+    r'913f19b833223f32e2867d29966d2ac238fd3078';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -47,6 +29,138 @@ class _SystemHash {
     return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
   }
 }
+
+/// See also [fetchEventWithPerson].
+@ProviderFor(fetchEventWithPerson)
+const fetchEventWithPersonProvider = FetchEventWithPersonFamily();
+
+/// See also [fetchEventWithPerson].
+class FetchEventWithPersonFamily extends Family<AsyncValue<EventWithPerson>> {
+  /// See also [fetchEventWithPerson].
+  const FetchEventWithPersonFamily();
+
+  /// See also [fetchEventWithPerson].
+  FetchEventWithPersonProvider call(
+    String eventId,
+  ) {
+    return FetchEventWithPersonProvider(
+      eventId,
+    );
+  }
+
+  @override
+  FetchEventWithPersonProvider getProviderOverride(
+    covariant FetchEventWithPersonProvider provider,
+  ) {
+    return call(
+      provider.eventId,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'fetchEventWithPersonProvider';
+}
+
+/// See also [fetchEventWithPerson].
+class FetchEventWithPersonProvider
+    extends AutoDisposeFutureProvider<EventWithPerson> {
+  /// See also [fetchEventWithPerson].
+  FetchEventWithPersonProvider(
+    String eventId,
+  ) : this._internal(
+          (ref) => fetchEventWithPerson(
+            ref as FetchEventWithPersonRef,
+            eventId,
+          ),
+          from: fetchEventWithPersonProvider,
+          name: r'fetchEventWithPersonProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$fetchEventWithPersonHash,
+          dependencies: FetchEventWithPersonFamily._dependencies,
+          allTransitiveDependencies:
+              FetchEventWithPersonFamily._allTransitiveDependencies,
+          eventId: eventId,
+        );
+
+  FetchEventWithPersonProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.eventId,
+  }) : super.internal();
+
+  final String eventId;
+
+  @override
+  Override overrideWith(
+    FutureOr<EventWithPerson> Function(FetchEventWithPersonRef provider) create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: FetchEventWithPersonProvider._internal(
+        (ref) => create(ref as FetchEventWithPersonRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        eventId: eventId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<EventWithPerson> createElement() {
+    return _FetchEventWithPersonProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is FetchEventWithPersonProvider && other.eventId == eventId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, eventId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin FetchEventWithPersonRef on AutoDisposeFutureProviderRef<EventWithPerson> {
+  /// The parameter `eventId` of this provider.
+  String get eventId;
+}
+
+class _FetchEventWithPersonProviderElement
+    extends AutoDisposeFutureProviderElement<EventWithPerson>
+    with FetchEventWithPersonRef {
+  _FetchEventWithPersonProviderElement(super.provider);
+
+  @override
+  String get eventId => (origin as FetchEventWithPersonProvider).eventId;
+}
+
+String _$filteredEventsHash() => r'ee04faa9276dc16b0bb1e5ded6d77af33786ba05';
 
 /// See also [filteredEvents].
 @ProviderFor(filteredEvents)
@@ -181,7 +295,7 @@ class _FilteredEventsProviderElement
   List<String> get memberIds => (origin as FilteredEventsProvider).memberIds;
 }
 
-String _$filteredFeedsHash() => r'bab39d6391c444ea8515474d9de061dff162ab47';
+String _$filteredFeedsHash() => r'0a6a6044a6d46fe8a290302e66287d9f5baedbd5';
 
 /// See also [filteredFeeds].
 @ProviderFor(filteredFeeds)
@@ -333,7 +447,7 @@ final fetchEventsProvider = AutoDisposeFutureProvider<List<Event>>.internal(
 // ignore: unused_element
 typedef FetchEventsRef = AutoDisposeFutureProviderRef<List<Event>>;
 String _$fetchEventAttendanceHash() =>
-    r'397e3f49d647ff82387140ee04796e804c3cecf1';
+    r'bdb528873350458923378813fce104de43a71729';
 
 /// See also [fetchEventAttendance].
 @ProviderFor(fetchEventAttendance)

@@ -220,8 +220,10 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                         //         ),
                                         //     ],
                                         //   ),
-                                        Text('${user.occupation}'),
-                                        const SizedBox(height: 5),
+                                        if (user.occupation != null)
+                                          Text('${user.occupation}'),
+                                        if (user.occupation != null)
+                                          const SizedBox(height: 5),
                                         // Text(
                                         //   'Joined Date: $joinedDate',
                                         //   style: const TextStyle(
@@ -232,42 +234,44 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                         SizedBox(
                                           height: 20,
                                         ),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 10, vertical: 6),
-                                          decoration: BoxDecoration(
-                                              color: kWhite,
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              border: Border.all(
-                                                  color: const Color.fromARGB(
-                                                      255, 234, 226, 226))),
-                                          child: IntrinsicWidth(
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 10),
-                                                  child: Image.asset(
-                                                      scale: 40,
-                                                      'assets/pngs/familytree_logo.png'),
-                                                ),
-                                                const SizedBox(width: 10),
-                                                Text(
-                                                    'BirthDate: ${DateFormat('yyyy-MM-dd').format(user.birthDate!)}',
-                                                    style:
-                                                        kSmallerTitleB.copyWith(
-                                                            color:
-                                                                kPrimaryColor)),
-                                              ],
+                                        if (user.birthDate != null)
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 10, vertical: 6),
+                                            decoration: BoxDecoration(
+                                                color: kWhite,
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                border: Border.all(
+                                                    color: const Color.fromARGB(
+                                                        255, 234, 226, 226))),
+                                            child: IntrinsicWidth(
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 10),
+                                                    child: Image.asset(
+                                                        scale: 40,
+                                                        'assets/pngs/familytree_logo.png'),
+                                                  ),
+                                                  const SizedBox(width: 10),
+                                                  if (user.birthDate != null)
+                                                    Text(
+                                                        'BirthDate: ${DateFormat('yyyy-MM-dd').format(user.birthDate!)}',
+                                                        style: kSmallerTitleB
+                                                            .copyWith(
+                                                                color:
+                                                                    kPrimaryColor)),
+                                                ],
+                                              ),
                                             ),
                                           ),
-                                        ),
                                         SizedBox(
                                           height: 20,
                                         )

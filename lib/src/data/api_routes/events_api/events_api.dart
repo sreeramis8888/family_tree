@@ -12,7 +12,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'events_api.g.dart';
 
 @riverpod
-Future<EventWithPerson> fetchEventWithPerson(String eventId) async {
+Future<EventWithPerson> fetchEventWithPerson(Ref ref,String eventId) async {
   final eventResponse = await http.get(
     Uri.parse('$baseUrl/events/$eventId'),
     headers: {'Authorization': 'Bearer $token'},
@@ -70,7 +70,7 @@ Future<void> updateEventStatus({
 
 @riverpod
 Future<List<Map<String, dynamic>>> filteredEvents(
-  FilteredEventsRef ref,
+  Ref ref,
   List<String> memberIds,
 ) async {
   try {
@@ -119,7 +119,7 @@ Future<List<Map<String, dynamic>>> filteredEvents(
 
 @riverpod
 Future<List<Map<String, dynamic>>> filteredFeeds(
-    FilteredFeedsRef ref, List<String> memberIds) async {
+    Ref ref, List<String> memberIds) async {
   try {
     final url = Uri.parse('$baseUrl/feeds/family/all');
     final response = await http.get(
@@ -204,7 +204,7 @@ Future<Event> fetchEventById(id) async {
 
 @riverpod
 Future<AttendanceUserListModel> fetchEventAttendance(
-    FetchEventAttendanceRef ref,
+    Ref ref,
     {required String eventId}) async {
   final url = Uri.parse('$baseUrl/events/attend/$eventId');
   print('Requesting URL: $url');

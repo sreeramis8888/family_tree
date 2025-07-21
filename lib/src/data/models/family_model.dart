@@ -89,7 +89,7 @@ class Member {
       joinDate:
           json['joinDate'] != null ? DateTime.parse(json['joinDate']) : null,
       personId: json['person']?['_id'],
-      fullName: json['person']?['fullName'],
+      fullName: json['fullName'],
     );
   }
 

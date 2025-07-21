@@ -25,7 +25,7 @@ class FinancialAssistancePage extends StatelessWidget {
                 decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage(
-                        'assets/hands_image.jpg'), // Replace with your image
+                        'assets/pngs/financial_bg.png'),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -181,10 +181,12 @@ class FinancialAssistancePage extends StatelessWidget {
                     child: customButton(
                       label: 'Request For Join',
                       onPressed: () {
+                        
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const FinancialProgramJoinPaymentPage(),
+                            builder: (context) =>
+                                const FinancialProgramJoinPaymentPage(),
                           ),
                         );
                       },

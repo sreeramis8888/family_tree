@@ -277,47 +277,56 @@ class ProfilePage extends ConsumerWidget {
                                                     //     color: kBlack,
                                                     //   ),
                                                     // ),
-                                                    SizedBox(height: 20),
-                                                    Container(
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 10,
-                                                          vertical: 6),
-                                                      decoration: BoxDecoration(
-                                                        color: kSecondaryColor,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(30),
-                                                      ),
-                                                      child: IntrinsicWidth(
-                                                        child: Row(
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceBetween,
-                                                          children: [
-                                                            Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .only(
-                                                                      left: 10),
-                                                              child: Image.asset(
-                                                                  scale: 30,
-                                                                  'assets/pngs/familytree_logo.png'),
-                                                            ),
-                                                            const SizedBox(
-                                                                width: 10),
-                                                            Text(
-                                                                'Member ID: ${user.email}',
-                                                                style: kSmallerTitleB
-                                                                    .copyWith(
-                                                                        color:
-                                                                            kPrimaryColor)),
-                                                          ],
+                                                    if (user.birthDate != null)
+                                                      SizedBox(height: 20),
+                                                    if (user.birthDate != null)
+                                                      Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                horizontal: 10,
+                                                                vertical: 6),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color:
+                                                              kSecondaryColor,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(30),
+                                                        ),
+                                                        child: IntrinsicWidth(
+                                                          child: Row(
+                                                            mainAxisSize:
+                                                                MainAxisSize
+                                                                    .min,
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .only(
+                                                                        left:
+                                                                            10),
+                                                                child: Image.asset(
+                                                                    scale: 30,
+                                                                    'assets/pngs/familytree_logo.png'),
+                                                              ),
+                                                              const SizedBox(
+                                                                  width: 10),
+                                                              if (user.birthDate !=
+                                                                  null)
+                                                                Text(
+                                                                    'BirthDate: ${DateFormat('yyyy-MM-dd').format(user.birthDate!)}',
+                                                                    style: kSmallerTitleB
+                                                                        .copyWith(
+                                                                            color:
+                                                                                kPrimaryColor)),
+                                                            ],
+                                                          ),
                                                         ),
                                                       ),
-                                                    ),
                                                     SizedBox(height: 20),
                                                     Column(
                                                       children: [

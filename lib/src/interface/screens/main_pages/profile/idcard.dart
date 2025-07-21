@@ -156,16 +156,18 @@ class IDCardScreen extends ConsumerWidget {
                         child: Row(
                           children: [
                             Expanded(
-                              child: customButton(label: 'Share', onPressed: () {
-                                
-                              },)
-                            ),
+                                child: customButton(
+                              label: 'Share',
+                              onPressed: () {},
+                            )),
                             const SizedBox(width: 16),
                             Expanded(
-                              child: customButton(label: 'Download QR', onPressed: () {
-                                
-                              },sideColor: kPrimaryLightColor,buttonColor: kWhite)
-                            ),
+                                child: customButton(
+                                    label: 'Download QR',
+                                    onPressed: () {},
+                                    sideColor: kPrimaryLightColor,
+                                    buttonColor: kWhite,
+                                    labelColor: kPrimaryColor)),
                           ],
                         ),
                       ),

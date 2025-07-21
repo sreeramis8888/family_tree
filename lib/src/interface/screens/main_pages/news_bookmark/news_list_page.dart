@@ -79,46 +79,46 @@ class NewsListPage extends ConsumerWidget {
             if (news.isNotEmpty) {
               return Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 8.0),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Search News',
-                        hintStyle: TextStyle(color: Colors.grey[600]),
-                        prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
-                        // suffixIcon: IconButton(
-                        //   icon: Icon(
-                        //     Icons.filter_alt_outlined,
-                        //     color: Colors.red[400],
-                        //     size: 22,
-                        //   ),
-                        //   onPressed: () {
-                        //     // Filter action
-                        //   },
-                        // ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25),
-                          borderSide:
-                              BorderSide(color: Colors.grey[300]!, width: 1),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25),
-                          borderSide:
-                              BorderSide(color: Colors.grey[300]!, width: 1),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25),
-                          borderSide:
-                              BorderSide(color: Colors.red[400]!, width: 1.5),
-                        ),
-                        filled: true,
-                        fillColor: kWhite,
-                        contentPadding:
-                            EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                      ),
-                    ),
-                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.symmetric(
+                  //       horizontal: 16.0, vertical: 8.0),
+                  //   child: TextField(
+                  //     decoration: InputDecoration(
+                  //       hintText: 'Search News',
+                  //       hintStyle: TextStyle(color: Colors.grey[600]),
+                  //       prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
+                  //       // suffixIcon: IconButton(
+                  //       //   icon: Icon(
+                  //       //     Icons.filter_alt_outlined,
+                  //       //     color: Colors.red[400],
+                  //       //     size: 22,
+                  //       //   ),
+                  //       //   onPressed: () {
+                  //       //     // Filter action
+                  //       //   },
+                  //       // ),
+                  //       border: OutlineInputBorder(
+                  //         borderRadius: BorderRadius.circular(25),
+                  //         borderSide:
+                  //             BorderSide(color: Colors.grey[300]!, width: 1),
+                  //       ),
+                  //       enabledBorder: OutlineInputBorder(
+                  //         borderRadius: BorderRadius.circular(25),
+                  //         borderSide:
+                  //             BorderSide(color: Colors.grey[300]!, width: 1),
+                  //       ),
+                  //       focusedBorder: OutlineInputBorder(
+                  //         borderRadius: BorderRadius.circular(25),
+                  //         borderSide:
+                  //             BorderSide(color: Colors.red[400]!, width: 1.5),
+                  //       ),
+                  //       filled: true,
+                  //       fillColor: kWhite,
+                  //       contentPadding:
+                  //           EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  //     ),
+                  //   ),
+                  // ),
                   Expanded(
                     child: ListView.builder(
                       itemCount: news.length,

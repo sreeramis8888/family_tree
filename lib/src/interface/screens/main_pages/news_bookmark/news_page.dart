@@ -46,17 +46,6 @@ class NewsDetailView extends ConsumerWidget {
           ),
           backgroundColor: kWhite,
           scrolledUnderElevation: 0,
-          actions: [
-            IconButton(
-              icon: Icon(Icons.bookmark_border),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => BookmarkPage()),
-                );
-              },
-            ),
-          ],
         ),
         body: NewsDetailContentView(news: news));
   }
@@ -208,49 +197,29 @@ class NewsContent extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Stack(
-                children: [
-                  AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: Image.network(
-                      newsItem.media ?? '',
-                      fit: BoxFit.cover,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return ShimmerLoadingEffect(
-                          child: Container(
-                            width: double.infinity,
-                            color: Colors.grey[300],
-                          ),
-                        );
-                      },
-                      errorBuilder: (context, error, stackTrace) {
-                        return ShimmerLoadingEffect(
-                          child: Container(
-                            width: double.infinity,
-                            color: Colors.grey[300],
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  Positioned(
-                    top: 16,
-                    right: 16,
-                    child: IconButton(
-                      icon: Icon(
-                        isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                        color: isBookmarked ? kPrimaryColor : kWhite,
-                        size: 28,
+              AspectRatio(
+                aspectRatio: 16 / 9,
+                child: Image.network(
+                  newsItem.media ?? '',
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return ShimmerLoadingEffect(
+                      child: Container(
+                        width: double.infinity,
+                        color: Colors.grey[300],
                       ),
-                      onPressed: () {
-                        ref
-                            .read(bookmarkedNewsProvider.notifier)
-                            .toggleBookmark(newsItem.id!);
-                      },
-                    ),
-                  ),
-                ],
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return ShimmerLoadingEffect(
+                      child: Container(
+                        width: double.infinity,
+                        color: Colors.grey[300],
+                      ),
+                    );
+                  },
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.all(16.0),

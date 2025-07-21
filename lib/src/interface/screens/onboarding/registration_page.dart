@@ -83,11 +83,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
     }
   }
 
-  void _addRelation() {
+  // Add new _addRelation that takes memberName
+  void _addRelation(String memberName) {
     if (_linkedMember != null && _relationship != null) {
       setState(() {
         _relations.add({
-          'member': _linkedMember,
+          'memberId': _linkedMember,
+          'memberName': memberName,
           'relationship': _relationship,
         });
         _linkedMember = null;
@@ -125,7 +127,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           if (profilePictureUrl != null) "image": profilePictureUrl,
           "relationships": _relations
               .map((rel) => {
-                    "personId": rel['member'],
+                    "personId": rel['memberId'],
                     "type": rel['relationship'],
                   })
               .toList(),
@@ -523,9 +525,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 },
               ),
               const SizedBox(height: 16),
-              Text('Parent Family',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
 
               Consumer(
                 builder: (context, ref, child) {
@@ -534,19 +533,36 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     data: (families) {
                       final filteredFamilies =
                           families.where((f) => f.id != _family).toList();
-                      return SelectionDropDown(
-                        label: null,
-                        hintText: 'Select parent family',
-                        value: _parentFamily,
-                        items: filteredFamilies
-                            .map((f) => DropdownMenuItem<String>(
-                                  value: f.id ?? '',
-                                  child: Text(f.name ?? ''),
-                                ))
-                            .toList(),
-                        onChanged: (val) => setState(() => _parentFamily = val),
-                        validator: (val) => val == null ? 'Required' : null,
-                      );
+                      if (filteredFamilies.isNotEmpty) {
+                        return Column(
+                          children: [
+                            Row(
+                              children: [
+                                Text('Parent Family',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            SelectionDropDown(
+                              label: null,
+                              hintText: 'Select parent family',
+                              value: _parentFamily,
+                              items: filteredFamilies
+                                  .map((f) => DropdownMenuItem<String>(
+                                        value: f.id ?? '',
+                                        child: Text(f.name ?? ''),
+                                      ))
+                                  .toList(),
+                              onChanged: (val) =>
+                                  setState(() => _parentFamily = val),
+                              // validator removed to make selection optional
+                            ),
+                          ],
+                        );
+                      } else {
+                        return SizedBox.shrink();
+                      }
                     },
                     loading: () => const Center(child: LoadingAnimation()),
                     error: (error, stackTrace) {
@@ -558,32 +574,89 @@ class _RegistrationPageState extends State<RegistrationPage> {
               ),
               if (_family != null) const SizedBox(height: 16),
               if (_family != null)
-                Text('Link to Family Member 1 *',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
-              if (_family != null)
                 Consumer(
                   builder: (context, ref, child) {
                     final asyncFamily = ref.watch(
                         fetchSingleFamilyProvider(familyId: _family ?? ''));
                     return asyncFamily.when(
                       data: (family) {
-                        if (family.members != null) {
-                          return SelectionDropDown(
-                            label: null,
-                            hintText: 'Select existing family member',
-                            value: _linkedMember,
-                            items: family.members!
-                                .map((m) => DropdownMenuItem(
-                                    value: m.personId,
-                                    child: Text(m.fullName ?? '')))
-                                .toList(),
-                            onChanged: (val) =>
-                                setState(() => _linkedMember = val),
-                            validator: (val) => val == null ? 'Required' : null,
-                          );
-                        } else {
+                        final hasMembers = family.members != null &&
+                            family.members!.isNotEmpty;
+                        if (!hasMembers) {
                           return Text('No Members exists in this family');
+                        } else {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Link to Family Member 1 *',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 16),
+                              SelectionDropDown(
+                                label: null,
+                                hintText: 'Select existing family member',
+                                value: _linkedMember,
+                                items: family.members!
+                                    .where((m) => !_relations.any((rel) => rel['memberId'] == m.id))
+                                    .map((m) => DropdownMenuItem(
+                                        value: m.id,
+                                        child: Text(m.fullName ?? '')))
+                                    .toList(),
+                                onChanged: (val) =>
+                                    setState(() => _linkedMember = val),
+                                validator: (val) =>
+                                    val == null ? 'Required' : null,
+                              ),
+                              const SizedBox(height: 16),
+                              Text('Relationship *',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 16),
+                              SelectionDropDown(
+                                label: null,
+                                hintText: 'Select Relationship',
+                                value: _relationship,
+                                items: _relationships
+                                    .map((r) => DropdownMenuItem(
+                                        value: r, child: Text(r.toUpperCase())))
+                                    .toList(),
+                                onChanged: (val) =>
+                                    setState(() => _relationship = val),
+                                validator: (val) =>
+                                    val == null ? 'Required' : null,
+                              ),
+                              const SizedBox(height: 8),
+                              TextButton(
+                                onPressed: () {
+                                  final selectedMember = family.members!
+                                      .firstWhere((m) => m.id == _linkedMember);
+                                  _addRelation(selectedMember.fullName ?? '');
+                                },
+                                child: Text('+ Add Relation',
+                                    style: TextStyle(
+                                        color: kRed,
+                                        fontWeight: FontWeight.bold)),
+                              ),
+                              ..._relations
+                                  .asMap()
+                                  .entries
+                                  .map((entry) => ListTile(
+                                        title: Text(
+                                            'Member: ${entry.value['memberName']}'),
+                                        subtitle: Text(
+                                            'Relationship: ${entry.value['relationship']}'),
+                                        trailing: IconButton(
+                                          icon: Icon(Icons.delete,
+                                              color: Colors.red),
+                                          onPressed: () {
+                                            setState(() {
+                                              _relations.removeAt(entry.key);
+                                            });
+                                          },
+                                        ),
+                                      )),
+                            ],
+                          );
                         }
                       },
                       loading: () => const Center(child: LoadingAnimation()),
@@ -594,42 +667,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     );
                   },
                 ),
-              if (_family != null) const SizedBox(height: 16),
-              if (_family != null)
-                Text('Relationship *',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-              if (_family != null) const SizedBox(height: 16),
-              if (_family != null)
-                SelectionDropDown(
-                  label: null,
-                  hintText: 'Select Relationship',
-                  value: _relationship,
-                  items: _relationships
-                      .map((r) => DropdownMenuItem(
-                          value: r, child: Text(r.toUpperCase())))
-                      .toList(),
-                  onChanged: (val) => setState(() => _relationship = val),
-                  validator: (val) => val == null ? 'Required' : null,
-                ),
-              if (_family != null) const SizedBox(height: 8),
-              TextButton(
-                onPressed: _addRelation,
-                child: Text('+ Add Relation',
-                    style: TextStyle(color: kRed, fontWeight: FontWeight.bold)),
-              ),
-              ..._relations.asMap().entries.map((entry) => ListTile(
-                    title: Text('Member: \\${entry.value['member']}'),
-                    subtitle:
-                        Text('Relationship: \\${entry.value['relationship']}'),
-                    trailing: IconButton(
-                      icon: Icon(Icons.delete, color: Colors.red),
-                      onPressed: () {
-                        setState(() {
-                          _relations.removeAt(entry.key);
-                        });
-                      },
-                    ),
-                  )),
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
