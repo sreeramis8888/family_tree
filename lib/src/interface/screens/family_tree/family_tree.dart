@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:familytree/src/data/constants/color_constants.dart';
+import 'package:familytree/src/data/constants/style_constants.dart';
 import 'package:familytree/src/data/globals.dart';
 import 'package:familytree/src/interface/screens/family_tree/FamilyMembers.dart';
 import 'package:familytree/src/interface/screens/family_tree/media.dart';
@@ -79,44 +81,49 @@ class _FamilyTreeState extends State<FamilyTree> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: kWhite,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        automaticallyImplyLeading: false,
+        backgroundColor: kWhite,
         forceMaterialTransparency: true,
         elevation: 1,
-        leading: const Padding(
-          padding: EdgeInsets.only(left: 16, top: 12),
-          child: Icon(Icons.account_tree, color: Colors.red, size: 20),
-        ),
-        title: Text(
-          "Family Tree",
-          style: GoogleFonts.roboto(
-            color: Colors.black,
-            fontSize: 20,
-            fontWeight: FontWeight.w500,
+        title: GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: Row(
+            children: [
+              Icon(
+                Icons.arrow_back_ios,
+                size: 15,
+              ),
+              const SizedBox(width: 8),
+              const Icon(Icons.account_tree, color: Colors.red, size: 20),
+              const SizedBox(width: 8),
+              Text("Family Tree", style: kHeadTitleB),
+            ],
           ),
         ),
         iconTheme: const IconThemeData(
           color: Colors.black,
-        ), // sets default icon color
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.all(16.0),
             child: Container(
               width: 398,
               decoration: BoxDecoration(
-                color: const Color(0xFFFFFFFF),
-                border: Border.all(
-                  color: const Color.fromARGB(255, 237, 237, 237),
-                  width: 1,
-                ),
-              ),
+                  color: const Color(0xFFFFFFFF),
+                  border: Border.all(
+                    color: const Color.fromARGB(255, 237, 237, 237),
+                    width: 1,
+                  ),
+                  borderRadius: BorderRadius.circular(5)),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Container(
-                    width: 398,
+                    width: double.infinity,
                     height: 152,
                     color: const Color(0xffEAF8EE),
                     child: Stack(
@@ -259,80 +266,6 @@ class _FamilyTreeState extends State<FamilyTree> {
               ),
             ),
           ),
-        ),
-      ),
-      bottomNavigationBar: Container(
-        height: 80,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-          border: Border(
-            top: BorderSide(color: Colors.grey.shade300, width: 1),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: List.generate(5, (index) {
-            final isSelected = index == currentIndex;
-            final List<Widget> icons = [
-              Icon(
-                Icons.home,
-                color: isSelected ? Colors.white : Colors.grey,
-                size: 26,
-              ),
-              Icon(
-                Icons.business_center,
-                color: isSelected ? Colors.white : Colors.grey,
-                size: 26,
-              ),
-              Icon(
-                Icons.account_tree,
-                color: isSelected ? Colors.white : Colors.grey,
-                size: 26,
-              ),
-              SvgPicture.asset(
-                'assets/svg/icons/iconamoon_news-fill.svg',
-                width: 26,
-                height: 26,
-                color: isSelected ? Colors.white : Colors.grey,
-              ),
-              Icon(
-                Icons.groups,
-                color: isSelected ? Colors.white : Colors.grey,
-                size: 26,
-              ),
-            ];
-
-            return GestureDetector(
-              onTap: () {
-                setState(() {
-                  currentIndex = index;
-                });
-              },
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                width: 50,
-                height: 50,
-                decoration: isSelected
-                    ? BoxDecoration(
-                        color: Colors.red,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.red.withOpacity(0.4),
-                            blurRadius: 12,
-                            spreadRadius: 4,
-                          ),
-                        ],
-                      )
-                    : const BoxDecoration(),
-                child: Center(child: icons[index]),
-              ),
-            );
-          }),
         ),
       ),
     );

@@ -95,10 +95,10 @@ class _FamilyMembersState extends State<FamilyMembers> {
               child: AppBar(
                 backgroundColor: Colors.white,
                 forceMaterialTransparency: true,
-                elevation: 0, // no default elevation
+                elevation: 0,
                 centerTitle: true,
                 title: Text(
-                  "${widget.familyname} Family",
+                  "Family Members",
                   style: GoogleFonts.roboto(
                     fontSize: 16,
                     color: const Color(0xff272727),

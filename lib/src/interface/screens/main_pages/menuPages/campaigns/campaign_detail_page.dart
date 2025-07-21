@@ -149,6 +149,8 @@ class _CampaignDetailPageState extends State<CampaignDetailPage> {
             ),
             const SizedBox(height: 10),
             Text(campaign.organizedBy, style: kSmallerTitleR),
+            const SizedBox(height: 10),
+            Text(campaign.description, style: kSmallerTitleR),
             const SizedBox(height: 28),
             Text('Enter Donation Amount', style: kSmallTitleB),
             const SizedBox(height: 8),

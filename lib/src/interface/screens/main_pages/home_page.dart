@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:familytree/src/data/api_routes/finance_api/finance_api.dart';
 import 'package:familytree/src/interface/screens/family_tree/family_tree.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/campaigns/campaign_detail_page.dart';
+import 'package:familytree/src/interface/screens/main_pages/menuPages/financial_program/financial_program_page.dart';
+import 'package:familytree/src/interface/screens/main_pages/menuPages/financial_program/program_join_request.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -100,7 +103,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         return Align(
           alignment: Alignment.centerRight,
           child: SizedBox(
-            width: MediaQuery.of(context).size.width, // Full screen
+            width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
             child: customDrawer(user: user, context: context, ref: ref),
           ),
@@ -108,7 +111,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       },
       transitionBuilder: (context, animation, secondaryAnimation, child) {
         final offsetAnimation = Tween<Offset>(
-          begin: const Offset(1, 0), // Start off-screen right
+          begin: const Offset(1, 0),
           end: Offset.zero,
         ).animate(animation);
         return SlideTransition(
@@ -187,7 +190,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                           'assets/pngs/familytree_logo.png'),
                                     ),
                                     const Spacer(),
-                                Consumer(
+                                    Consumer(
                                       builder: (context, ref, child) {
                                         final asyncNotifications = ref
                                             .watch(fetchNotificationsProvider);
@@ -239,7 +242,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                                         );
                                       },
                                     ),
-
 
                                     // Menu button to open the right drawer
                                     InkWell(
@@ -554,6 +556,45 @@ class _HomePageState extends ConsumerState<HomePage> {
                                           MainAxisAlignment.spaceEvenly,
                                       children: [
                                         CircleIconButton(
+                                            onTap: () async {
+                                              try {
+                                                final membershipDetails =
+                                                    await ref.read(
+                                                        getProgramMemberByIdProvider(
+                                                                id)
+                                                            .future);
+
+                                                if (membershipDetails != null) {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          const FinancialProgramPage(),
+                                                    ),
+                                                  );
+                                                } else {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          const FinancialAssistancePage(),
+                                                    ),
+                                                  );
+                                                }
+                                              } catch (e, stackTrace) {
+                                                log('❌ Error fetching membership: $e');
+                                                log('Stack trace:\n$stackTrace');
+
+                                                // Optional: Navigate to fallback or show error
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const FinancialAssistancePage(),
+                                                  ),
+                                                );
+                                              }
+                                            },
                                             text: 'Check Wallet',
                                             icon:
                                                 'assets/svg/icons/wallet_icon.svg'),
@@ -561,7 +602,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                           icon:
                                               'assets/svg/icons/tree_icon.svg',
                                           text: 'Family Tree',
-                                           onTap: () {
+                                          onTap: () {
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(
@@ -826,9 +867,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                               const SizedBox(
                                 height: 20,
                               ),
-                              // --- CSR & Zakath Campaigns Section ---
                               _CampaignsTabSection(),
-                              // --- End Section ---
                               const SizedBox(
                                 height: 20,
                               ),
