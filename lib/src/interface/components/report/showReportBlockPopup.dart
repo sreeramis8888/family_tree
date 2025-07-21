@@ -97,55 +97,6 @@ void showReportOrBlockDialog(BuildContext context, reported_user_id) {
 }
 
 
-void ShowReportPostDialog(BuildContext context, String postId) {
-  showGeneralDialog(
-    context: context,
-    barrierDismissible: true,
-    barrierLabel: 'Report',
-    pageBuilder: (_, __, ___) {
-      return Stack(
-        children: [
-          Positioned(
-            top: 60,
-            right: 25,
-            child: Material(
-              color: Colors.transparent,
-              child: Container(
-                width: 100,
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 8,
-                    ),
-                  ],
-                ),
-                child: InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                    showReportReasonDialog(context, postId,"Feeds");
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(Icons.report, color: Colors.black, size: 17),
-                      SizedBox(width: 6),
-                      Text("Report", style: TextStyle(fontSize: 13)),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      );
-    },
-  );
-}
-
 
 
 

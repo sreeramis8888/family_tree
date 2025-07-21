@@ -583,13 +583,48 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                   ),
                 ),
                 if (widget.business.author != id)
-                  IconButton(
-                    icon: const Icon(Icons.more_vert, color: Colors.grey),
-                    onPressed: () {
-                      ShowReportPostDialog(context, widget.business.id.toString());
-                      log(id);
+                 PopupMenuButton<String>(
+                    onSelected: (value) {
+                      if (value == 'report') {
+                        showReportReasonDialog(context, "postId", "Feeds");
+                      }
                     },
+                    icon: const Icon(Icons.more_vert,
+                        size: 18, color: Colors.black),
+                    offset: const Offset(0, 25),
+
+                    // Popup appearance
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                      side: BorderSide(color: Colors.grey.shade300),
+                    ),
+
+                    itemBuilder: (BuildContext context) => [
+                      PopupMenuItem<String>(
+                        value: 'report',
+                        height: 30,
+                        padding: EdgeInsets.zero,
+                        child: SizedBox(
+                          width: 80, 
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: const [
+                                                            Text(
+                                'Report',
+                                style: TextStyle(fontSize: 12),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(left: 8, right: 4),
+                                child:  Icon(Icons.report, color: Colors.black, size: 17),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
+
               ],
             ),
           ),

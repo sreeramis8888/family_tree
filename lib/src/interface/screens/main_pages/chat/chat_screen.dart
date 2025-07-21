@@ -513,25 +513,77 @@ class _IndividualPageState extends State<IndividualPage>
             ),
 
                 const Spacer(),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                  icon: const Icon(
-                    Icons.more_vert,
-                    color: Colors.grey,
-                  ),
-                  onPressed: () {
-                    final otherParticipant =
-                        widget.conversation.participants.firstWhere(
-                      (participant) => participant.userId != id,
-                    );
+            PopupMenuButton<String>(
+              icon: const Icon(
+                Icons.more_vert,
+                color: Colors.grey,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              elevation: 8,
+              onSelected: (value) {
+                final otherParticipant =
+                    widget.conversation.participants.firstWhere(
+                  (participant) => participant.userId != id,
+                );
 
-                    showReportOrBlockDialog(context, otherParticipant.userId);
-                  },
+                if (value == 'report') {
+                  showReportReasonDialog(
+                      context, otherParticipant.userId, "User");
+                } else if (value == 'block') {
+                  showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text("Block User"),
+                      content: const Text(
+                          "Are you sure you want to block this user?"),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text("Cancel"),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("User blocked.")),
+                            );
+                          },
+                          child: const Text("Block"),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              },
+              itemBuilder: (BuildContext context) => [
+                PopupMenuItem<String>(
+                  value: 'report',
+                  height: 30,
+                  child: Row(
+                    children: const [
+                      Icon(Icons.report, color: Colors.black, size: 16),
+                      SizedBox(width: 8),
+                      Text("Report", style: TextStyle(fontSize: 13)),
+                    ],
+                  ),
+                ),
+                const PopupMenuDivider(),
+                PopupMenuItem<String>(
+                  value: 'block',
+                  height: 30,
+                  child: Row(
+                    children: const [
+                      Icon(Icons.block, color: Colors.black, size: 16),
+                      SizedBox(width: 8),
+                      Text("Block", style: TextStyle(fontSize: 13)),
+                    ],
+                  ),
                 ),
               ],
-            ),
+            )
+
           ],
         ),
        
