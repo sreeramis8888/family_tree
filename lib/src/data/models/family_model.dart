@@ -1,3 +1,30 @@
+class FamilyMedia {
+  final String? url;
+  final String? caption;
+  final String? urlType;
+  final DateTime? uploadDate;
+
+  FamilyMedia({this.url, this.caption, this.urlType, this.uploadDate});
+
+  factory FamilyMedia.fromJson(Map<String, dynamic> json) {
+    return FamilyMedia(
+      url: json['url'],
+      caption: json['caption'],
+      urlType: json['urlType'],
+      uploadDate: json['uploadDate'] != null ? DateTime.parse(json['uploadDate']) : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'url': url,
+      'caption': caption,
+      'urlType': urlType,
+      'uploadDate': uploadDate?.toIso8601String(),
+    };
+  }
+}
+
 class FamilyModel {
   final String? id;
   final String? name;
@@ -8,7 +35,7 @@ class FamilyModel {
   final bool? status;
   final bool? isPrivate;
 
-  final List<dynamic>? media;
+  final List<FamilyMedia>? media;
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final int? v;
@@ -40,7 +67,9 @@ class FamilyModel {
       generation: json['generation'],
       status: json['status'],
       isPrivate: json['isPrivate'],
-      media: json['media'],
+      media: (json['media'] as List<dynamic>?)
+          ?.map((e) => FamilyMedia.fromJson(e))
+          .toList(),
       createdAt:
           json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
       updatedAt:
@@ -59,7 +88,7 @@ class FamilyModel {
       'generation': generation,
       'status': status,
       'isPrivate': isPrivate,
-      'media': media,
+      'media': media?.map((e) => e.toJson()).toList(),
       'createdAt': createdAt?.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
       '__v': v,
@@ -102,6 +131,34 @@ class Member {
         '_id': personId,
         'fullName': fullName,
       },
+    };
+  }
+}
+
+class FamilyMemberBasic {
+  final String? id;
+  final String? fullName;
+  final String? familyName;
+
+  FamilyMemberBasic({
+    this.id,
+    this.fullName,
+    this.familyName,
+  });
+
+  factory FamilyMemberBasic.fromJson(Map<String, dynamic> json) {
+    return FamilyMemberBasic(
+      id: json['_id'],
+      fullName: json['fullName'],
+      familyName: json['familyName'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'fullName': fullName,
+      'familyName': familyName,
     };
   }
 }

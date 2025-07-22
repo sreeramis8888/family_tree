@@ -8,10 +8,10 @@ part 'relationship_api.g.dart';
 
 class RelationshipApi {
   static Map<String, String> _headers() => {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer $token',
-    'accept': '*/*',
-  };
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+        'accept': '*/*',
+      };
 
   static Future<bool> createRelationship({
     required String person1,
@@ -32,55 +32,67 @@ class RelationshipApi {
       );
       final jsonResponse = json.decode(response.body);
       if (response.statusCode == 201) {
-        SnackbarService().showSnackBar(jsonResponse['message'] ?? 'Relationship created successfully');
+        SnackbarService().showSnackBar(
+            jsonResponse['message'] ?? 'Relationship created successfully');
         return true;
       } else {
-        SnackbarService().showSnackBar(jsonResponse['message'] ?? 'Failed to create relationship');
+        SnackbarService().showSnackBar(
+            jsonResponse['message'] ?? 'Failed to create relationship');
         return false;
       }
     } catch (e) {
-      SnackbarService().showSnackBar('Error creating relationship: ${e.toString()}');
+      SnackbarService()
+          .showSnackBar('Error creating relationship: ${e.toString()}');
       return false;
     }
   }
 
-  static Future<List<Map<String, dynamic>>> fetchRelationships({required String personId}) async {
+  static Future<List<Map<String, dynamic>>> fetchRelationships(
+      {required String personId}) async {
     final url = Uri.parse('$baseUrl/relationships?personId=$personId');
     try {
       final response = await http.get(url, headers: _headers());
       final jsonResponse = json.decode(response.body);
       if (response.statusCode == 200) {
-        final relationships = jsonResponse['data']['relationships'] as List<dynamic>;
+        final relationships =
+            jsonResponse['data']['relationships'] as List<dynamic>;
         return relationships.cast<Map<String, dynamic>>();
       } else {
-        SnackbarService().showSnackBar(jsonResponse['message'] ?? 'Failed to fetch relationships');
+        SnackbarService().showSnackBar(
+            jsonResponse['message'] ?? 'Failed to fetch relationships');
         return [];
       }
     } catch (e) {
-      SnackbarService().showSnackBar('Error fetching relationships: ${e.toString()}');
+      SnackbarService()
+          .showSnackBar('Error fetching relationships: ${e.toString()}');
       return [];
     }
   }
 
-  static Future<bool> deleteRelationship({required String relationshipId}) async {
+  static Future<bool> deleteRelationship(
+      {required String relationshipId}) async {
     final url = Uri.parse('$baseUrl/relationships/$relationshipId');
     try {
       final response = await http.delete(url, headers: _headers());
       final jsonResponse = json.decode(response.body);
       if (response.statusCode == 200) {
-        SnackbarService().showSnackBar(jsonResponse['message'] ?? 'Relationship deleted successfully');
+        SnackbarService().showSnackBar(
+            jsonResponse['message'] ?? 'Relationship deleted successfully');
         return true;
       } else {
-        SnackbarService().showSnackBar(jsonResponse['message'] ?? 'Failed to delete relationship');
+        SnackbarService().showSnackBar(
+            jsonResponse['message'] ?? 'Failed to delete relationship');
         return false;
       }
     } catch (e) {
-      SnackbarService().showSnackBar('Error deleting relationship: ${e.toString()}');
+      SnackbarService()
+          .showSnackBar('Error deleting relationship: ${e.toString()}');
       return false;
     }
   }
 }
 
 @riverpod
-Future<List<Map<String, dynamic>>> fetchRelationships(FetchRelationshipsRef ref, String personId) =>
-    RelationshipApi.fetchRelationships(personId: personId); 
+Future<List<Map<String, dynamic>>> fetchRelationships(
+        FetchRelationshipsRef ref, String personId) =>
+    RelationshipApi.fetchRelationships(personId: personId);

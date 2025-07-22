@@ -1,4 +1,3 @@
-
 import 'chat_model.dart';
 
 class ChatMessage {
@@ -67,10 +66,12 @@ class ChatMessage {
         metadata: json['metadata'] != null
             ? Metadata.fromJson(json['metadata'] as Map<String, dynamic>)
             : null,
-        createdAt: json['createdAt'] != null && (json['createdAt'] as String).isNotEmpty
+        createdAt: json['createdAt'] != null &&
+                (json['createdAt'] as String).isNotEmpty
             ? DateTime.tryParse(json['createdAt'])
             : null,
-        updatedAt: json['updatedAt'] != null && (json['updatedAt'] as String).isNotEmpty
+        updatedAt: json['updatedAt'] != null &&
+                (json['updatedAt'] as String).isNotEmpty
             ? DateTime.tryParse(json['updatedAt'])
             : null,
       );
@@ -83,7 +84,8 @@ class ChatMessage {
       if (content != null) 'content': content,
       if (messageType != null) 'messageType': messageType,
       'attachments': attachments.map((e) => e.toJson()).toList(),
-      'replyTo': replyTo is ChatMessage ? (replyTo as ChatMessage).toJson() : replyTo,
+      'replyTo':
+          replyTo is ChatMessage ? (replyTo as ChatMessage).toJson() : replyTo,
       if (edited != null) 'edited': edited?.toJson(),
       if (deleted != null) 'deleted': deleted?.toJson(),
       'readBy': readBy.map((e) => e.toJson()).toList(),
@@ -285,7 +287,8 @@ class Mention {
   final int startIndex;
   final int length;
 
-  Mention({required this.userId, required this.startIndex, required this.length});
+  Mention(
+      {required this.userId, required this.startIndex, required this.length});
 
   factory Mention.fromJson(Map<String, dynamic> json) => Mention(
         userId: json['userId'] as String,
@@ -300,4 +303,4 @@ class Mention {
       'length': length,
     };
   }
-} 
+}

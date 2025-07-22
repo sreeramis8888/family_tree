@@ -28,10 +28,12 @@ class DetailsSheet extends StatelessWidget {
       builder: (context, scrollController) {
         return Consumer(
           builder: (context, ref, _) {
-            final asyncRequest = ref.watch(fetchRequestWithPersonAndRelationshipsProvider(requestId));
+            final asyncRequest = ref.watch(
+                fetchRequestWithPersonAndRelationshipsProvider(requestId));
             return asyncRequest.when(
               loading: () => const Center(child: LoadingAnimation()),
-              error: (error, stackTrace) => Center(child: Text('Error: $error')),
+              error: (error, stackTrace) =>
+                  Center(child: Text('Error: $error')),
               data: (data) {
                 final request = data.request;
                 final fullName = data.fullName;
@@ -43,10 +45,11 @@ class DetailsSheet extends StatelessWidget {
                       'Membership Status',
                       status,
                       child: Container(
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: status == 'Approved' ? Colors.green : Colors.red,
+                          color:
+                              status == 'Approved' ? Colors.green : Colors.red,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
@@ -72,17 +75,20 @@ class DetailsSheet extends StatelessWidget {
                 if (request.relationships.isNotEmpty) {
                   final firstRel = request.relationships.first;
                   rows.addAll([
-                    _buildDetailRow('Link to Family Member 1', firstRel.relatedPersonName ?? 'N/A'),
+                    _buildDetailRow('Link to Family Member 1',
+                        firstRel.relatedPersonName ?? 'N/A'),
                     const SizedBox(height: 12),
                     _buildDetailRow('Relation', firstRel.type),
                   ]);
                 }
 
                 return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: const BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(16)),
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
@@ -128,7 +134,8 @@ class DetailsSheet extends StatelessWidget {
                                   backgroundColor:
                                       const Color.fromARGB(255, 237, 235, 235),
                                   elevation: 0,
-                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 14),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(6),
                                   ),
@@ -142,7 +149,8 @@ class DetailsSheet extends StatelessWidget {
                                     context,
                                     MaterialPageRoute(
                                       builder: (_) => const ApprovalsPage(
-                                        initialChipIndex: 0, // Notification Approvals
+                                        initialChipIndex:
+                                            0, // Notification Approvals
                                         initialTabIndex: 0, // Pending Tab
                                       ),
                                     ),
@@ -164,7 +172,8 @@ class DetailsSheet extends StatelessWidget {
                                   backgroundColor: const Color(0xFF228B22),
                                   foregroundColor: Colors.white,
                                   elevation: 0,
-                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 14),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(6),
                                   ),
@@ -178,7 +187,8 @@ class DetailsSheet extends StatelessWidget {
                                     context,
                                     MaterialPageRoute(
                                       builder: (_) => const ApprovalsPage(
-                                        initialChipIndex: 0, // Notification Approvals
+                                        initialChipIndex:
+                                            0, // Notification Approvals
                                         initialTabIndex: 0, // Pending Tab
                                       ),
                                     ),

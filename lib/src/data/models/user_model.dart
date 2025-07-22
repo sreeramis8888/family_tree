@@ -8,6 +8,7 @@ class UserModel {
   final String? biography;
   final List<Media>? media;
   final List<String>? familyId;
+  final String? familyName;
 
   final String? email;
   final String? phone;
@@ -46,6 +47,7 @@ class UserModel {
     this.biography,
     this.media,
     this.familyId,
+    this.familyName,
     this.email,
     this.phone,
     this.secondaryPhone,
@@ -82,6 +84,7 @@ class UserModel {
     String? biography,
     List<Media>? media,
     List<String>? familyId,
+    String? familyName,
     String? email,
     String? phone,
     String? secondaryPhone,
@@ -99,102 +102,109 @@ class UserModel {
     double? receivedContributions,
     double? fixedWalletAmount,
     bool? needsRechargeReminder,
-    bool? isFinanceProgramMember,
     bool? isAlive,
     String? status,
     bool? isPrivate,
     String? image,
     String? location,
     bool? isRegistered,
-    bool? isisFamilyAdmin,
+    bool? isFamilyAdmin,
   }) {
     return UserModel(
-      id: id ?? this.id,
-      fullName: fullName ?? this.fullName,
-      gender: gender ?? this.gender,
-      birthDate: birthDate ?? this.birthDate,
-      deathDate: deathDate ?? this.deathDate,
-      occupation: occupation ?? this.occupation,
-      biography: biography ?? this.biography,
-      media: media ?? this.media,
-      familyId: familyId ?? this.familyId,
-      email: email ?? this.email,
-      phone: phone ?? this.phone,
-      secondaryPhone: secondaryPhone ?? this.secondaryPhone,
-      social: social ?? this.social,
-      address: address ?? this.address,
-      website: website ?? this.website,
-      walletBalance: walletBalance ?? this.walletBalance,
-      lastRecharge: lastRecharge ?? this.lastRecharge,
-      walletStatus: walletStatus ?? this.walletStatus,
-      lastRechargeAmount: lastRechargeAmount ?? this.lastRechargeAmount,
-      totalContribution: totalContribution ?? this.totalContribution,
-      lastRenewed: lastRenewed ?? this.lastRenewed,
-      nextRenewal: nextRenewal ?? this.nextRenewal,
-      reminderThreshold: reminderThreshold ?? this.reminderThreshold,
-      receivedContributions:
-          receivedContributions ?? this.receivedContributions,
-      fixedWalletAmount: fixedWalletAmount ?? this.fixedWalletAmount,
-      needsRechargeReminder:
-          needsRechargeReminder ?? this.needsRechargeReminder,
-      isAlive: isAlive ?? this.isAlive,
-      status: status ?? this.status,
-      isPrivate: isPrivate ?? this.isPrivate,
-      image: image ?? this.image,
-      location: location ?? this.location,
-      isRegistered: isRegistered ?? this.isRegistered,
-      isFamilyAdmin: isFamilyAdmin?? this.isFamilyAdmin
-    );
+        id: id ?? this.id,
+        fullName: fullName ?? this.fullName,
+        gender: gender ?? this.gender,
+        birthDate: birthDate ?? this.birthDate,
+        deathDate: deathDate ?? this.deathDate,
+        occupation: occupation ?? this.occupation,
+        biography: biography ?? this.biography,
+        media: media ?? this.media,
+        familyId: familyId ?? this.familyId,
+        familyName: familyName ?? this.familyName,
+        email: email ?? this.email,
+        phone: phone ?? this.phone,
+        secondaryPhone: secondaryPhone ?? this.secondaryPhone,
+        social: social ?? this.social,
+        address: address ?? this.address,
+        website: website ?? this.website,
+        walletBalance: walletBalance ?? this.walletBalance,
+        lastRecharge: lastRecharge ?? this.lastRecharge,
+        walletStatus: walletStatus ?? this.walletStatus,
+        lastRechargeAmount: lastRechargeAmount ?? this.lastRechargeAmount,
+        totalContribution: totalContribution ?? this.totalContribution,
+        lastRenewed: lastRenewed ?? this.lastRenewed,
+        nextRenewal: nextRenewal ?? this.nextRenewal,
+        reminderThreshold: reminderThreshold ?? this.reminderThreshold,
+        receivedContributions:
+            receivedContributions ?? this.receivedContributions,
+        fixedWalletAmount: fixedWalletAmount ?? this.fixedWalletAmount,
+        needsRechargeReminder:
+            needsRechargeReminder ?? this.needsRechargeReminder,
+        isAlive: isAlive ?? this.isAlive,
+        status: status ?? this.status,
+        isPrivate: isPrivate ?? this.isPrivate,
+        image: image ?? this.image,
+        location: location ?? this.location,
+        isRegistered: isRegistered ?? this.isRegistered,
+        isFamilyAdmin: isFamilyAdmin ?? this.isFamilyAdmin);
   }
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['_id'],
-      fullName: json['fullName'],
-      gender: json['gender'],
-      birthDate: json['birthDate'] != null
-          ? DateTime.tryParse(json['birthDate'])
-          : null,
-      deathDate: json['deathDate'] != null
-          ? DateTime.tryParse(json['deathDate'])
-          : null,
-      occupation: json['occupation'],
-      biography: json['biography'],
-      media: (json['media'] as List?)?.map((e) => Media.fromJson(e)).toList(),
-      familyId: (json['familyId'] as List?)?.map((e) => e.toString()).toList(),
-      email: json['email'],
-      phone: json['phone'],
-      secondaryPhone: json['secondaryPhone'],
-      social: (json['social'] as List?)?.map((e) => Link.fromJson(e)).toList(),
-      address: json['address'],
-      website:
-          (json['website'] as List?)?.map((e) => Link.fromJson(e)).toList(),
-      walletBalance: (json['walletBalance'] as num?)?.toDouble(),
-      lastRecharge: json['lastRecharge'] != null
-          ? DateTime.tryParse(json['lastRecharge'])
-          : null,
-      walletStatus: json['walletStatus'],
-      lastRechargeAmount: (json['lastRechargeAmount'] as num?)?.toDouble(),
-      totalContribution: (json['totalContribution'] as num?)?.toDouble(),
-      lastRenewed: json['lastRenewed'] != null
-          ? DateTime.tryParse(json['lastRenewed'])
-          : null,
-      nextRenewal: json['nextRenewal'] != null
-          ? DateTime.tryParse(json['nextRenewal'])
-          : null,
-      reminderThreshold: json['reminderThreshold'],
-      receivedContributions:
-          (json['receivedContributions'] as num?)?.toDouble(),
-      fixedWalletAmount: (json['fixedWalletAmount'] as num?)?.toDouble(),
-      needsRechargeReminder: json['needsRechargeReminder'],
-      isAlive: json['isAlive'],
-      status: json['status'],
-      isPrivate: json['isPrivate'],
-      image: json['image'],
-      location: json['location'],
-      isRegistered: json['isRegistered'],
-      isFamilyAdmin: json['isFamilyAdmin']
-    );
+        id: json['_id'],
+        fullName: json['fullName'],
+        gender: json['gender'],
+        birthDate: json['birthDate'] != null
+            ? DateTime.tryParse(json['birthDate'])
+            : null,
+        deathDate: json['deathDate'] != null
+            ? DateTime.tryParse(json['deathDate'])
+            : null,
+        occupation: json['occupation'],
+        biography: json['biography'],
+        media: (json['media'] as List?)?.map((e) => Media.fromJson(e)).toList(),
+        familyId: (json['familyId'] as List?)
+            ?.map((e) {
+              if (e is String) return e;
+              if (e is Map<String, dynamic>) return e['_id']?.toString();
+              return null;
+            })
+            .whereType<String>()
+            .toList(),
+        familyName: json['familyName'],
+        email: json['email'],
+        phone: json['phone'],
+        secondaryPhone: json['secondaryPhone'],
+        social:
+            (json['social'] as List?)?.map((e) => Link.fromJson(e)).toList(),
+        address: json['address'],
+        website:
+            (json['website'] as List?)?.map((e) => Link.fromJson(e)).toList(),
+        walletBalance: (json['walletBalance'] as num?)?.toDouble(),
+        lastRecharge: json['lastRecharge'] != null
+            ? DateTime.tryParse(json['lastRecharge'])
+            : null,
+        walletStatus: json['walletStatus'],
+        lastRechargeAmount: (json['lastRechargeAmount'] as num?)?.toDouble(),
+        totalContribution: (json['totalContribution'] as num?)?.toDouble(),
+        lastRenewed: json['lastRenewed'] != null
+            ? DateTime.tryParse(json['lastRenewed'])
+            : null,
+        nextRenewal: json['nextRenewal'] != null
+            ? DateTime.tryParse(json['nextRenewal'])
+            : null,
+        reminderThreshold: json['reminderThreshold'],
+        receivedContributions:
+            (json['receivedContributions'] as num?)?.toDouble(),
+        fixedWalletAmount: (json['fixedWalletAmount'] as num?)?.toDouble(),
+        needsRechargeReminder: json['needsRechargeReminder'],
+        isAlive: json['isAlive'],
+        status: json['status'],
+        isPrivate: json['isPrivate'],
+        image: json['image'],
+        location: json['location'],
+        isRegistered: json['isRegistered'],
+        isFamilyAdmin: json['isFamilyAdmin']);
   }
 
   Map<String, dynamic> toJson() {
@@ -208,6 +218,7 @@ class UserModel {
       'biography': biography,
       'media': media?.map((e) => e.toJson()).toList(),
       'familyId': familyId,
+      'familyName': familyName,
       'email': email,
       'phone': phone,
       'secondaryPhone': secondaryPhone,
@@ -231,7 +242,7 @@ class UserModel {
       'image': image,
       'location': location,
       'isRegistered': isRegistered,
-      'isFamilyAdmin':isFamilyAdmin
+      'isFamilyAdmin': isFamilyAdmin
     };
   }
 }
@@ -289,6 +300,7 @@ class Media {
         'uploadDate': uploadDate?.toIso8601String(),
       };
 }
+
 class Link {
   final String? name;
   final String? link;

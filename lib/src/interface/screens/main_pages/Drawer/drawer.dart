@@ -14,6 +14,7 @@ import 'package:familytree/src/data/utils/secure_storage.dart';
 import 'package:familytree/src/interface/components/Dialogs/premium_dialog.dart';
 import 'package:familytree/src/interface/screens/web_view_screen.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/financial_program/financial_program_page.dart';
+import 'package:familytree/src/data/notifiers/user_notifier.dart';
 
 Widget customDrawer(
     {required UserModel user,
@@ -157,20 +158,20 @@ Widget customDrawer(
                     },
                   ),
 
-                _buildDrawerItem(
-                  icon: 'assets/svg/icons/my_products.svg',
-                  label: 'My Products',
-                  onTap: () {
-                    navigationService.pushNamed('MyProducts');
-                  },
-                ),
-                _buildDrawerItem(
-                  icon: 'assets/svg/icons/my_reviews.svg',
-                  label: 'My Reviews',
-                  onTap: () {
-                    navigationService.pushNamed('MyReviews');
-                  },
-                ),
+                // _buildDrawerItem(
+                //   icon: 'assets/svg/icons/my_products.svg',
+                //   label: 'My Posts',
+                //   onTap: () {
+                //     navigationService.pushNamed('MyRequirements');
+                //   },
+                // ),
+                // _buildDrawerItem(
+                //   icon: 'assets/svg/icons/my_reviews.svg',
+                //   label: 'My Reviews',
+                //   onTap: () {
+                //     navigationService.pushNamed('MyReviews');
+                //   },
+                // ),
                 _buildDrawerItem(
                   icon: 'assets/svg/icons/my_events.svg',
                   label: 'My Events',
@@ -178,11 +179,11 @@ Widget customDrawer(
                     navigationService.pushNamed('MyEvents');
                   },
                 ),
-                _buildDrawerItem(
-                  icon: 'assets/svg/icons/my_transactions.svg',
-                  label: 'My Transactions',
-                  onTap: () {},
-                ),
+                // _buildDrawerItem(
+                //   icon: 'assets/svg/icons/my_transactions.svg',
+                //   label: 'My Transactions',
+                //   onTap: () {},
+                // ),
                 // _buildDrawerItem(
                 //   icon: 'assets/svg/icons/my_post.svg',
                 //   label: 'My Post',
@@ -215,10 +216,22 @@ Widget customDrawer(
                   label: 'Logout',
                   onTap: () async {
                     await SecureStorage.deleteAll();
+                    // Clear in-memory globals
+                    token = '';
+                    id = '';
+                    fcmToken = '';
+                    LoggedIn = false;
+                    subscriptionType = 'free';
+                    // Reset userProvider state
+                    ref.invalidate(userProvider);
                     navigationService.pushNamedAndRemoveUntil('PhoneNumber');
-                    await editUser({
-                      "fcm": "",
-                    }, id);
+                    // await editUser({
+                    //   "fcm": "",
+                    // }, id);
+                    final tokenVal = await SecureStorage.read('token');
+                    final userId = await SecureStorage.read('id');
+                    final phone = await SecureStorage.read('phone');
+                    log('authToken: [31m$tokenVal [0m userId: [31m$userId [0m phone: [31m$phone [0m');
                   },
                 ),
                 const SizedBox(height: 8),
@@ -313,13 +326,11 @@ Widget customDrawer(
                                           fontSize: 12, color: Colors.grey),
                                     ),
                                   ),
-                                  const SizedBox(height: 10),
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 7),
-                                    child: Image.asset(
-                                      scale: 25,
-                                      'assets/pngs/acutelogo.png',
-                                    ),
+                                  const SizedBox(height: 5),
+                                  Image.asset(
+                                    scale: 1.6,
+                                    fit: BoxFit.contain,
+                                    'assets/pngs/xyvin.png',
                                   ),
                                 ],
                               ),

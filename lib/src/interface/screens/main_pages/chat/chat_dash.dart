@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:familytree/src/data/globals.dart';
+import 'package:familytree/src/data/models/user_model.dart';
 import 'package:familytree/src/interface/components/loading_indicator/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +10,7 @@ import 'package:familytree/src/interface/screens/main_pages/chat/chat_screen.dar
 import 'package:familytree/src/data/models/chat_conversation_model.dart';
 import 'package:familytree/src/data/models/chat_model.dart';
 import 'package:familytree/src/data/services/socket_service.dart';
+import 'package:flutter_svg/svg.dart';
 
 extension ChatConversationUnread on ChatConversation {
   int get unreadCount => (this as dynamic).unreadCount ?? 0;
@@ -98,19 +100,35 @@ class _ChatDashState extends ConsumerState<ChatDash> {
                   lastMessageText = '${lastMessageText.substring(0, 30)}...';
                 }
               }
+              final otherUser =
+                  conversation.participants[1].user ?? UserModel();
               return Column(
                 children: [
                   ListTile(
                     leading: CircleAvatar(
                       backgroundColor: Colors.white,
-                  backgroundImage: conversation.participantDetails.length > 1 &&
-                 conversation.participantDetails[1].image != null &&
-                 conversation.participantDetails[1].image!.isNotEmpty
-    ? NetworkImage(conversation.participantDetails[1].image!)
-    : null,
-
+                      radius: 20,
+                      child: (otherUser.image != null &&
+                              otherUser.image!.isNotEmpty &&
+                              otherUser.image != '')
+                          ? ClipOval(
+                              child: Image.network(
+                                otherUser.image!,
+                                fit: BoxFit.cover,
+                                width: 40,
+                                height: 40,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return SvgPicture.asset(
+                                    'assets/svg/icons/dummy_person_small.svg',
+                                  );
+                                },
+                              ),
+                            )
+                          : SvgPicture.asset(
+                              'assets/svg/icons/dummy_person_small.svg',
+                            ),
                     ),
-                    title: Text(conversation.name ?? 'Chat'),
+                    title: Text(otherUser.fullName ?? 'Chat'),
                     subtitle: Text(lastMessageText),
                     trailing: const SizedBox.shrink(),
                     onTap: () {

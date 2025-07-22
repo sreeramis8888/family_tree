@@ -31,7 +31,7 @@ Future<void> likeFeed(String feedId) async {
 
 Future<void> postComment(
     {required String feedId, required String comment}) async {
-  final url = Uri.parse('$baseUrl/feeds/comment/$feedId');
+  final url = Uri.parse('$baseUrl/feeds/$feedId/comment');
 
   // Replace with your actual token
 
@@ -49,7 +49,7 @@ Future<void> postComment(
 
   try {
     // Send the POST request
-    final response = await http.post(
+    final response = await http.put(
       url,
       headers: headers,
       body: body,

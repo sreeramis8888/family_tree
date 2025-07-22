@@ -64,7 +64,7 @@ class _ShowAdddBusinessSheetState extends State<ShowAdddBusinessSheet> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      'Add Business',
+                      'Add Posts',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -185,7 +185,7 @@ class _ShowAdddBusinessSheetState extends State<ShowAdddBusinessSheet> {
                           );
                         }
 
-                         await createFeed(
+                        await createFeed(
                           type: 'post',
                           media: mediaUrl,
                           content: widget.textController.text,

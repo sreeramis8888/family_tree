@@ -104,22 +104,22 @@ class _MainPageState extends ConsumerState<MainPage> {
       ),
       // BusinessPage(),
       ProfilePage(user: user),
-      FamilyTree(),
+      FamilyTree(
+        familyId: user.familyId?.first ?? '',
+      ),
       NewsListPage(),
       PeoplePage(),
     ];
     _activeIcons = [
       'assets/svg/icons/active_home.svg',
-      // 'assets/svg/icons/active_business.svg',
-      'assets/svg/icons/active_analytics.svg',
+      'assets/svg/icons/active_profile.svg',
       'assets/svg/icons/active_family_tree_icon.svg',
       'assets/svg/icons/active_news.svg',
       'assets/svg/icons/active_chat.svg',
     ];
     _inactiveIcons = [
       'assets/svg/icons/inactive_home.svg',
-      // 'assets/svg/icons/inactive_business.svg',
-      'assets/svg/icons/inactive_analytics.svg',
+      'assets/svg/icons/inactive_profile.svg',
       'assets/svg/icons/inactive_family_tree_icon.svg',
       'assets/svg/icons/inactive_news.svg',
       'assets/svg/icons/inactive_chat.svg',
@@ -163,29 +163,15 @@ class _MainPageState extends ConsumerState<MainPage> {
                   type: BottomNavigationBarType.fixed,
                   items: List.generate(5, (index) {
                     final isSelected = selectedIndex == index;
-                    final isProfile = index == 1;
 
                     Widget iconWidget;
 
-                    if (isProfile) {
-                      iconWidget = user.image != null && user.image != ''
-                          ? CircleAvatar(
-                              backgroundImage: NetworkImage(user.image!),
-                              radius: 15,
-                            )
-                          : SvgPicture.asset(
-                              'assets/svg/icons/dummy_person_small.svg',
-                              height: 24,
-                              width: 24,
-                            );
-                    } else {
-                      iconWidget = IconResolver(
-                        iconPath: isSelected
-                            ? _activeIcons[index]
-                            : _inactiveIcons[index],
-                        color: isSelected ? kWhite : Colors.grey,
-                      );
-                    }
+                    iconWidget = IconResolver(
+                      iconPath: isSelected
+                          ? _activeIcons[index]
+                          : _inactiveIcons[index],
+                      color: isSelected ? kWhite : Colors.grey,
+                    );
 
                     return BottomNavigationBarItem(
                       label: '',

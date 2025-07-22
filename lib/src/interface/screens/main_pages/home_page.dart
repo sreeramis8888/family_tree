@@ -607,16 +607,34 @@ class _HomePageState extends ConsumerState<HomePage> {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      FamilyTree()),
+                                                      FamilyTree(familyId:  widget. user.familyId?.first??'',)),
                                             );
                                           },
                                         ),
                                         CircleIconButton(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    CampaignsMainScreen(),
+                                              ),
+                                            );
+                                          },
                                           icon:
                                               'assets/svg/icons/health_icon.svg',
                                           text: 'Zakath',
                                         ),
                                         CircleIconButton(
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      CampaignsMainScreen(),
+                                                ),
+                                              );
+                                            },
                                             text: 'CSR',
                                             icon:
                                                 'assets/svg/icons/csr_icon.svg'),

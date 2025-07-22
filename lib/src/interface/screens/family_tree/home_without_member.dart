@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:familytree/src/data/globals.dart';
 import 'package:familytree/src/data/models/user_model.dart';
+import 'package:familytree/src/data/services/navgitor_service.dart';
 import 'package:familytree/src/interface/components/loading_indicator/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -36,7 +38,7 @@ class _FamilyMembersState extends State<FamilyMembers> {
         Uri.parse('$baseUrl/people/$personId'),
         headers: {'Authorization': 'Bearer $token'},
       );
-
+      log('Requesting url:$baseUrl/people/$id');
       if (personRes.statusCode != 200) return;
       final personData = jsonDecode(personRes.body)['data'];
 
@@ -47,7 +49,12 @@ class _FamilyMembersState extends State<FamilyMembers> {
       if (familyField is String) {
         familyId = familyField;
       } else if (familyField is List && familyField.isNotEmpty) {
-        familyId = familyField.first;
+        final firstItem = familyField.first;
+        if (firstItem is String) {
+          familyId = firstItem;
+        } else if (firstItem is Map<String, dynamic>) {
+          familyId = firstItem['_id'];
+        }
       } else {
         familyId = null;
       }
@@ -74,7 +81,7 @@ class _FamilyMembersState extends State<FamilyMembers> {
           Uri.parse('$baseUrl/people/$id'),
           headers: {'Authorization': 'Bearer $token'},
         );
-
+        log('Requesting url:$baseUrl/people/$id');
         if (memberRes.statusCode == 200) {
           final memberData = jsonDecode(memberRes.body)['data'];
           final user = UserModel.fromJson(memberData);
@@ -171,100 +178,97 @@ class _FamilyMembersState extends State<FamilyMembers> {
                           const SizedBox(height: 24),
                           for (String category in pendingApprovals.keys)
                             for (UserModel user in pendingApprovals[category]!)
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 0),
-                                child: Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    border:
-                                        Border.all(color: Colors.grey.shade300),
-                                    borderRadius: BorderRadius.circular(0),
-                                  ),
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      if (user.image != null)
-                                        CircleAvatar(
-                                          radius: 20,
-                                          backgroundImage: user.image!
-                                                  .startsWith("http")
-                                              ? NetworkImage(user.image!)
-                                              : File(user.image!).existsSync()
-                                                  ? FileImage(File(user.image!))
-                                                  : const AssetImage(
-                                                          'assets/pngs/approval-profile.jpg')
-                                                      as ImageProvider,
-                                        ),
-                                      if (user.image == null)
-                                        const CircleAvatar(
-                                          radius: 20,
-                                          backgroundImage: AssetImage(
-                                            'assets/pngs/approval-profile.jpg',
+                              GestureDetector(
+                                onTap: () {
+                                  NavigationService navigationService =
+                                      NavigationService();
+                                  navigationService.pushNamed(
+                                      'ProfilePreviewUsingID',
+                                      arguments: user.id);
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 0),
+                                  child: Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      border: Border.all(
+                                          color: Colors.grey.shade300),
+                                      borderRadius: BorderRadius.circular(0),
+                                    ),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        if (user.image != null)
+                                          CircleAvatar(
+                                            radius: 20,
+                                            backgroundImage: user.image!
+                                                    .startsWith("http")
+                                                ? NetworkImage(user.image!)
+                                                : File(user.image!).existsSync()
+                                                    ? FileImage(
+                                                        File(user.image!))
+                                                    : const AssetImage(
+                                                            'assets/pngs/approval-profile.jpg')
+                                                        as ImageProvider,
+                                          ),
+                                        if (user.image == null)
+                                          const CircleAvatar(
+                                            radius: 20,
+                                            backgroundImage: AssetImage(
+                                              'assets/pngs/approval-profile.jpg',
+                                            ),
+                                          ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                '${user.fullName ?? 'Unnamed'}',
+                                                style: GoogleFonts.inter(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 12,
+                                                  height: 1.31,
+                                                  color:
+                                                      const Color(0xff272727),
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              const SizedBox(height: 2),
+                                              Text(
+                                                familyName!,
+                                                style: GoogleFonts.inter(
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 11,
+                                                  height: 1.31,
+                                                  color:
+                                                      const Color(0xff272727),
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              const SizedBox(height: 2),
+                                              Text(
+                                                user.birthDate != null
+                                                    ? '${user.birthDate!.day}/${user.birthDate!.month}/${user.birthDate!.year}'
+                                                    : 'Unknown DOB',
+                                                style: GoogleFonts.inter(
+                                                  fontWeight: FontWeight.w300,
+                                                  fontSize: 11,
+                                                  height: 1.31,
+                                                  color:
+                                                      const Color(0xff272727),
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              '${user.fullName ?? 'Unnamed'}',
-                                              style: GoogleFonts.inter(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 12,
-                                                height: 1.31,
-                                                color: const Color(0xff272727),
-                                              ),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                            const SizedBox(height: 2),
-                                            Text(
-                                              familyName!,
-                                              style: GoogleFonts.inter(
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 11,
-                                                height: 1.31,
-                                                color: const Color(0xff272727),
-                                              ),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                            const SizedBox(height: 2),
-                                            Text(
-                                              user.birthDate != null
-                                                  ? '${user.birthDate!.day}/${user.birthDate!.month}/${user.birthDate!.year}'
-                                                  : 'Unknown DOB',
-                                              style: GoogleFonts.inter(
-                                                fontWeight: FontWeight.w300,
-                                                fontSize: 11,
-                                                height: 1.31,
-                                                color: const Color(0xff272727),
-                                              ),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          IconButton(
-                                            icon: const Icon(
-                                              Icons.more_vert,
-                                              color: Colors.grey,
-                                            ),
-                                            onPressed: () {
-                                              // Show options
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -274,16 +278,6 @@ class _FamilyMembersState extends State<FamilyMembers> {
                   ),
           ),
         ],
-      ),
-      floatingActionButton: RawMaterialButton(
-        onPressed: () {
-          // Add new member
-        },
-        fillColor: const Color(0xffE30613),
-        shape: const CircleBorder(),
-        elevation: 6,
-        constraints: const BoxConstraints.tightFor(width: 62, height: 62),
-        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }

@@ -26,6 +26,8 @@ import 'package:familytree/src/interface/screens/crop_image_screen.dart';
 import 'package:familytree/src/interface/screens/main_pages/notification_page.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:familytree/src/data/api_routes/chat_api/chat_api.dart';
+import 'package:familytree/src/interface/screens/main_pages/chat/chat_screen.dart';
 
 class BusinessView extends ConsumerStatefulWidget {
   const BusinessView({super.key});
@@ -72,7 +74,11 @@ class _BusinessViewState extends ConsumerState<BusinessView> {
         final result = await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CropImageScreen(imageFile: imageFile),
+            builder: (context) => CropImageScreen(
+              imageFile: imageFile,
+              shape: CropShape.rectangle,
+              aspectRatio: Size(4, 5),
+            ),
           ),
         );
 
@@ -296,22 +302,38 @@ class _BusinessViewState extends ConsumerState<BusinessView> {
                   ref.read(businessNotifierProvider.notifier).refreshFeed();
                 },
                 onComment: () async {},
-                onShare: () {
-                  // businessEnquiry(
-                  //     businessAuthor: user,
-                  //     context: context,
-                  //     onButtonPressed: () async {},
-                  //     buttonText: 'MESSAGE',
-                  //     businesss: feed,
-                  //     receiver: receiver,
-                  //     sender: sender);
+                onShare: () async {
+                  // Fetch or create direct chat with the post author
+                  if (feed.author == null || feed.author == id)
+                    return; // Don't allow sharing to self or if no author
+                  try {
+                    final chatApi = ChatApi();
+                    final conversation =
+                        await chatApi.fetchDirectConversation(feed.author!);
+                    if (!mounted) return;
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => IndividualPage(
+                          conversation: conversation,
+                          currentUserId: id,
+                          initialMessage: feed.content ?? '',
+                          initialImageUrl: feed.media ?? '',
+                        ),
+                      ),
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content:
+                              Text('Failed to open chat: ' + e.toString())),
+                    );
+                  }
                 });
           },
           loading: () => const ReusableFeedPostSkeleton(),
           error: (error, stackTrace) {
-            return const Center(
-              child: Text('No Posts'),
-            );
+            return SizedBox.shrink();
           },
         );
       },
@@ -586,7 +608,8 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                   IconButton(
                     icon: const Icon(Icons.more_vert, color: Colors.grey),
                     onPressed: () {
-                      ShowReportPostDialog(context, widget.business.id.toString());
+                      ShowReportPostDialog(
+                          context, widget.business.id.toString());
                       log(id);
                     },
                   ),
@@ -614,20 +637,7 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
             child: ExpandableText(text: widget.business.content ?? ''),
           ),
 
-          const SizedBox(height: 12),
-
-          // Hashtags
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              '#FamilyHistory #FoundersStory',
-              style: TextStyle(
-                color: Colors.blue[700],
-                fontSize: 14,
-              ),
-            ),
-          ),
-
+      
           const SizedBox(height: 16),
 
           // Post image
@@ -691,26 +701,9 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                     child: Row(
                       children: [
                         SvgPicture.asset('assets/svg/icons/share.svg'),
-                        const SizedBox(width: 4),
-                        Text(
-                          '32', // You can replace this with actual share count
-                          style: TextStyle(
-                            color: Colors.grey[700],
-                            fontSize: 14,
-                          ),
-                        ),
                       ],
                     ),
                   ),
-
-                const Spacer(),
-
-                // Bookmark button
-                Icon(
-                  Icons.bookmark_border,
-                  color: Colors.grey[600],
-                  size: 29,
-                ),
               ],
             ),
           ),

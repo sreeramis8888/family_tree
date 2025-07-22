@@ -1,3 +1,4 @@
+import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/data/globals.dart';
 import 'package:familytree/src/interface/components/report/showReportBlockPopup.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +14,15 @@ import 'dart:async';
 class IndividualPage extends StatefulWidget {
   final ChatConversation conversation;
   final String currentUserId;
-  const IndividualPage(
-      {required this.conversation, required this.currentUserId, super.key});
+  final String? initialMessage;
+  final String? initialImageUrl;
+  const IndividualPage({
+    required this.conversation,
+    required this.currentUserId,
+    this.initialMessage,
+    this.initialImageUrl,
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<IndividualPage> createState() => _IndividualPageState();
@@ -32,33 +40,13 @@ class _IndividualPageState extends State<IndividualPage>
   String? typingUserId;
   bool _hasSentTyping = false;
   Timer? _typingTimer;
-  String? otherUserId;
+  ChatUser? otherUserId;
   String otherUserStatus = '';
   late AnimationController _sendButtonController;
   late AnimationController _typingController;
   late Animation<double> _sendButtonAnimation;
   late Animation<double> _typingAnimation;
   bool _isInputFocused = false;
-
-  // Chat theme colors using your app's color scheme
-  static const Color kPrimaryColor = Color(0xFFE30613);
-  static const Color kSecondaryColor = Color(0xFFF3EFEF);
-  static const Color kPrimaryLightColor = Color(0xFFE83A33);
-  static const Color kTertiary = Color(0xFFE8EAED);
-  static const Color kInputFieldcolor = Color(0xFF6F7782);
-  static const Color kWhite = Color.fromARGB(255, 255, 255, 255);
-  static const Color kGrey = Color.fromARGB(255, 200, 200, 200);
-  static const Color kGreyLight = Color(0xFFCCCCCC);
-  static const Color kGreyDark = Color.fromARGB(255, 118, 121, 124);
-  static const Color kGreyDarker = Color(0xFF585858);
-  static const Color kRed = Color(0xFFEB5757);
-  static const Color kRedDark = Color(0xFFC9300E);
-  static const Color kBlack = Color.fromARGB(255, 5, 5, 5);
-  static const Color kBlack54 = Color(0xFF8A000000);
-  static const Color kGreen = Color.fromARGB(255, 76, 175, 80);
-  static const Color kGreenLight = Color.fromARGB(255, 192, 252, 194);
-  static const Color kBlue = Color(0xFF2B74E1);
-  static const Color kLightGreen = Color.fromARGB(255, 192, 252, 194);
 
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
@@ -73,7 +61,7 @@ class _IndividualPageState extends State<IndividualPage>
   @override
   void initState() {
     super.initState();
-    
+
     // Initialize animation controllers
     _sendButtonController = AnimationController(
       duration: const Duration(milliseconds: 200),
@@ -83,11 +71,11 @@ class _IndividualPageState extends State<IndividualPage>
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
-    
+
     _sendButtonAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _sendButtonController, curve: Curves.elasticOut),
     );
-    
+
     _typingAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _typingController, curve: Curves.easeInOut),
     );
@@ -103,7 +91,8 @@ class _IndividualPageState extends State<IndividualPage>
     socketService.connect();
     socketService.joinRoom(widget.conversation.id ?? '');
     socketService.onMessage((data) {
-      if (data['conversationId'] == widget.conversation.id && data['message'] != null) {
+      if (data['conversationId'] == widget.conversation.id &&
+          data['message'] != null) {
         final newMsg = ChatMessage.fromJson(data['message']);
         setState(() {
           messages.add(newMsg);
@@ -121,10 +110,10 @@ class _IndividualPageState extends State<IndividualPage>
     // Find the other participant's userId
     final other = widget.conversation.participants.firstWhere(
       (p) => isOtherParticipant(p.userId, widget.currentUserId),
-      orElse: () => Participant(userId: '', isActive: false),
+      orElse: () => Participant(userId: ChatUser(), isActive: false),
     );
     otherUserId = other.userId;
-    
+
     // Listen for presence updates for the other user
     socketService.onPresenceUpdate((userId, status) {
       if (userId == otherUserId) {
@@ -144,7 +133,7 @@ class _IndividualPageState extends State<IndividualPage>
         _typingController.repeat(reverse: true);
       }
     });
-    
+
     socketService.onUserStopTyping((userId, conversationId) {
       if (conversationId == widget.conversation.id &&
           userId != widget.currentUserId) {
@@ -156,7 +145,29 @@ class _IndividualPageState extends State<IndividualPage>
       }
     });
 
-    fetchInitialMessages();
+    fetchInitialMessages().then((_) async {
+      if (widget.initialMessage != null || widget.initialImageUrl != null) {
+        String content = widget.initialMessage ?? '';
+        List<Map<String, dynamic>>? attachments;
+        if (widget.initialImageUrl != null && widget.initialImageUrl!.isNotEmpty) {
+          attachments = [
+            {
+              'type': 'image',
+              'url': widget.initialImageUrl,
+            },
+          ];
+        }
+        // Send the message only if not already sent (avoid duplicate on back navigation)
+        if (content.isNotEmpty || (attachments != null && attachments.isNotEmpty)) {
+          await ChatApi().sendMessage(
+            widget.conversation.id ?? '',
+            content,
+            messageType: attachments != null ? 'image' : 'text',
+            attachments: attachments,
+          );
+        }
+      }
+    });
   }
 
   Future<void> fetchInitialMessages() async {
@@ -172,7 +183,8 @@ class _IndividualPageState extends State<IndividualPage>
     // Emit "message read" for unread messages
     for (final msg in fetched) {
       final isOwn = msg.sender?.id == widget.currentUserId;
-      final alreadyRead = msg.readBy.any((r) => r.userId == widget.currentUserId);
+      final alreadyRead =
+          msg.readBy.any((r) => r.userId == widget.currentUserId);
       if (!isOwn && !alreadyRead && msg.id != null) {
         socketService.emitMessageRead(msg.id!);
       }
@@ -212,7 +224,7 @@ class _IndividualPageState extends State<IndividualPage>
     if (_controller.text.isNotEmpty) {
       // Haptic feedback
       HapticFeedback.lightImpact();
-      
+
       final msg = {
         'conversationId': widget.conversation.id,
         'senderId': widget.currentUserId,
@@ -231,7 +243,7 @@ class _IndividualPageState extends State<IndividualPage>
       _controller.clear();
       sendStopTyping();
       _sendButtonController.reverse();
-      
+
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _scrollToBottom();
       });
@@ -292,7 +304,7 @@ class _IndividualPageState extends State<IndividualPage>
       decoration: BoxDecoration(
         color: statusColor,
         shape: BoxShape.circle,
-        border: Border.all(            color: kGrey, width: 2),
+        border: Border.all(color: kGrey, width: 2),
       ),
     );
   }
@@ -325,7 +337,8 @@ class _IndividualPageState extends State<IndividualPage>
                   width: 6,
                   height: 6,
                   decoration: BoxDecoration(
-                    color: kGreyDark.withOpacity(0.5 + (_typingAnimation.value * 0.5)),
+                    color: kGreyDark
+                        .withOpacity(0.5 + (_typingAnimation.value * 0.5)),
                     shape: BoxShape.circle,
                   ),
                 );
@@ -350,8 +363,45 @@ class _IndividualPageState extends State<IndividualPage>
     bool isDelivered = false;
     bool isRead = false;
     if (isOwn) {
-      isDelivered = message.deliveredTo.any((d) => d.userId != widget.currentUserId);
+      isDelivered =
+          message.deliveredTo.any((d) => d.userId != widget.currentUserId);
       isRead = message.readBy.any((r) => r.userId != widget.currentUserId);
+    }
+
+    // Display image attachments if present
+    List<Widget> attachmentWidgets = [];
+    if (message.attachments.isNotEmpty) {
+      for (final att in message.attachments) {
+        if (att.type == 'image' && att.url.isNotEmpty) {
+          attachmentWidgets.add(
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: GestureDetector(
+                onTap: () {
+                  // Optionally implement fullscreen view
+                  showDialog(
+                    context: context,
+                    builder: (_) => Dialog(
+                      child: InteractiveViewer(
+                        child: Image.network(att.url),
+                      ),
+                    ),
+                  );
+                },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    att.url,
+                    width: 200,
+                    height: 200,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
+      }
     }
 
     return Container(
@@ -384,14 +434,18 @@ class _IndividualPageState extends State<IndividualPage>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
-                message.content ?? '',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: kBlack.withOpacity(0.85),
-                  height: 1.3,
+              // Show images first
+              ...attachmentWidgets,
+              // Then text content
+              if ((message.content ?? '').isNotEmpty)
+                Text(
+                  message.content ?? '',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: kBlack.withOpacity(0.85),
+                    height: 1.3,
+                  ),
                 ),
-              ),
               const SizedBox(height: 4),
               Row(
                 mainAxisSize: MainAxisSize.min,
@@ -412,9 +466,7 @@ class _IndividualPageState extends State<IndividualPage>
                               ? Icons.done_all
                               : Icons.done,
                       size: 14,
-                      color: isRead
-                          ? kGreen
-                          : kGreyDark,
+                      color: isRead ? kGreen : kGreyDark,
                     ),
                   ],
                 ],
@@ -428,14 +480,21 @@ class _IndividualPageState extends State<IndividualPage>
 
   @override
   Widget build(BuildContext context) {
+    final otherUser = widget.conversation.participants[1].userId ?? ChatUser();
     List<ChatMessage> sortedMessages = List.from(messages)
       ..sort((a, b) {
         final aTime = a.createdAt is DateTime
             ? a.createdAt as DateTime
-            : (a.createdAt != null ? DateTime.tryParse(a.createdAt.toString()) : null) ?? DateTime.fromMillisecondsSinceEpoch(0);
+            : (a.createdAt != null
+                    ? DateTime.tryParse(a.createdAt.toString())
+                    : null) ??
+                DateTime.fromMillisecondsSinceEpoch(0);
         final bTime = b.createdAt is DateTime
             ? b.createdAt as DateTime
-            : (b.createdAt != null ? DateTime.tryParse(b.createdAt.toString()) : null) ?? DateTime.fromMillisecondsSinceEpoch(0);
+            : (b.createdAt != null
+                    ? DateTime.tryParse(b.createdAt.toString())
+                    : null) ??
+                DateTime.fromMillisecondsSinceEpoch(0);
         return aTime.compareTo(bTime);
       });
 
@@ -455,25 +514,10 @@ class _IndividualPageState extends State<IndividualPage>
                 CircleAvatar(
                   radius: 20,
                   backgroundColor: kGrey,
-                  backgroundImage: widget.conversation.avatar != null &&
-                          widget.conversation.avatar!.isNotEmpty
-                      ? NetworkImage(widget.conversation.avatar!)
-                      : null,
-                  child: widget.conversation.avatar == null ||
-                          widget.conversation.avatar!.isEmpty
-                      ? Text(
-                          widget.conversation.participants.length > 1 &&
-                                  widget.conversation.participants[1].fullName != null &&
-                                  widget.conversation.participants[1].fullName!.isNotEmpty
-                              ? widget.conversation.participants[1].fullName![0].toUpperCase()
-                              : '?',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: kWhite,
-                          ),
-                        )
-                      : null,
+                  backgroundImage:
+                      otherUser.image != null && otherUser.image!.isNotEmpty
+                          ? NetworkImage(otherUser.image!)
+                          : null,
                 ),
                 if (otherUserStatus == 'online')
                   Positioned(
@@ -489,7 +533,7 @@ class _IndividualPageState extends State<IndividualPage>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.conversation.name ?? 'Chat',
+                    otherUser.fullName ?? 'Chat',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -498,10 +542,14 @@ class _IndividualPageState extends State<IndividualPage>
                   ),
                   const SizedBox(height: 2),
                   Text(
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
                     otherUserStatus.isNotEmpty
-                        ? otherUserStatus[0].toUpperCase() + otherUserStatus.substring(1)
+                        ? otherUserStatus[0].toUpperCase() +
+                            otherUserStatus.substring(1)
                         : (widget.conversation.lastActivity != null
-                            ? 'Last seen ' + timeAgo(widget.conversation.lastActivity!)
+                            ? 'Last seen ' +
+                                timeAgo(widget.conversation.lastActivity!)
                             : 'Offline'),
                     style: TextStyle(
                       fontSize: 12,
@@ -511,8 +559,7 @@ class _IndividualPageState extends State<IndividualPage>
                 ],
               ),
             ),
-
-                const Spacer(),
+            const Spacer(),
             Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -534,7 +581,6 @@ class _IndividualPageState extends State<IndividualPage>
             ),
           ],
         ),
-       
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -560,14 +606,17 @@ class _IndividualPageState extends State<IndividualPage>
                       itemCount: sortedMessages.length,
                       itemBuilder: (context, index) {
                         final message = sortedMessages[index];
-                        final isOwn = message.sender?.id == widget.currentUserId;
+                        final isOwn =
+                            message.sender?.id == widget.currentUserId;
 
                         // Format time
                         String time = '';
                         if (message.createdAt != null) {
                           final dt = message.createdAt is DateTime
                               ? message.createdAt as DateTime
-                              : DateTime.tryParse(message.createdAt.toString()) ?? DateTime.fromMillisecondsSinceEpoch(0);
+                              : DateTime.tryParse(
+                                      message.createdAt.toString()) ??
+                                  DateTime.fromMillisecondsSinceEpoch(0);
                           time = DateFormat('h:mm a').format(dt.toLocal());
                         }
 
@@ -599,14 +648,16 @@ class _IndividualPageState extends State<IndividualPage>
                           color: kTertiary,
                           borderRadius: BorderRadius.circular(25),
                           border: Border.all(
-                            color: _isInputFocused ? kPrimaryColor.withOpacity(0.3) : Colors.transparent,
+                            color: _isInputFocused
+                                ? kPrimaryColor.withOpacity(0.3)
+                                : Colors.transparent,
                             width: 1,
                           ),
                         ),
                         child: Row(
                           children: [
                             IconButton(
-                              icon: Icon(Icons.emoji_emotions_outlined, 
+                              icon: Icon(Icons.emoji_emotions_outlined,
                                   color: kInputFieldcolor),
                               onPressed: () {
                                 // Emoji picker functionality
@@ -624,19 +675,22 @@ class _IndividualPageState extends State<IndividualPage>
                                   border: InputBorder.none,
                                   hintText: "Type a message",
                                   hintStyle: TextStyle(color: kInputFieldcolor),
-                                  contentPadding: EdgeInsets.symmetric(vertical: 10),
+                                  contentPadding:
+                                      EdgeInsets.symmetric(vertical: 10),
                                 ),
                               ),
                             ),
                             IconButton(
-                              icon: Icon(Icons.attach_file, color: kInputFieldcolor),
+                              icon: Icon(Icons.attach_file,
+                                  color: kInputFieldcolor),
                               onPressed: () {
                                 // Attachment functionality
                               },
                             ),
                             if (_controller.text.isEmpty)
                               IconButton(
-                                icon: Icon(Icons.camera_alt, color: kInputFieldcolor),
+                                icon: Icon(Icons.camera_alt,
+                                    color: kInputFieldcolor),
                                 onPressed: () {
                                   // Camera functionality
                                 },
@@ -667,13 +721,17 @@ class _IndividualPageState extends State<IndividualPage>
                             ),
                             child: IconButton(
                               icon: Icon(
-                                _controller.text.isNotEmpty ? Icons.send : Icons.mic,
+                                _controller.text.isNotEmpty
+                                    ? Icons.send
+                                    : Icons.mic,
                                 color: kWhite,
                                 size: 20,
                               ),
-                              onPressed: _controller.text.isNotEmpty ? sendMessage : () {
-                                // Voice message functionality
-                              },
+                              onPressed: _controller.text.isNotEmpty
+                                  ? sendMessage
+                                  : () {
+                                      // Voice message functionality
+                                    },
                             ),
                           ),
                         );

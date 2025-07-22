@@ -48,7 +48,9 @@ class NotificationPage extends StatelessWidget {
                       final approvedNotifications = notifications
                           .where((notif) => notif.status == 'approved')
                           .toList();
-
+                      if (approvedNotifications.isEmpty) {
+                        return Center(child: Text('No Notifications'));
+                      }
                       return ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
@@ -81,7 +83,7 @@ class NotificationPage extends StatelessWidget {
                     },
                     loading: () => const Center(child: LoadingAnimation()),
                     error: (error, stackTrace) => const Center(
-                      child: Text('Error loading notifications'),
+                      child: Text('No notifications'),
                     ),
                   ),
                 ],

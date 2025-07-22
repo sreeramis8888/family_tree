@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:familytree/src/data/api_routes/user_api/user_data/user_data.dart';
+import 'package:familytree/src/data/models/user_model.dart';
 
 part 'family_api.g.dart';
 
@@ -21,7 +23,7 @@ class FamilyApiService {
       };
 
   static Future<List<FamilyModel>> fetchAllFamily() async {
-    Uri url = Uri.parse('$_baseUrl');
+    Uri url = Uri.parse('$_baseUrl?is_all=true');
 
     print('Requesting URL: $url');
     final response = await http.get(
@@ -45,25 +47,27 @@ class FamilyApiService {
       throw Exception(json.decode(response.body)['message']);
     }
   }
-  static Future<FamilyModel> fetchSingleFamily({required String familyId}) async {
+
+  static Future<FamilyModel> fetchSingleFamily(
+      {required String familyId}) async {
     Uri url = Uri.parse('$_baseUrl/$familyId');
 
-    print('Requesting URL: $url');
+    print('Requesting URL: $_baseUrl/$familyId');
     final response = await http.get(
       url,
       headers: _headers(),
     );
 
     if (response.statusCode == 200) {
-    
-  final dynamic data = json.decode(response.body)['data'];
-    return FamilyModel.fromJson(data);
+      final dynamic data = json.decode(response.body)['data'];
+      return FamilyModel.fromJson(data);
     } else {
       print(json.decode(response.body)['message']);
 
       throw Exception(json.decode(response.body)['message']);
     }
   }
+
   static Future<FamilyModel> createFamily(String name) async {
     Uri url = Uri.parse('$_baseUrl');
     final response = await http.post(
@@ -75,9 +79,41 @@ class FamilyApiService {
       final dynamic data = json.decode(response.body)["data"];
       return FamilyModel.fromJson(data);
     } else {
-      throw Exception(json.decode(response.body)["message"] ?? "Failed to create family");
+      throw Exception(
+          json.decode(response.body)["message"] ?? "Failed to create family");
     }
   }
+
+  // Add or update family media
+  static Future<FamilyModel> updateFamilyMedia({
+    required String familyId,
+    required List<FamilyMedia> media,
+  }) async {
+    Uri url = Uri.parse('$_baseUrl/$familyId');
+    final response = await http.put(
+      url,
+      headers: _headers(),
+      body: json.encode({'media': media.map((m) => m.toJson()).toList()}),
+    );
+    if (response.statusCode == 200) {
+      final dynamic data = json.decode(response.body)['data'];
+      return FamilyModel.fromJson(data);
+    } else {
+      throw Exception(json.decode(response.body)['message']);
+    }
+  }
+
+  // static Future<List<FamilyMemberBasic>> fetchFamilyMembersByPersonId(String personId) async {
+  //   // Fetch person
+  //   final person = await UserService.fetchUserDetails(personId);
+  //   // Use only the data from the person API response
+  //   final member = FamilyMemberBasic(
+  //     id: person.id,
+  //     fullName: person.fullName,
+  //     familyName: person.familyName,
+  //   );
+  //   return [member];
+  // }
 }
 
 @riverpod
@@ -86,9 +122,13 @@ Future<List<FamilyModel>> fetchAllFamily(
 ) {
   return FamilyApiService.fetchAllFamily();
 }
+
 @riverpod
-Future<FamilyModel> fetchSingleFamily(
-  Ref ref,{required String familyId}
-) {
+Future<FamilyModel> fetchSingleFamily(Ref ref, {required String familyId}) {
   return FamilyApiService.fetchSingleFamily(familyId: familyId);
 }
+
+// @riverpod
+// Future<List<FamilyMemberBasic>> fetchFamilyMembersByPersonId(Ref ref, String personId) async {
+//   return FamilyApiService.fetchFamilyMembersByPersonId(personId);
+// }

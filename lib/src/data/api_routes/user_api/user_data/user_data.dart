@@ -24,7 +24,7 @@ class UserService {
     final url = Uri.parse('$baseUrl/people/$userId');
     final response = await http.get(url, headers: _headers());
     log(response.body);
-
+    log(name: 'FETCHING USER DETAILS:', url.toString());
     if (response.statusCode == 200) {
       final data = json.decode(response.body)['data'];
       return UserModel.fromJson(data);

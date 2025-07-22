@@ -185,7 +185,12 @@ class _EditUserState extends ConsumerState<EditUser> {
   String? _linkedMember;
   String? _relationship;
   List<Map<String, String?>> _relations = [];
-  final List<String> _relationships = ["spouse", "parent", "sibling", "child"];
+  final List<String> _relationships = ["spouse", "parent", "child"];
+
+  // Add state for other families
+  List<String> _otherFamilies = [];
+  // Add state for other family (single selection)
+  String? _otherFamily;
 
   void _addRelation(String memberName) {
     if (_linkedMember != null && _relationship != null) {
@@ -445,6 +450,7 @@ class _EditUserState extends ConsumerState<EditUser> {
       'social': user.social?.map((e) => e.toJson()).toList(),
       'website': user.website?.map((e) => e.toJson()).toList(),
       'media': user.media?.map((e) => e.toJson()).toList(),
+      'otherFamilyId': _otherFamily,
     };
 
     log("Submitting profile data: ${profileData.toString()}");
@@ -642,17 +648,23 @@ class _EditUserState extends ConsumerState<EditUser> {
                       .toList() ??
                   [];
               Widget relationSection = SizedBox.shrink();
-              if (user.familyId != null && user.familyId!.isNotEmpty) {
+              // Use selected family for member selection
+              String? selectedFamilyId = _otherFamily ??
+                  (user.familyId != null && user.familyId!.isNotEmpty
+                      ? user.familyId!.first
+                      : null);
+              if (selectedFamilyId != null) {
                 relationSection = Consumer(
                   builder: (context, ref, child) {
-                    final asyncFamily = ref.watch(fetchSingleFamilyProvider(
-                        familyId: user.familyId!.first));
+                    final asyncFamily = ref.watch(
+                        fetchSingleFamilyProvider(familyId: selectedFamilyId));
                     return asyncFamily.when(
                       data: (family) {
                         final hasMembers = family.members != null &&
-                            family.members!.isNotEmpty;
+                            family.members!.isNotEmpty &&
+                            family.members!.length > 1;
                         if (!hasMembers) {
-                          return Text('No Members exists in this family');
+                          return SizedBox.shrink();
                         } else {
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -667,7 +679,10 @@ class _EditUserState extends ConsumerState<EditUser> {
                                 hintText: 'Select existing family member',
                                 value: _linkedMember,
                                 items: family.members!
-                                    .where((m) => m.id != user.id && !_relations.any((rel) => rel['memberId'] == m.id))
+                                    .where((m) =>
+                                        m.id != user.id &&
+                                        !_relations.any(
+                                            (rel) => rel['memberId'] == m.id))
                                     .map((m) => DropdownMenuItem(
                                         value: m.id,
                                         child: Text(m.fullName ?? '')))
@@ -746,10 +761,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                     return asyncRelationships.when(
                       data: (relationships) {
                         if (relationships.isEmpty) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
-                            child: Text('No relationships found.'),
-                          );
+                          return SizedBox.shrink();
                         }
 
                         return Column(
@@ -826,6 +838,58 @@ class _EditUserState extends ConsumerState<EditUser> {
                   },
                 );
               }
+              // Insert Other Families selection here
+              Widget otherFamilySection = Consumer(
+                builder: (context, ref, child) {
+                  final asyncFamilies = ref.watch(fetchAllFamilyProvider);
+                  return asyncFamilies.when(
+                    data: (families) {
+                      // Exclude user's main family (assume user.familyId is List<String>)
+                      final mainFamilyIds = user.familyId ?? [];
+                      final filteredFamilies = families
+                          .where((f) => !mainFamilyIds.contains(f.id))
+                          .toList();
+                      if (filteredFamilies.isEmpty) return SizedBox.shrink();
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 20, right: 20, top: 20, bottom: 10),
+                            child: Text('Other Family (if any)',
+                                style: kBodyTitleB),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: SelectionDropDown(
+                              label: null,
+                              hintText: 'Select other family',
+                              value: _otherFamily,
+                              items: filteredFamilies
+                                  .map((f) => DropdownMenuItem<String>(
+                                        value: f.id ?? '',
+                                        child: Text(f.name ?? ''),
+                                      ))
+                                  .toList(),
+                              onChanged: (val) {
+                                setState(() {
+                                  _otherFamily = val;
+                                });
+                              },
+                              validator: (val) => null, // optional
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                    loading: () => const Center(child: LoadingAnimation()),
+                    error: (error, stackTrace) {
+                      log(error.toString());
+                      return const Center(child: SizedBox.shrink());
+                    },
+                  );
+                },
+              );
               return PopScope(
                 onPopInvoked: (didPop) {
                   if (didPop) {
@@ -1208,6 +1272,8 @@ class _EditUserState extends ConsumerState<EditUser> {
                                   // ),
                                 ],
                               ),
+                              // Insert Other Family section here
+                              otherFamilySection,
                               // Show relationships section here
                               Padding(
                                 padding: const EdgeInsets.only(

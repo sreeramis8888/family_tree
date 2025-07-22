@@ -166,7 +166,7 @@ class FinancialProgramJoinPaymentPage extends ConsumerWidget {
                         child: customButton(
                           label: 'Proceed to Pay',
                           onPressed: () async {
-                            TopupPaymentService(
+                            final topupPayment = TopupPaymentService(
                               amount: minBalance?.minimumAmount ?? 0,
                               onSuccess: (msg) async {
                                 final bool success =
@@ -197,6 +197,8 @@ class FinancialProgramJoinPaymentPage extends ConsumerWidget {
                                 }
                               },
                             );
+                            topupPayment.init();
+                            await topupPayment.startPayment();
                           },
                         )),
                   ],
