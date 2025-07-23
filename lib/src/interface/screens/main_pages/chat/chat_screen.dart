@@ -12,6 +12,8 @@ import 'package:familytree/src/data/models/chat_model.dart';
 import 'dart:async';
 
 class IndividualPage extends StatefulWidget {
+  final String conversationTitle;
+  final String conversationImage;
   final ChatConversation conversation;
   final String currentUserId;
   final String? initialMessage;
@@ -22,6 +24,8 @@ class IndividualPage extends StatefulWidget {
     this.initialMessage,
     this.initialImageUrl,
     Key? key,
+    required this.conversationTitle,
+    required this.conversationImage,
   }) : super(key: key);
 
   @override
@@ -149,7 +153,8 @@ class _IndividualPageState extends State<IndividualPage>
       if (widget.initialMessage != null || widget.initialImageUrl != null) {
         String content = widget.initialMessage ?? '';
         List<Map<String, dynamic>>? attachments;
-        if (widget.initialImageUrl != null && widget.initialImageUrl!.isNotEmpty) {
+        if (widget.initialImageUrl != null &&
+            widget.initialImageUrl!.isNotEmpty) {
           attachments = [
             {
               'type': 'image',
@@ -158,7 +163,8 @@ class _IndividualPageState extends State<IndividualPage>
           ];
         }
         // Send the message only if not already sent (avoid duplicate on back navigation)
-        if (content.isNotEmpty || (attachments != null && attachments.isNotEmpty)) {
+        if (content.isNotEmpty ||
+            (attachments != null && attachments.isNotEmpty)) {
           await ChatApi().sendMessage(
             widget.conversation.id ?? '',
             content,
@@ -514,10 +520,10 @@ class _IndividualPageState extends State<IndividualPage>
                 CircleAvatar(
                   radius: 20,
                   backgroundColor: kGrey,
-                  backgroundImage:
-                      otherUser.image != null && otherUser.image!.isNotEmpty
-                          ? NetworkImage(otherUser.image!)
-                          : null,
+                  backgroundImage: widget.conversationImage != '' &&
+                          widget.conversationImage.isNotEmpty
+                      ? NetworkImage(otherUser.image!)
+                      : null,
                 ),
                 if (otherUserStatus == 'online')
                   Positioned(
@@ -533,29 +539,29 @@ class _IndividualPageState extends State<IndividualPage>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    otherUser.fullName ?? 'Chat',
+                    widget.conversationTitle ?? '',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: kWhite,
                     ),
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
-                    otherUserStatus.isNotEmpty
-                        ? otherUserStatus[0].toUpperCase() +
-                            otherUserStatus.substring(1)
-                        : (widget.conversation.lastActivity != null
-                            ? 'Last seen ' +
-                                timeAgo(widget.conversation.lastActivity!)
-                            : 'Offline'),
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: kWhite.withOpacity(0.8),
-                    ),
-                  ),
+                  // const SizedBox(height: 2),
+                  // Text(
+                  //   overflow: TextOverflow.ellipsis,
+                  //   maxLines: 2,
+                  //   otherUserStatus.isNotEmpty
+                  //       ? otherUserStatus[0].toUpperCase() +
+                  //           otherUserStatus.substring(1)
+                  //       : (widget.conversation.lastActivity != null
+                  //           ? 'Last seen ' +
+                  //               timeAgo(widget.conversation.lastActivity!)
+                  //           : 'Offline'),
+                  //   style: TextStyle(
+                  //     fontSize: 12,
+                  //     color: kWhite.withOpacity(0.8),
+                  //   ),
+                  // ),
                 ],
               ),
             ),

@@ -94,7 +94,7 @@ class _BusinessViewState extends ConsumerState<BusinessView> {
           }
 
           // Write the cropped image bytes to the file
-          await tempFile.writeAsBytes(result.bytes);
+          await tempFile.writeAsBytes(result); // result is Uint8List
 
           setState(() {
             _feedImage = tempFile;
@@ -314,7 +314,7 @@ class _BusinessViewState extends ConsumerState<BusinessView> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => IndividualPage(
+                        builder: (context) => IndividualPage(conversationImage:user.image??'' ,conversationTitle:user.fullName??'' ,
                           conversation: conversation,
                           currentUserId: id,
                           initialMessage: feed.content ?? '',

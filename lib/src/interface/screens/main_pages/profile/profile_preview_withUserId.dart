@@ -757,7 +757,7 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                               Navigator.of(context).push(
                                                 MaterialPageRoute(
                                                   builder: (context) =>
-                                                      IndividualPage(
+                                                      IndividualPage(conversationImage:user.image??'' ,conversationTitle:user.fullName??'' ,
                                                     conversation:
                                                         directConversation,
                                                     currentUserId: id,
@@ -772,7 +772,7 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                               Navigator.of(context).push(
                                                 MaterialPageRoute(
                                                   builder: (context) =>
-                                                      IndividualPage(
+                                                      IndividualPage(conversationImage:user.image??'' ,conversationTitle:user.fullName??'' ,
                                                     conversation:
                                                         newConversation,
                                                     currentUserId: id,

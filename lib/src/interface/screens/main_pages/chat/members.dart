@@ -1,3 +1,4 @@
+import 'package:familytree/src/data/models/chat_model.dart';
 import 'package:familytree/src/interface/screens/main_pages/profile/profile_preview_withUserModel.dart';
 import 'package:familytree/src/interface/screens/main_pages/profile_page.dart';
 import 'package:flutter/material.dart';
@@ -255,9 +256,10 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                                   constraints: const BoxConstraints(),
                                   onPressed: () async {
                                     if (directConversation != null) {
+                                         final otherUser = directConversation.participants[1].userId ?? ChatUser();
                                       Navigator.of(context).push(
                                         MaterialPageRoute(
-                                          builder: (context) => IndividualPage(
+                                          builder: (context) => IndividualPage(conversationImage:otherUser.image??'' ,conversationTitle:otherUser.fullName??'' ,
                                             conversation: directConversation,
                                             currentUserId: id,
                                           ),
@@ -267,10 +269,11 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                                       final newConversation = await ChatApi()
                                           .fetchDirectConversation(userId);
                                       log('DIRECT CONVERSATION:${newConversation.toJson()}');
+                                             final otherUser = newConversation.participants[1].userId ?? ChatUser();
                                       Navigator.of(context).push(
                                         MaterialPageRoute(
                                           builder: (context) => IndividualPage(
-                                            conversation: newConversation,
+                                            conversation: newConversation,conversationImage:otherUser.image??'' ,conversationTitle:otherUser.fullName??'' ,
                                             currentUserId: id,
                                           ),
                                         ),

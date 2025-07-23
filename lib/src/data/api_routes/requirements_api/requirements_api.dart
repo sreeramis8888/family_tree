@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:familytree/src/data/models/feeds_model.dart';
-import 'package:familytree/src/interface/screens/approvals/post_view.dart' hide FeedWithPerson;
+import 'package:familytree/src/interface/screens/approvals/post_view.dart'
+    hide FeedWithPerson;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:familytree/src/data/services/snackbar_service.dart';
 import 'package:http/http.dart' as http;
@@ -10,8 +11,6 @@ import 'package:familytree/src/data/models/business_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'requirements_api.g.dart';
-
-
 
 Future<FeedWithPerson> fetchFeedWithPerson(String feedId) async {
   final feedResponse = await http.get(
@@ -41,13 +40,13 @@ Future<FeedWithPerson> fetchFeedWithPerson(String feedId) async {
 
   final personJson = jsonDecode(personResponse.body)['data'];
 
-
   return FeedWithPerson(
     feed: feed,
     fullName: personJson['fullName'] ?? 'N/A',
     phone: personJson['phone'] ?? 'N/A',
   );
 }
+
 /// Update feed status: accept or reject
 Future<void> updateFeedStatus({
   required String feedId,
@@ -65,7 +64,6 @@ Future<void> updateFeedStatus({
           : null,
     );
 
-
     final contentType = response.headers['content-type'];
     if (contentType == null || !contentType.contains('application/json')) {
       log("⚠️ Expected JSON, got: $contentType");
@@ -76,11 +74,10 @@ Future<void> updateFeedStatus({
     if (response.statusCode == 200) {
       log('✅ ${data['message']}');
     } else {
-      log('❌ ${data['message']   } failed to update post status');
+      log('❌ ${data['message']} failed to update post status');
     }
   } catch (e) {
-    throw Exception ('❌ Error updating feed: $e');
- 
+    throw Exception('❌ Error updating feed: $e');
   }
 }
 
@@ -114,11 +111,12 @@ Future<List<Map<String, dynamic>>> filteredFeeds(
     throw Exception('Error fetching filtered feeds: $e');
   }
 }
+
 Future<void> createFeed({
   required String type, // Required: post, event, news, etc.
-  String? media,        // Optional: image/video URL
-  String? link,         // Optional: any external link
-  String? content,      // Optional: text content
+  String? media, // Optional: image/video URL
+  String? link, // Optional: any external link
+  String? content, // Optional: text content
 }) async {
   final url = Uri.parse('$baseUrl/feeds');
 
@@ -173,7 +171,7 @@ Future<List<Business>> fetchBusiness(FetchBusinessRef ref,
 
 @riverpod
 Future<List<Business>> fetchMyBusinesses(Ref ref) async {
-  final url = Uri.parse('$baseUrl/feeds/my/requirements');
+  final url = Uri.parse('$baseUrl/feeds/my/feed');
   log('Requesting URL: $url');
   final response = await http.get(
     url,

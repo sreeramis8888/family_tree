@@ -22,7 +22,7 @@ class MyPosts extends StatelessWidget {
             backgroundColor: kWhite,
             appBar: AppBar(
               title: Text(
-                "My Businesses",
+                "My Posts",
                 style: TextStyle(fontSize: 17),
               ),
               backgroundColor: kWhite,

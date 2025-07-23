@@ -134,6 +134,8 @@ class _ChatDashState extends ConsumerState<ChatDash> {
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => IndividualPage(
+                          conversationImage: otherUser.image ?? '',
+                          conversationTitle: otherUser.fullName ?? '',
                           conversation: conversation,
                           currentUserId: id,
                         ),
