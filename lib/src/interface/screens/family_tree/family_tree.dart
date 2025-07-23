@@ -75,7 +75,7 @@ class _FamilyTreeState extends State<FamilyTree> {
                     ),
                     error: (e, st) => SizedBox(
                       height: 152,
-                      child: Center(child: Text('Error loading family')),
+                      child: Center(child: Text('Something went wrong')),
                     ),
                     data: (family) {
                       final members = family.members ?? [];

@@ -98,13 +98,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
     }
   }
 
-  Future<String> saveUint8ListToFile(Uint8List bytes, String fileName) async {
-    final tempDir = await getTemporaryDirectory();
-    final file = File('${tempDir.path}/$fileName');
-    await file.writeAsBytes(bytes);
-    return file.path;
-  }
-
   Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
       String? profilePictureUrl;
@@ -597,7 +590,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 hintText: 'Select existing family member',
                                 value: _linkedMember,
                                 items: family.members!
-                                    .where((m) => !_relations.any((rel) => rel['memberId'] == m.id))
+                                    .where((m) => !_relations
+                                        .any((rel) => rel['memberId'] == m.id))
                                     .map((m) => DropdownMenuItem(
                                         value: m.id,
                                         child: Text(m.fullName ?? '')))

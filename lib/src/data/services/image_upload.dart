@@ -45,6 +45,13 @@ Future<String> imageUpload(String imagePath) async {
   }
 }
 
+Future<String> saveUint8ListToFile(Uint8List bytes, String fileName) async {
+  final tempDir = await Directory.systemTemp.createTemp();
+  final file = File('${tempDir.path}/$fileName');
+  await file.writeAsBytes(bytes);
+  return file.path;
+}
+
 String extractImageUrl(String responseBody) {
   final responseJson = jsonDecode(responseBody);
   log(name: "image upload response", responseJson.toString());

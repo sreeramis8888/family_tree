@@ -1,13 +1,14 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:familytree/src/data/globals.dart';
 import 'package:http/http.dart' as http;
 
 Future<void> likeFeed(String feedId) async {
-  final url = Uri.parse('$baseUrl/feeds/like/$feedId');
+  final url = Uri.parse('$baseUrl/feeds/$feedId/like');
 
   try {
-    final response = await http.post(
+    final response = await http.put(
       url,
       headers: {
         'accept': '*/*',
@@ -32,10 +33,7 @@ Future<void> likeFeed(String feedId) async {
 Future<void> postComment(
     {required String feedId, required String comment}) async {
   final url = Uri.parse('$baseUrl/feeds/$feedId/comment');
-
-  // Replace with your actual token
-
-  // Define the headers
+  log('$baseUrl/feeds/$feedId/comment');
   final headers = {
     'Authorization': 'Bearer $token',
     'Content-Type': 'application/json',
@@ -48,7 +46,6 @@ Future<void> postComment(
   });
 
   try {
-    // Send the POST request
     final response = await http.put(
       url,
       headers: headers,

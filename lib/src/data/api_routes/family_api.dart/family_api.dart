@@ -3,13 +3,9 @@ import 'dart:developer';
 
 import 'package:familytree/src/data/globals.dart';
 import 'package:familytree/src/data/models/family_model.dart';
-import 'package:familytree/src/data/services/snackbar_service.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:familytree/src/data/api_routes/user_api/user_data/user_data.dart';
-import 'package:familytree/src/data/models/user_model.dart';
 
 part 'family_api.g.dart';
 
@@ -70,17 +66,27 @@ class FamilyApiService {
 
   static Future<FamilyModel> createFamily(String name) async {
     Uri url = Uri.parse('$_baseUrl');
+    log('Creating family with name: $name');
+    log('POST URL: $url');
+
     final response = await http.post(
       url,
       headers: _headers(),
       body: json.encode({"name": name}),
     );
+
+    log('Response status code: ${response.statusCode}');
+    log('Response body: ${response.body}');
+
     if (response.statusCode == 201 || response.statusCode == 200) {
       final dynamic data = json.decode(response.body)["data"];
+      log('Family created successfully: $data');
       return FamilyModel.fromJson(data);
     } else {
-      throw Exception(
-          json.decode(response.body)["message"] ?? "Failed to create family");
+      final errorMsg =
+          json.decode(response.body)["message"] ?? "Failed to create family";
+      log('Error creating family: $errorMsg');
+      throw Exception(errorMsg);
     }
   }
 

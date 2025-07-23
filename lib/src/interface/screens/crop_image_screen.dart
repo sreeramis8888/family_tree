@@ -47,7 +47,7 @@ class _CropImageScreenState extends State<CropImageScreen> {
     final MemoryImage? croppedResult = await controller.onCropImage();
 
     if (croppedResult != null) {
-      Navigator.of(context).pop(croppedResult);
+      Navigator.of(context).pop(croppedResult.bytes);
     } else {
       setState(() {
         _isLoading = false;
@@ -92,8 +92,14 @@ class _CropImageScreenState extends State<CropImageScreen> {
                 backgroundColor: Colors.black,
                 cropController: controller,
                 image: FileImage(widget.imageFile),
-                ratio: widget.aspectRatio != null ? Ratio(width: widget.aspectRatio!.width, height: widget.aspectRatio!.height) : null,
-                shape: widget.shape == CropShape.circle ? CustomCropShape.Circle : CustomCropShape.Square,
+                ratio: widget.aspectRatio != null
+                    ? Ratio(
+                        width: widget.aspectRatio!.width,
+                        height: widget.aspectRatio!.height)
+                    : null,
+                shape: widget.shape == CropShape.circle
+                    ? CustomCropShape.Circle
+                    : CustomCropShape.Square,
                 borderRadius: 0,
                 canRotate: true,
                 canMove: true,
