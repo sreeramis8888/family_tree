@@ -49,7 +49,10 @@ class NotificationPage extends StatelessWidget {
                           .where((notif) => notif.status == 'approved')
                           .toList();
                       if (approvedNotifications.isEmpty) {
-                        return Center(child: Text('No Notifications'));
+                        return SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.7,
+                          child: const Center(child: Text('No Notifications')),
+                        );
                       }
                       return ListView.builder(
                         shrinkWrap: true,

@@ -28,7 +28,7 @@ class SocketService {
     _notifyStatus();
 
     _socket = IO.io(
-      'https://connect.kalathingalneelatt.com',
+      'https://85d3b38a46b5.ngrok-free.app',
       <String, dynamic>{
         'transports': ['websocket'],
         'autoConnect': false,

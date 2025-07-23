@@ -158,13 +158,13 @@ Widget customDrawer(
                     },
                   ),
 
-                // _buildDrawerItem(
-                //   icon: 'assets/svg/icons/my_products.svg',
-                //   label: 'My Posts',
-                //   onTap: () {
-                //     navigationService.pushNamed('MyRequirements');
-                //   },
-                // ),
+                _buildDrawerItem(
+                  icon: 'assets/svg/icons/my_products.svg',
+                  label: 'My Posts',
+                  onTap: () {
+                    navigationService.pushNamed('MyPosts');
+                  },
+                ),
                 // _buildDrawerItem(
                 //   icon: 'assets/svg/icons/my_reviews.svg',
                 //   label: 'My Reviews',

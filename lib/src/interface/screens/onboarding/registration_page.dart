@@ -38,6 +38,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
   String? _relationship;
   List<Map<String, String?>> _relations = [];
   Uint8List? _profileImage;
+  String? _newFamilyName; // Store new family name if created
+  static const String _newFamilyValue = '__new_family__'; // Special value for new family
 
   final List<String> _genders = ['Male', 'Female', 'Other'];
   final List<String> _relationships = ["spouse", "parent", "sibling", "child"];
@@ -115,7 +117,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
           "gender": _gender,
           "parentFamilyId": _parentFamily,
           "isAlive": _status == 'Alive',
-          "familyId": _family,
+          if (_family != null) "familyId": _family != _newFamilyValue ? _family : null,
+          if (_newFamilyName != null) "familyName": _newFamilyName, // Pass new family name if set
           "phone": phone,
           if (profilePictureUrl != null) "image": profilePictureUrl,
           "relationships": _relations
@@ -263,6 +266,15 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 child: Text(f.name ?? ''),
                               ))
                           .toList();
+                      // If a new family was added, show it in the dropdown
+                      if (_newFamilyName != null) {
+                        items.add(
+                          DropdownMenuItem<String>(
+                            value: _newFamilyValue,
+                            child: Text(_newFamilyName!, style: const TextStyle(fontWeight: FontWeight.bold)),
+                          ),
+                        );
+                      }
                       items.add(
                         const DropdownMenuItem<String>(
                           value: '__add_new__',
@@ -276,7 +288,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                           SelectionDropDown(
                             label: null,
                             hintText: 'Select family',
-                            value: _family,
+                            value: _family ?? (_newFamilyName != null ? _newFamilyValue : null),
                             items: items,
                             onChanged: (val) async {
                               if (val == '__add_new__') {
@@ -466,30 +478,21 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 if (newFamilyName != null &&
                                     newFamilyName.isNotEmpty) {
                                   setState(() {
-                                    _isCreatingFamily = true;
+                                    _family = _newFamilyValue; // Use special value for new family
+                                    _newFamilyName = newFamilyName; // Store new family name
+                                    _isCreatingFamily = false;
                                     _familyCreationError = null;
                                   });
-                                  try {
-                                    final newFamily =
-                                        await FamilyApiService.createFamily(
-                                            newFamilyName);
-                                    setState(() {
-                                      _family = newFamily.id;
-                                      _isCreatingFamily = false;
-                                    });
-                                    // Optionally, refresh the families provider
-                                    ref.invalidate(fetchAllFamilyProvider);
-                                  } catch (e) {
-                                    setState(() {
-                                      _isCreatingFamily = false;
-                                      _familyCreationError =
-                                          'Failed to create family. Please try again.';
-                                    });
-                                  }
                                 }
                               } else {
                                 setState(() {
-                                  _family = val;
+                                  if (val == _newFamilyValue) {
+                                    // Do nothing, keep _newFamilyName
+                                    _family = _newFamilyValue;
+                                  } else {
+                                    _family = val;
+                                    _newFamilyName = null; // Clear new family name if existing selected
+                                  }
                                 });
                               }
                             },
@@ -602,9 +605,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                     val == null ? 'Required' : null,
                               ),
                               const SizedBox(height: 16),
-                              Text('Relationship *',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
+                              Text(_linkedMember != null
+                                ? 'Who are you to ' + (family.members!.firstWhere((m) => m.id == _linkedMember).fullName ?? '')
+                                : 'Relationship *',
+                                style: TextStyle(fontWeight: FontWeight.bold)),
                               const SizedBox(height: 16),
                               SelectionDropDown(
                                 label: null,

@@ -376,7 +376,7 @@ class _PhotoGalleryPageState extends ConsumerState<PhotoGalleryPage>
                     constraints: const BoxConstraints(),
                     icon: const Icon(
                       Icons.arrow_back_ios,
-                      size: 12,
+                      size: 18,
                       color: Colors.black,
                     ),
                     onPressed: () {

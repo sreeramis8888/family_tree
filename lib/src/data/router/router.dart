@@ -20,7 +20,7 @@ import 'package:familytree/src/interface/screens/main_pages/menuPages/levels/sen
 import 'package:familytree/src/interface/screens/main_pages/menuPages/change_number.dart';
 
 import 'package:familytree/src/interface/screens/main_pages/menuPages/levels/states.dart';
-import 'package:familytree/src/interface/screens/main_pages/menuPages/my_businesses.dart';
+import 'package:familytree/src/interface/screens/main_pages/menuPages/my_posts.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/my_enquiries.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/event/my_events.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/my_products.dart';
@@ -117,8 +117,8 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       return MaterialPageRoute(builder: (context) => MyProductPage());
     case 'EnterProductsPage':
       return MaterialPageRoute(builder: (context) => EnterProductsPage());
-    case 'MyBusinesses':
-      return MaterialPageRoute(builder: (context) => MyBusinessesPage());
+    case 'MyPosts':
+      return MaterialPageRoute(builder: (context) => MyPosts());
     case 'AnalyticsPage':
       return MaterialPageRoute(builder: (context) => AnalyticsPage());
     case 'SendAnalyticRequest':

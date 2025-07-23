@@ -24,18 +24,19 @@ import 'package:intl/intl.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
+import 'package:familytree/src/data/api_routes/chat_api/chat_api.dart';
+import 'package:familytree/src/interface/screens/main_pages/chat/chat_screen.dart';
 
 class ProfilePreviewWithUserModel extends StatelessWidget {
   final UserModel user;
   ProfilePreviewWithUserModel({Key? key, required this.user}) : super(key: key);
 
   final List<String> svgIcons = [
+    'assets/svg/icons/icons8-facebook.svg',
+    'assets/svg/icons/twitter.svg',
     'assets/svg/icons/instagram.svg',
     'assets/svg/icons/linkedin.svg',
-    'assets/svg/icons/twitter.svg',
-    'assets/svg/icons/icons8-facebook.svg'
   ];
-
   final ValueNotifier<int> _currentVideo = ValueNotifier<int>(0);
 
   @override
@@ -128,53 +129,56 @@ class ProfilePreviewWithUserModel extends StatelessWidget {
                           style: kHeadTitleSB,
                         ),
                         const SizedBox(height: 5),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Column(
-                            children: [
-                              if (user.occupation != 'null')
-                                Text('${user.occupation}'),
-                              const SizedBox(height: 5),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 6),
-                                decoration: BoxDecoration(
-                                    color: kWhite,
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(
-                                        color: const Color.fromARGB(
-                                            255, 234, 226, 226))),
-                                child: IntrinsicWidth(
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 10),
-                                        child: Image.asset(
-                                            scale: 40,
-                                            'assets/pngs/familytree_logo.png'),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Text(
-                                          'BirthDate: ${DateFormat('yyyy-MM-dd').format(user.birthDate!)}',
-                                          style: kSmallerTitleB.copyWith(
-                                              color: kPrimaryColor)),
-                                    ],
+                        if (user.birthDate != null)
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Column(
+                              children: [
+                                if (user.occupation != 'null')
+                                  Text('${user.occupation}'),
+                                const SizedBox(height: 5),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 6),
+                                  decoration: BoxDecoration(
+                                      color: kWhite,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                          color: const Color.fromARGB(
+                                              255, 234, 226, 226))),
+                                  child: IntrinsicWidth(
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 10),
+                                          child: Image.asset(
+                                              scale: 40,
+                                              'assets/pngs/familytree_logo.png'),
+                                        ),
+                                        const SizedBox(width: 10),
+                                        if (user.birthDate != null)
+                                          Text(
+                                              'BirthDate: ${DateFormat('yyyy-MM-dd').format(user.birthDate!)}',
+                                              style: kSmallerTitleB.copyWith(
+                                                  color: kPrimaryColor)),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                              SizedBox(
-                                height: 20,
-                              )
-                            ],
+                                SizedBox(
+                                  height: 20,
+                                )
+                              ],
+                            ),
                           ),
-                        ),
                       ],
                     ),
                     const SizedBox(
@@ -476,8 +480,49 @@ class ProfilePreviewWithUserModel extends StatelessWidget {
                               buttonHeight: 60,
                               fontSize: 16,
                               label: 'SAY HI',
-                              onPressed: () {
-                                // Implement SAY HI action here
+                              onPressed: () async {
+                                final userId = user.id ?? '';
+
+                                try {
+                                  final conversations =
+                                      await ChatApi().fetchConversations();
+                                  final directConversation = conversations
+                                          .where((c) =>
+                                              c.type == 'direct' &&
+                                              c.participants.any(
+                                                  (p) => p.userId == userId))
+                                          .isNotEmpty
+                                      ? conversations
+                                          .where((c) =>
+                                              c.type == 'direct' &&
+                                              c.participants.any(
+                                                  (p) => p.userId == userId))
+                                          .first
+                                      : null;
+                                  if (directConversation != null) {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => IndividualPage(
+                                          conversation: directConversation,
+                                          currentUserId: id,
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    final newConversation = await ChatApi()
+                                        .fetchDirectConversation(userId);
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => IndividualPage(
+                                          conversation: newConversation,
+                                          currentUserId: id,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                } catch (e) {
+                                  // Handle error (show snackbar, etc.)
+                                }
                               }),
                         ),
                         const SizedBox(

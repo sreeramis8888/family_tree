@@ -26,6 +26,8 @@ import 'package:intl/intl.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
+import 'package:familytree/src/data/api_routes/chat_api/chat_api.dart';
+import 'package:familytree/src/interface/screens/main_pages/chat/chat_screen.dart';
 
 class ReviewsState extends StateNotifier<int> {
   ReviewsState() : super(1);
@@ -46,11 +48,11 @@ class ProfilePreviewUsingId extends ConsumerWidget {
     required this.userId,
   });
 
-  final List<String> svgIcons = [
+  final List<String> svgIcons = [    'assets/svg/icons/icons8-facebook.svg' ,  'assets/svg/icons/twitter.svg',
     'assets/svg/icons/instagram.svg',
     'assets/svg/icons/linkedin.svg',
-    'assets/svg/icons/twitter.svg',
-    'assets/svg/icons/icons8-facebook.svg'
+ 
+
   ];
 
   final ValueNotifier<int> _currentVideo = ValueNotifier<int>(0);
@@ -728,18 +730,59 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                         buttonHeight: 60,
                                         fontSize: 16,
                                         label: 'SAY HI',
-                                        onPressed: () {
-                                          // final Participant receiver = Participant(
-                                          //   id: user.id,
-                                          //   image: user.image ?? '',
-                                          //   name: user.name,
-                                          // );
-                                          // final Participant sender = Participant(id: id);
-                                          // Navigator.of(context).push(MaterialPageRoute(
-                                          //     builder: (context) => IndividualPage(
-                                          //           receiver: receiver,
-                                          //           sender: sender,
-                                          //         )));
+                                        onPressed: () async {
+                                          final userId = user.id ?? '';
+                                          try {
+                                            final conversations =
+                                                await ChatApi()
+                                                    .fetchConversations();
+                                            final directConversation = conversations
+                                                    .where((c) =>
+                                                        c.type == 'direct' &&
+                                                        c.participants.any(
+                                                            (p) =>
+                                                                p.userId ==
+                                                                userId))
+                                                    .isNotEmpty
+                                                ? conversations
+                                                    .where((c) =>
+                                                        c.type == 'direct' &&
+                                                        c.participants.any(
+                                                            (p) =>
+                                                                p.userId ==
+                                                                userId))
+                                                    .first
+                                                : null;
+                                            if (directConversation != null) {
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      IndividualPage(
+                                                    conversation:
+                                                        directConversation,
+                                                    currentUserId: id,
+                                                  ),
+                                                ),
+                                              );
+                                            } else {
+                                              final newConversation =
+                                                  await ChatApi()
+                                                      .fetchDirectConversation(
+                                                          userId);
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      IndividualPage(
+                                                    conversation:
+                                                        newConversation,
+                                                    currentUserId: id,
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          } catch (e) {
+                                            // Handle error (show snackbar, etc.)
+                                          }
                                         }),
                                   ),
                                   const SizedBox(

@@ -457,7 +457,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
           fcmToken: fcmToken,
           smsCode: _otpController.text,
           context: context);
-
+            await SecureStorage.write('refreshToken',responseMap['refreshToken'] ?? '' );
       final message = responseMap['message'] ?? '';
       final isRegistered = responseMap['isRegistered'];
       final user = responseMap['user'];

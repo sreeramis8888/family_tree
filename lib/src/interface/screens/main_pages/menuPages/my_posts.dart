@@ -12,7 +12,7 @@ import 'package:intl/intl.dart';
 
 import 'package:shimmer/shimmer.dart';
 
-class MyBusinessesPage extends StatelessWidget {
+class MyPosts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer(

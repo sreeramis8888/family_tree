@@ -670,9 +670,10 @@ class _EditUserState extends ConsumerState<EditUser> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(height: 24),
-                              Text('Link to Family Member',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
+                              Text(_linkedMember != null
+  ? 'Who are you to ' + (family.members!.firstWhere((m) => m.id == _linkedMember).fullName ?? '')
+  : 'Relationship',
+  style: TextStyle(fontWeight: FontWeight.bold)),
                               SizedBox(height: 16),
                               SelectionDropDown(
                                 label: null,
@@ -751,7 +752,6 @@ class _EditUserState extends ConsumerState<EditUser> {
                   },
                 );
               }
-              // Insert after social media section, before relation-adding UI
               Widget relationshipsSection = SizedBox.shrink();
               if (user.id != null) {
                 relationshipsSection = Consumer(
@@ -1218,7 +1218,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                   SocialMediaEditor(
                                     icon: FontAwesomeIcons.instagram,
                                     socialMedias: user.social ?? [],
-                                    platform: 'Instagram',
+                                    platform: 'instagram',
                                     onSave: (socialMedias, platform, newUrl) {
                                       ref
                                           .read(userProvider.notifier)
@@ -1229,7 +1229,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                   SocialMediaEditor(
                                     icon: FontAwesomeIcons.linkedinIn,
                                     socialMedias: user.social ?? [],
-                                    platform: 'Linkedin',
+                                    platform: 'linkedin',
                                     onSave: (socialMedias, platform, newUrl) {
                                       ref
                                           .read(userProvider.notifier)
@@ -1240,7 +1240,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                   SocialMediaEditor(
                                     icon: FontAwesomeIcons.xTwitter,
                                     socialMedias: user.social ?? [],
-                                    platform: 'Twitter',
+                                    platform: 'twitter',
                                     onSave: (socialMedias, platform, newUrl) {
                                       ref
                                           .read(userProvider.notifier)
@@ -1251,7 +1251,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                   SocialMediaEditor(
                                     icon: FontAwesomeIcons.facebookF,
                                     socialMedias: user.social ?? [],
-                                    platform: 'Facebook',
+                                    platform: 'facebook',
                                     onSave: (socialMedias, platform, newUrl) {
                                       ref
                                           .read(userProvider.notifier)
