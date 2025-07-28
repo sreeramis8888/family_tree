@@ -42,7 +42,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   static const String _newFamilyValue = '__new_family__'; // Special value for new family
 
   final List<String> _genders = ['Male', 'Female', 'Other'];
-  final List<String> _relationships = ["spouse", "parent", "sibling", "child"];
+  final List<String> _relationships = ["spouse", "parent", "child"];
 
   bool _isCreatingFamily = false;
   String? _familyCreationError;

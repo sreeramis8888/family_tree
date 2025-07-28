@@ -119,6 +119,7 @@ Future<List<Map<String, dynamic>>> filteredNotifications(
     throw Exception('Error fetching filtered notifications: $e');
   }
 }
+
 @riverpod
 Future<List<NotificationModel>> fetchNotifications(Ref ref) async {
   final url = Uri.parse('$baseUrl/notifications/$id');
@@ -156,7 +157,6 @@ Future<List<NotificationModel>> fetchNotifications(Ref ref) async {
     throw Exception("Error fetching push notification");
   }
 }
-
 
 /// ✅ Create a notification
 Future<void> createLevelNotification({

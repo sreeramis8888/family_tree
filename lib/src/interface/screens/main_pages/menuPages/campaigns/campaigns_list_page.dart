@@ -237,8 +237,8 @@ class _CampaignsMainScreenState extends ConsumerState<CampaignsMainScreen>
                     itemCount: transactions.length,
                     itemBuilder: (context, index) {
                       final t = transactions[index];
-                      final formattedDate =
-                          DateFormat('d MMMM y, hh:mm a').format(t.date);
+                      final formattedDate = DateFormat('d MMMM y, hh:mm a')
+                          .format(t.date.toLocal());
                       return Container(
                         margin: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 8),

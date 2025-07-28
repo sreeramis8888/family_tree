@@ -67,10 +67,12 @@ class _MembersPageState extends ConsumerState<MembersPage> {
 
   @override
   Widget build(BuildContext context) {
-    final users = ref.watch(peopleNotifierProvider);
+    final usersRaw = ref.watch(peopleNotifierProvider);
     final isLoading = ref.read(peopleNotifierProvider.notifier).isLoading;
     final isFirstLoad = ref.read(peopleNotifierProvider.notifier).isFirstLoad;
     final conversationsAsync = ref.watch(fetchChatConversationsProvider);
+    // Filter out the current user
+    final users = usersRaw.where((user) => user.id != id).toList();
 
     return Scaffold(
       backgroundColor: kWhite,

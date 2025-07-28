@@ -174,21 +174,21 @@ class _CampaignDetailPageState extends State<CampaignDetailPage> {
                         border: InputBorder.none,
                         hintText: 'Amount',
                       ),
-                      style: const TextStyle(fontSize: 20),
+                      style: const TextStyle(fontSize: 16),
                     ),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Your donation will help provide educational support to children in need',
-              style: TextStyle(fontSize: 13, color: kGrey),
-            ),
+            // const Text(
+            //   'Your donation will help provide educational support to children in need',
+            //   style: TextStyle(fontSize: 13, color: kGrey),
+            // ),
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
-              height: 54,
+              height: 44,
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: kPrimaryColor,

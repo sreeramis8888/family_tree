@@ -42,15 +42,18 @@ class TransactionApiService {
               .map((item) => TransactionModel.fromJson(item))
               .toList();
         } else {
-          throw Exception('❌ Invalid response format: expected list, got ${body['data'].runtimeType}');
+          throw Exception(
+              '❌ Invalid response format: expected list, got ${body['data'].runtimeType}');
         }
       } else {
-        final errorMsg = jsonDecode(response.body)['message'] ?? 'Unknown error';
-        throw Exception('❌ Failed to load transactions: ${response.statusCode}, $errorMsg');
+        final errorMsg =
+            jsonDecode(response.body)['message'] ?? 'Unknown error';
+        throw Exception(
+            '❌ Failed to load transactions: ${response.statusCode}, $errorMsg');
       }
     } catch (e, stack) {
       debugPrint('🔥 Exception: $e');
-      
+
       throw Exception('Transaction fetch error: $e');
     }
   }

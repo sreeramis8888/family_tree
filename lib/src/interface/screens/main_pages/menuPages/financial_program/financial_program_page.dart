@@ -94,9 +94,18 @@ class _FinancialProgramPageState extends ConsumerState<FinancialProgramPage>
               const SizedBox(height: 8),
               TabBar(
                 controller: _tabController,
-                labelColor: Colors.red,
-                unselectedLabelColor: Colors.grey,
-                indicatorColor: Colors.red,
+                enableFeedback: true,
+                isScrollable: false,
+                indicatorColor: kPrimaryColor,
+                indicatorWeight: 3.0,
+                indicatorSize: TabBarIndicatorSize.tab,
+                labelColor: kPrimaryColor,
+                unselectedLabelColor: Colors.grey.shade600,
+                labelStyle: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.3,
+                ),
                 tabs: const [
                   Tab(text: 'Membership'),
                   Tab(text: 'Transactions'),
@@ -123,7 +132,8 @@ class _FinancialProgramPageState extends ConsumerState<FinancialProgramPage>
 
 class _BalanceCard extends ConsumerWidget {
   final FinancialAssistance? member;
-  const _BalanceCard({this.member, required this.ref, Key? key}) : super(key: key);
+  const _BalanceCard({this.member, required this.ref, Key? key})
+      : super(key: key);
   final WidgetRef ref;
 
   @override
@@ -152,56 +162,274 @@ class _BalanceCard extends ConsumerWidget {
               child: customButton(
                 label: '+ Top Up Wallet',
                 onPressed: () async {
-                  double? enteredAmount;
+                  int? enteredAmount;
                   final amount = await showDialog<double>(
                     context: context,
+                    barrierDismissible: false,
                     builder: (context) {
-                      return AlertDialog(
-                        title: const Text('Top Up Wallet'),
-                        content: TextField(
-                          keyboardType: TextInputType.numberWithOptions(decimal: true),
-                          decoration: const InputDecoration(hintText: 'Enter amount'),
-                          onChanged: (value) {
-                            enteredAmount = double.tryParse(value);
-                          },
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.of(context).pop(),
-                            child: const Text('Cancel'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () async {
-                              if (enteredAmount != null && enteredAmount! > 0) {
-                                final amountToTopUp = enteredAmount!;
-                                Navigator.of(context).pop();
+                      final TextEditingController amountController =
+                          TextEditingController();
+                      String? errorText;
 
-                                final topupPayment = TopupPaymentService(
-                                  amount: amountToTopUp,
-                                  onSuccess: (msg) async {
-                                    await handleTopupSuccess(
-                                      ref: ref,
-                                      context: context,
-                                      id: id,
-                                      amount: amountToTopUp,
-                                    );
-                                  },
-                                  onError: (msg) {
-                                    if (context.mounted) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(content: Text(msg)),
-                                      );
-                                    }
-                                  },
-                                );
-                                topupPayment.init();
-                                await topupPayment.startPayment();
-                              }
-                            },
-                            child: const Text("Top Up"),
-                          )
-                        ],
+                      return StatefulBuilder(
+                        builder: (context, setState) {
+                          return Dialog(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            elevation: 8,
+                            child: Container(
+                              padding: const EdgeInsets.all(24),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                color: Theme.of(context).cardColor,
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Header with icon and title
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context)
+                                              .primaryColor
+                                              .withOpacity(0.1),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: Icon(
+                                          Icons.account_balance_wallet,
+                                          color: Theme.of(context).primaryColor,
+                                          size: 24,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Text(
+                                        'Top Up Wallet',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headlineSmall
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.w600,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurface,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  const SizedBox(height: 8),
+
+                                  // Subtitle
+                                  Text(
+                                    'Enter the amount you want to add to your wallet',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface
+                                              .withOpacity(0.7),
+                                        ),
+                                  ),
+
+                                  const SizedBox(height: 24),
+
+                                  // Amount input field
+                                  TextField(
+                                    controller: amountController,
+                                    keyboardType:
+                                        const TextInputType.numberWithOptions(
+                                            decimal: true),
+                                    autofocus: true,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineSmall
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                    decoration: InputDecoration(
+                                      labelText: 'Amount',
+                                      hintText: '0.00',
+                                      prefixIcon: Icon(
+                                        Icons.currency_rupee,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                      errorText: errorText,
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: BorderSide(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .outline,
+                                        ),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: BorderSide(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .outline
+                                              .withOpacity(0.5),
+                                        ),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: BorderSide(
+                                          color: Theme.of(context).primaryColor,
+                                          width: 2,
+                                        ),
+                                      ),
+                                      errorBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                        borderSide: BorderSide(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .error,
+                                        ),
+                                      ),
+                                      filled: true,
+                                      fillColor:
+                                          Theme.of(context).colorScheme.surface,
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 16,
+                                      ),
+                                    ),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        errorText = null;
+                                        enteredAmount = int.tryParse(value);
+                                      });
+                                    },
+                                  ),
+
+                                  const SizedBox(height: 24),
+
+                                  // Action buttons
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(),
+                                        style: TextButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 24,
+                                            vertical: 12,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                        ),
+                                        child: Text(
+                                          'Cancel',
+                                          style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurface
+                                                .withOpacity(0.7),
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      ElevatedButton(
+                                        onPressed: () async {
+                                          if (enteredAmount == null ||
+                                              enteredAmount! <= 0) {
+                                            setState(() {
+                                              errorText =
+                                                  'Please enter a valid amount';
+                                            });
+                                            return;
+                                          }
+
+                                          final amountToTopUp = enteredAmount!;
+                                          Navigator.of(context)
+                                              .pop(amountToTopUp);
+
+                                          final topupPayment =
+                                              TopupPaymentService(
+                                            amount: amountToTopUp.toInt(),
+                                            onSuccess: (msg) async {
+                                              await handleTopupSuccess(
+                                                ref: ref,
+                                                context: context,
+                                                id: id,
+                                                amount: amountToTopUp.toInt(),
+                                              );
+                                            },
+                                            onError: (msg) {
+                                              if (context.mounted) {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(msg),
+                                                    backgroundColor:
+                                                        Theme.of(context)
+                                                            .colorScheme
+                                                            .error,
+                                                    behavior: SnackBarBehavior
+                                                        .floating,
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8),
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+                                            },
+                                          );
+                                          topupPayment.init();
+                                          await topupPayment.startPayment();
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              Theme.of(context).primaryColor,
+                                          foregroundColor: Theme.of(context)
+                                              .colorScheme
+                                              .onPrimary,
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 32,
+                                            vertical: 12,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                          elevation: 2,
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Icon(Icons.add, size: 18),
+                                            const SizedBox(width: 8),
+                                            const Text(
+                                              'Top Up',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
                       );
                     },
                   );
@@ -219,28 +447,28 @@ Future<void> handleTopupSuccess({
   required WidgetRef ref,
   required BuildContext context,
   required String id,
-  required double amount,
+  required int amount,
 }) async {
-  final success = await ref.read(joinProgramProvider(
-    memberId: id,
-    amount: amount,
-  ).future);
+  // final success = await ref.read(joinProgramProvider(
+  //   memberId: id,
+  //   amount: amount,
+  // ).future);
 
-  debugPrint("success1");
+  // debugPrint("success1");
 
-  if (success) {
-    debugPrint("success2");
+  // if (success) {
+  debugPrint("success");
 
-    ref.invalidate(getProgramMemberByIdProvider(id));
+  ref.invalidate(getProgramMemberByIdProvider(id));
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Wallet topped up successfully!')),
-    );
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Failed to top up wallet.')),
-    );
-  }
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text('Wallet topped up successfully!')),
+  );
+  // } else {
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     const SnackBar(content: Text('Failed to top up wallet.')),
+  //   );
+  // }
 }
 
 class _LowBalanceAlert extends StatelessWidget {

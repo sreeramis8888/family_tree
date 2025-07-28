@@ -15,6 +15,7 @@ import 'package:familytree/src/interface/components/Dialogs/premium_dialog.dart'
 import 'package:familytree/src/interface/screens/web_view_screen.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/financial_program/financial_program_page.dart';
 import 'package:familytree/src/data/notifiers/user_notifier.dart';
+import 'package:familytree/src/interface/screens/main_pages/menuPages/campaigns/my_transactions_page.dart';
 
 Widget customDrawer(
     {required UserModel user,
@@ -179,11 +180,18 @@ Widget customDrawer(
                     navigationService.pushNamed('MyEvents');
                   },
                 ),
-                // _buildDrawerItem(
-                //   icon: 'assets/svg/icons/my_transactions.svg',
-                //   label: 'My Transactions',
-                //   onTap: () {},
-                // ),
+                _buildDrawerItem(
+                  icon: 'assets/svg/icons/my_transactions.svg',
+                  label: 'My Transactions',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const MyTransactionsPage(),
+                      ),
+                    );
+                  },
+                ),
                 // _buildDrawerItem(
                 //   icon: 'assets/svg/icons/my_post.svg',
                 //   label: 'My Post',
@@ -300,9 +308,9 @@ Widget customDrawer(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => const WebViewScreen(
-                                  color: Colors.deepPurpleAccent,
-                                  url: 'https://www.acutendeavors.com/',
-                                  title: 'ACUTE ENDEAVORS',
+                                  color: Color.fromARGB(255, 84, 43, 196),
+                                  url: 'https://www.xyvin.com/',
+                                  title: 'Xyvin Technologies',
                                 ),
                               ),
                             );

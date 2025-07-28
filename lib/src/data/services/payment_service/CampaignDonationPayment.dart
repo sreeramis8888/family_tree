@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -77,9 +78,11 @@ class CampaignPaymentService {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> json = jsonDecode(response.body);
+        log(json.toString());
         final order = json['data']?['order'];
         if (order != null && order['id'] != null) {
-          _openRazorpay(order['id']);
+          final int razorpayAmount = order['amount'];
+          _openRazorpay(order['id'], razorpayAmount);
         } else {
           onError("Invalid Razorpay order data.");
         }
@@ -91,10 +94,10 @@ class CampaignPaymentService {
     }
   }
 
-  void _openRazorpay(String orderId) {
+  void _openRazorpay(String orderId, int razorpayAmount) {
     final options = {
-      'key': 'rzp_test_lDODXN89x37kcK',
-      'amount': (amount * 100).toInt(),
+      'key': 'rzp_test_SV7cfi5qGS7db9',
+      'amount': razorpayAmount,
       'currency': 'INR',
       'name': campaign.title,
       'description': 'Campaign Donation',
@@ -116,13 +119,11 @@ class CampaignPaymentService {
     final verifyUrl = Uri.parse("$baseUrl/payments/verify");
 
     try {
-      final token = await _storage.read(key: 'authToken');
-
       final verifyResponse = await http.post(
         verifyUrl,
         headers: {
           "Content-Type": "application/json",
-          if (token != null) "Authorization": "Bearer $token",
+          "Authorization": "Bearer $token",
         },
         body: jsonEncode({
           "razorpay_payment_id": response.paymentId,
@@ -130,7 +131,7 @@ class CampaignPaymentService {
           "razorpay_signature": response.signature,
         }),
       );
-
+      log(response.data.toString());
       if (verifyResponse.statusCode == 200) {
         onSuccess("Donation successful. Thank you!");
       } else {

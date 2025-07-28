@@ -24,7 +24,7 @@ class PostDetailsSheet extends StatelessWidget {
       expand: false,
       builder: (context, scrollController) {
         return FutureBuilder<FeedWithPerson>(
-          future: fetchFeedWithPerson(postId), 
+          future: fetchFeedWithPerson(postId),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: LoadingAnimation());
@@ -70,29 +70,28 @@ class PostDetailsSheet extends StatelessWidget {
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                     const SizedBox(height: 18),
-                    if(!isPending)
-                    _buildDetailRow(
-                      'Post Status',
-                      feed.status,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: _statusColor(feed.status),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          _statusLabel(feed.status),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
+                    if (!isPending)
+                      _buildDetailRow(
+                        'Post Status',
+                        feed.status,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: _statusColor(feed.status),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            _statusLabel(feed.status),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                       ),
-                    ),
                     const SizedBox(height: 18),
-
                     _buildDetailRow('Member name', fullName),
                     _buildDetailRow('Phone no', phoneNo),
                     const SizedBox(height: 18),
@@ -162,8 +161,7 @@ class PostDetailsSheet extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                               ),
-                              onPressed: () =>
-                                  _updateStatus(context, 'published'),
+                              onPressed: () => _updateStatus(context, 'accept'),
                               child: const Text('Approve'),
                             ),
                           ),
@@ -251,6 +249,7 @@ class PostDetailsSheet extends StatelessWidget {
       );
     }
   }
+
   String _statusLabel(String status) {
     switch (status.toLowerCase()) {
       case 'published':
@@ -276,5 +275,4 @@ class PostDetailsSheet extends StatelessWidget {
         return Colors.black;
     }
   }
-
 }

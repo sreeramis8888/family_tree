@@ -10,6 +10,7 @@ import 'package:familytree/src/data/api_routes/request_api/request_api.dart'
 import 'package:familytree/src/data/api_routes/request_api/request_api.dart';
 import 'package:familytree/src/data/api_routes/requirements_api/requirements_api.dart'
     as requirements_api;
+import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/data/globals.dart';
 import 'package:familytree/src/data/models/feeds_model.dart';
 import 'package:familytree/src/data/models/request_model.dart';
@@ -84,8 +85,8 @@ class _ApprovalsPageState extends ConsumerState<ApprovalsPage>
   bool isChipLoading = false;
 
   bool _isLoading = true;
-  
- late String familyname;
+
+  late String familyname;
 
   @override
   void initState() {
@@ -135,7 +136,7 @@ class _ApprovalsPageState extends ConsumerState<ApprovalsPage>
         if (familyRes.statusCode == 200) {
           final familyData = jsonDecode(familyRes.body)['data'];
           final familyName = familyData['name'];
-          familyname=familyName;
+          familyname = familyName;
           final members = familyData['members'] as List<dynamic>;
           allMemberIds.addAll(members.map((m) => m['_id'].toString()));
           allMembername.addAll(members.map((m) => m['fullName'].toString()));
@@ -145,7 +146,6 @@ class _ApprovalsPageState extends ConsumerState<ApprovalsPage>
       setState(() {
         memberIds = allMemberIds;
         membername = allMembername;
-        
       });
 
       final feeds = await ref
@@ -163,14 +163,12 @@ class _ApprovalsPageState extends ConsumerState<ApprovalsPage>
         approvedApprovalsMap['Member'] = request
             .where((r) => r.status == 'approved')
             .map<Map<String, String>>((r) => {
-
                   'view': 'Member',
                   'title': '${r.fullName}',
                   'subtitle': r.email ?? '',
                   'status': r.status.capitalize(),
                   '_id': r.id ?? '',
-                  'family': familyname??''
-            
+                  'family': familyname ?? ''
                 })
             .toList();
         pendingApprovalsMap['Member'] = request
@@ -181,7 +179,7 @@ class _ApprovalsPageState extends ConsumerState<ApprovalsPage>
                   'subtitle': r.email ?? '',
                   'status': r.status.capitalize(),
                   '_id': r.id ?? '',
-                  'family': familyname??''
+                  'family': familyname ?? ''
                 })
             .toList();
 
@@ -194,7 +192,7 @@ class _ApprovalsPageState extends ConsumerState<ApprovalsPage>
                   'subtitle': r.email ?? '',
                   'status': r.status.capitalize(),
                   '_id': r.id ?? '',
-                  'family': familyname ??''
+                  'family': familyname ?? ''
                 })
             .toList();
 
@@ -247,13 +245,12 @@ class _ApprovalsPageState extends ConsumerState<ApprovalsPage>
                   'status': event['isApproved'].toString().capitalize(),
                   '_id': event['_id'],
                   'family': familyname ?? ''
-                  
                 })
             .toList();
 
         // Event – Approved
         approvedApprovalsMap['Event'] = events
-            .where((event) => event['isApproved'] == 'approved')
+            .where((event) => event['isApproved'] == 'true')
             .map<Map<String, String>>((event) => {
                   'view': 'Event',
                   'title': '${event['event_name'] ?? 'Untitled'}',
@@ -364,7 +361,7 @@ class _ApprovalsPageState extends ConsumerState<ApprovalsPage>
             ),
             centerTitle: true,
             actions: _isLoading
-                ? [] 
+                ? []
                 : [
                     IconButton(
                       icon: SvgPicture.asset(
@@ -387,7 +384,6 @@ class _ApprovalsPageState extends ConsumerState<ApprovalsPage>
                       },
                     ),
                   ],
-
             bottom: TabBar(
               controller: _tabController,
               tabs: const [
@@ -395,10 +391,18 @@ class _ApprovalsPageState extends ConsumerState<ApprovalsPage>
                 Tab(text: 'Approved'),
                 Tab(text: 'Rejected')
               ],
-              labelColor: Colors.red,
-               indicatorColor: Colors.red, 
-              indicatorWeight: 3.0,   
-              unselectedLabelColor: Colors.grey,
+              enableFeedback: true,
+              isScrollable: false,
+              indicatorColor: kPrimaryColor,
+              indicatorWeight: 3.0,
+              indicatorSize: TabBarIndicatorSize.tab,
+              labelColor: kPrimaryColor,
+              unselectedLabelColor: Colors.grey.shade600,
+              labelStyle: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                letterSpacing: 0.3,
+              ),
             ),
           ),
         ),
@@ -409,7 +413,7 @@ class _ApprovalsPageState extends ConsumerState<ApprovalsPage>
               children: [
                 const SizedBox(height: 8),
                 SizedBox(
-                  height: 50,
+                  height: 40,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: chipLabels.length,

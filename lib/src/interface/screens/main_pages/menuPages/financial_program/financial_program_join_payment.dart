@@ -167,12 +167,16 @@ class FinancialProgramJoinPaymentPage extends ConsumerWidget {
                           label: 'Proceed to Pay',
                           onPressed: () async {
                             final topupPayment = TopupPaymentService(
-                              amount: minBalance?.minimumAmount ?? 0,
+                              amount: int.parse(
+                                  minBalance?.minimumAmount.toString() ?? '0'),
                               onSuccess: (msg) async {
                                 final bool success =
                                     await FinanceApiService.joinProgram(
                                         memberId: id,
-                                        amount: minBalance?.minimumAmount ?? 0);
+                                        amount: int.parse(minBalance
+                                                ?.minimumAmount
+                                                .toString() ??
+                                            '0'));
                                 if (success) {
                                   Navigator.pushAndRemoveUntil(
                                     context,
@@ -186,7 +190,9 @@ class FinancialProgramJoinPaymentPage extends ConsumerWidget {
                                   ref: ref,
                                   context: context,
                                   id: id,
-                                  amount: minBalance?.minimumAmount ?? 0,
+                                  amount: int.parse(
+                                      minBalance?.minimumAmount.toString() ??
+                                          '0'),
                                 );
                               },
                               onError: (msg) {

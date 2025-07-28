@@ -8,7 +8,8 @@ class AuthService {
   static Future<bool> refreshAccessToken() async {
     final refreshToken = await SecureStorage.read('refreshToken');
 
-    debugPrint("📥 Calling /refresh-token with saved refresh token: $refreshToken");
+    debugPrint(
+        "📥 Calling /refresh-token with saved refresh token: $refreshToken");
 
     if (refreshToken == null || refreshToken.isEmpty) {
       debugPrint("❌ No refresh token found");

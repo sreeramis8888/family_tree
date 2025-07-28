@@ -47,10 +47,9 @@ Future<FeedWithPerson> fetchFeedWithPerson(String feedId) async {
   );
 }
 
-/// Update feed status: accept or reject
 Future<void> updateFeedStatus({
   required String feedId,
-  required String action, // 'accept' or 'reject'
+  required String action,
   String? reason,
 }) async {
   final url = Uri.parse('$baseUrl/feeds/$feedId/$action');

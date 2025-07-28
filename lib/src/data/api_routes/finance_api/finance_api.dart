@@ -98,7 +98,7 @@ class FinanceApiService {
   static Future<bool> joinProgram({
     required String memberId,
     String? membershipStatus,
-    double? amount,
+    int? amount,
   }) async {
     final url = Uri.parse('$_baseUrl/join');
     final body = json.encode({
@@ -206,7 +206,7 @@ Future<bool> joinProgram(
   Ref ref, {
   required String memberId,
   String? membershipStatus,
-  double? amount,
+  int? amount,
 }) {
   return FinanceApiService.joinProgram(
     memberId: memberId,

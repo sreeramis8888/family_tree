@@ -310,7 +310,7 @@ class _FetchBusinessProviderElement
   int get limit => (origin as FetchBusinessProvider).limit;
 }
 
-String _$fetchMyBusinessesHash() => r'6d7f1f85eb2b2e11029bdc087634522d721eabf4';
+String _$fetchMyBusinessesHash() => r'3921cded82ffdc61e8753d3f23fc8d8a257320b6';
 
 /// See also [fetchMyBusinesses].
 @ProviderFor(fetchMyBusinesses)

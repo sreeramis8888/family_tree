@@ -341,7 +341,7 @@ bool _isLoading = true;
                                                 _handleStatusUpdate(
                                               context,
                                       
-                                              "rejected",
+                                              "reject",
                                                       item['view']!,
                                               id,
                                             ),
@@ -373,7 +373,7 @@ bool _isLoading = true;
                                                 _handleStatusUpdate(
                                               context,
                                              
-                                              "approved",
+                                              "accept",
                                                item['view']!,
                                               id
                                             ),

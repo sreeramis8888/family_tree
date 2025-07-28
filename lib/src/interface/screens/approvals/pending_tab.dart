@@ -23,7 +23,7 @@ class PendingTab extends StatelessWidget {
   const PendingTab({super.key, required this.data});
 
   void showDetailsBottomSheet(
-      BuildContext context, String view, String status, Id  ,String familyName) {
+      BuildContext context, String view, String status, Id, String familyName) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -35,7 +35,8 @@ class PendingTab extends StatelessWidget {
           case 'Member':
             return DetailsSheet(
               status: status,
-              requestId: Id, familyName: familyName,
+              requestId: Id,
+              familyName: familyName,
             );
           case 'Event':
             return EventDetailsSheet(
@@ -77,11 +78,9 @@ class PendingTab extends StatelessWidget {
           throw Exception("Unknown view type: $view");
       }
 
-    
       final viewKey = view.split(' – ').first;
       final chipIndex = chipIndexFromView[viewKey] ?? 0;
 
-      
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -110,21 +109,22 @@ class PendingTab extends StatelessWidget {
       itemBuilder: (context, index) {
         final approval = data[index];
         final status = approval['status'] ?? 'Unknown';
-       
+
         return PendingCard(
           title: approval['title']!,
           subtitle: approval['subtitle']!,
           postId: approval['_id']!,
-          onView: () => showDetailsBottomSheet(
-              context, approval['view']!, status, approval['_id']!,approval['family']!),
+          onView: () => showDetailsBottomSheet(context, approval['view']!,
+              status, approval['_id']!, approval['family']!),
           update: (String statusUpdate) => _handleStatusUpdate(
             context,
             statusUpdate,
             approval['view']!,
             approval['_id']!,
             approval['title']!,
-          ), view:   approval['view']!, familyName: approval['family']!,
-          
+          ),
+          view: approval['view']!,
+          familyName: approval['family']!,
         );
       },
     );
@@ -153,6 +153,28 @@ class PendingCard extends StatelessWidget {
 
   bool get isMember => view.toLowerCase().contains('member');
 
+  String get approveValue {
+    if (view.toLowerCase().contains('member') || view.toLowerCase().contains('notification')) {
+      return 'approved';
+    } else if (view.toLowerCase().contains('post')) {
+      return 'accept';
+    } else if (view.toLowerCase().contains('event')) {
+      return 'true';
+    }
+    return 'approved'; // default fallback
+  }
+
+  String get rejectValue {
+    if (view.toLowerCase().contains('member') || view.toLowerCase().contains('notification')) {
+      return 'rejected';
+    } else if (view.toLowerCase().contains('post')) {
+      return 'reject';
+    } else if (view.toLowerCase().contains('event')) {
+      return 'false';
+    }
+    return 'rejected'; // default fallback
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -167,7 +189,6 @@ class PendingCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -216,7 +237,6 @@ class PendingCard extends StatelessWidget {
                                       color: const Color(0xff979797),
                                     ),
                                   ),
-                                  
                                 ],
                               ),
                             ),
@@ -229,7 +249,6 @@ class PendingCard extends StatelessWidget {
                         ),
                       )
                     : Row(
-
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
@@ -275,7 +294,7 @@ class PendingCard extends StatelessWidget {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () => update("rejected"),
+                  onPressed: () => update(rejectValue),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 229, 227, 227),
                     foregroundColor: Colors.black,
@@ -300,7 +319,7 @@ class PendingCard extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () => update("approved"),
+                  onPressed: () => update(approveValue),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF228B22),
                     foregroundColor: Colors.white,
