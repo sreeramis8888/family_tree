@@ -117,7 +117,7 @@ class DeepLinkService {
         case 'my_feeds':
           try {
             NavigationService.navigatorKey.currentState
-                ?.pushNamed('MyBusinesses');
+                ?.pushNamed('MyPosts');
           } catch (e) {
             debugPrint('Error fetching requirement: $e');
             _showError('Unable to load profile');

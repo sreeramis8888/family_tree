@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:familytree/src/data/constants/color_constants.dart';
+
 class SearchableDropDown extends StatefulWidget {
   final String? hintText;
   final String? label;
@@ -8,6 +9,7 @@ class SearchableDropDown extends StatefulWidget {
   final ValueChanged<String?> onChanged;
   final FormFieldValidator<String>? validator;
   final String searchHintText;
+  final bool searchable;
 
   const SearchableDropDown({
     this.label,
@@ -18,6 +20,7 @@ class SearchableDropDown extends StatefulWidget {
     Key? key,
     this.hintText,
     this.searchHintText = 'Search...',
+    this.searchable = true,
   }) : super(key: key);
 
   @override
@@ -30,14 +33,12 @@ class _SearchableDropDownState extends State<SearchableDropDown>
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
 
-  final LayerLink _layerLink = LayerLink();
   final FocusNode _focusNode = FocusNode();
   final TextEditingController _searchController = TextEditingController();
 
-  bool _isDropdownOpen = false;
-  List<DropdownMenuItem<String>> _filteredItems = [];
-  OverlayEntry? _overlayEntry;
   String? _selectedValue;
+  List<DropdownMenuItem<String>> _filteredItems = [];
+  VoidCallback? _searchListener;
 
   @override
   void initState() {
@@ -66,49 +67,48 @@ class _SearchableDropDownState extends State<SearchableDropDown>
     _selectedValue = widget.value;
   }
 
-  // Track search field focus state
-  bool _searchHasFocus = false;
-
   @override
   void dispose() {
-    _closeDropdown();
     _animationController.dispose();
     _focusNode.dispose();
     _searchController.dispose();
     super.dispose();
   }
 
-  void _openDropdown() {
-    if (_isDropdownOpen) return;
-
-    _isDropdownOpen = true;
-    _overlayEntry = _createOverlayEntry();
-    Overlay.of(context).insert(_overlayEntry!);
-  }
-
-  void _closeDropdown() {
-    if (_overlayEntry != null) {
-      _overlayEntry!.remove();
-      _overlayEntry = null;
-      _isDropdownOpen = false;
-      _searchController.clear();
+  @override
+  void didUpdateWidget(SearchableDropDown oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Update selected value when widget updates
+    if (widget.value != _selectedValue) {
       setState(() {
-        _filteredItems = List.from(widget.items);
+        _selectedValue = widget.value;
       });
     }
   }
 
   void _filterItems(String query) {
+    print("Filtering for: $query"); // 🔥 check this
+    if (!mounted) return;
     setState(() {
-      _filteredItems = widget.items
-          .where((item) => (item.child as Text)
-              .data!
+      try {
+        if (query.trim().isEmpty) {
+          _filteredItems = List.from(widget.items);
+        } else {
+          final queryWords = query
               .toLowerCase()
-              .contains(query.toLowerCase()))
-          .toList();
+              .trim()
+              .split(' ')
+              .where((word) => word.isNotEmpty)
+              .toList();
 
-      if (_overlayEntry != null) {
-        _overlayEntry!.markNeedsBuild();
+          _filteredItems = widget.items.where((item) {
+            final itemText = (item.child as Text).data!.toLowerCase();
+            return queryWords.every((word) => itemText.contains(word)) ||
+                itemText.contains(query.toLowerCase());
+          }).toList();
+        }
+      } catch (e) {
+        _filteredItems = List.from(widget.items);
       }
     });
   }
@@ -117,14 +117,32 @@ class _SearchableDropDownState extends State<SearchableDropDown>
     setState(() {
       _selectedValue = item.value;
     });
+
     widget.onChanged(item.value);
-    _searchHasFocus = false;
-    _closeDropdown();
-    _focusNode.unfocus();
+
+    // Remove listener before closing dialog
+    if (_searchListener != null) {
+      _searchController.removeListener(_searchListener!);
+      _searchListener = null;
+    }
+    Navigator.of(context).pop();
   }
 
   String? _getDisplayText() {
     if (_selectedValue == null) return null;
+
+    // Special handling for new family value
+    if (_selectedValue == '__new_family__') {
+      // Look for the new family item in the list
+      final newFamilyItem = widget.items.firstWhere(
+        (item) => item.value == '__new_family__',
+        orElse: () => const DropdownMenuItem(value: '', child: Text('')),
+      );
+
+      if (newFamilyItem.value != '') {
+        return (newFamilyItem.child as Text).data;
+      }
+    }
 
     final selectedItem = widget.items.firstWhere(
       (item) => item.value == _selectedValue,
@@ -134,127 +152,114 @@ class _SearchableDropDownState extends State<SearchableDropDown>
     return selectedItem.value == '' ? null : (selectedItem.child as Text).data;
   }
 
-  OverlayEntry _createOverlayEntry() {
-    final RenderBox renderBox = context.findRenderObject() as RenderBox;
-    final size = renderBox.size;
+  void _showSearchDialog() {
+    _filteredItems = List.from(widget.items);
+    _searchController.clear();
+    _searchListener = () {
+      _filterItems(_searchController.text);
+    };
+    _searchController.addListener(_searchListener!);
 
-    return OverlayEntry(
-      builder: (context) => Positioned(
-        width: size.width,
-        child: CompositedTransformFollower(
-          link: _layerLink,
-          showWhenUnlinked: false,
-          offset: Offset(0.0, size.height + 5.0),
-          child: Material(
-            elevation: 4.0,
-            borderRadius: BorderRadius.circular(8),
-            child: Container(
-              decoration: BoxDecoration(
-                color: kWhite,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
-              ),
-              constraints: BoxConstraints(
-                maxHeight: 300,
-                minWidth: size.width,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextField(
-                      controller: _searchController,
-                      autofocus: true,
-                      decoration: InputDecoration(
-                        hintText: widget.searchHintText,
-                        isDense: true,
-                        prefixIcon:
-                            const Icon(Icons.search, color: Color(0xFF718096)),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide:
-                              const BorderSide(color: Color(0xFFE2E8F0)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(
-                              color: Color(0xFF3182CE), width: 2),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide:
-                              const BorderSide(color: Color(0xFFE2E8F0)),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        hintStyle: const TextStyle(
-                          color: Color(0xFF718096),
-                          fontSize: 14,
-                        ),
-                      ),
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFF2D3748),
-                      ),
-                      onChanged: _filterItems,
-                    ),
+    // Determine the heading based on the label or hint text
+    String getHeading() {
+      final label = widget.label?.toLowerCase() ?? '';
+      final hint = widget.hintText?.toLowerCase() ?? '';
+
+      if (label.contains('family') || hint.contains('family')) {
+        return 'Select Family';
+      } else if (label.contains('member') || hint.contains('member')) {
+        return 'Select Members';
+      } else if (label.contains('relationship') ||
+          hint.contains('relationship')) {
+        return 'Select Relationship';
+      } else {
+        return widget.label ?? 'Select Option';
+      }
+    }
+
+    void _cleanupListener() {
+      if (_searchListener != null) {
+        _searchController.removeListener(_searchListener!);
+        _searchListener = null;
+      }
+    }
+
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return PopScope(
+          onPopInvoked: (didPop) {
+            if (didPop) {
+              _cleanupListener();
+            }
+          },
+          child: Dialog(
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: StatefulBuilder(
+              // 👈 Add this
+              builder: (BuildContext context, StateSetter setStateDialog) {
+                return Container(
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height * 0.7,
+                    maxWidth: MediaQuery.of(context).size.width * 0.9,
                   ),
-                  Flexible(
-                    child: ListView.builder(
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      itemCount: _filteredItems.length,
-                      itemBuilder: (context, index) {
-                        final item = _filteredItems[index];
-                        final isSelected = item.value == _selectedValue;
-
-                        return InkWell(
-                          onTap: () => _selectItem(item),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 12),
-                            color: isSelected
-                                ? const Color(0xFFEBF8FF)
-                                : Colors.transparent,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: DefaultTextStyle(
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: isSelected
-                                          ? const Color(0xFF3182CE)
-                                          : const Color(0xFF2D3748),
-                                      fontWeight: isSelected
-                                          ? FontWeight.bold
-                                          : FontWeight.normal,
-                                    ),
-                                    child: item.child,
-                                  ),
-                                ),
-                                if (isSelected)
-                                  const Icon(
-                                    Icons.check,
-                                    color: Color(0xFF3182CE),
-                                    size: 18,
-                                  ),
-                              ],
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Search Field
+                      if (widget.searchable)
+                        Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: TextField(
+                            controller: _searchController,
+                            autofocus: true,
+                            decoration: InputDecoration(
+                              hintText: widget.searchHintText,
+                              prefixIcon: const Icon(Icons.search),
+                              border: OutlineInputBorder(),
                             ),
+                            onChanged: (value) {
+                              setStateDialog(() {
+                                _filterItems(value); // rebuild dialog UI
+                              });
+                            },
                           ),
-                        );
-                      },
-                    ),
+                        ),
+
+                      // Items List
+                      Flexible(
+                        child: _filteredItems.isEmpty
+                            ? const Center(child: Text("No items found"))
+                            : ListView.builder(
+                                itemCount: _filteredItems.length,
+                                itemBuilder: (context, index) {
+                                  final item = _filteredItems[index];
+                                  final isSelected =
+                                      item.value == _selectedValue;
+
+                                  return ListTile(
+                                    title: item.child,
+                                    trailing: isSelected
+                                        ? const Icon(Icons.check_circle,
+                                            color: Colors.blue)
+                                        : null,
+                                    onTap: () => _selectItem(item),
+                                  );
+                                },
+                              ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                );
+              },
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -283,88 +288,71 @@ class _SearchableDropDownState extends State<SearchableDropDown>
                 ),
               GestureDetector(
                 behavior: HitTestBehavior.opaque,
-                onTap: () {
-                  if (!_isDropdownOpen) {
-                    _focusNode.requestFocus();
-                    _openDropdown();
-                  } else {
-                    _closeDropdown();
-                    _focusNode.unfocus();
-                  }
-                },
-                child: CompositedTransformTarget(
-                  link: _layerLink,
-                  child: FormField<String>(
-                    validator: widget.validator,
-                    initialValue: _selectedValue,
-                    builder: (FormFieldState<String> state) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              color: kWhite,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: _isDropdownOpen
-                                    ? const Color(0xFF3182CE)
-                                    : state.hasError
-                                        ? Colors.red
-                                        : const Color(0xFFE2E8F0),
-                                width: _isDropdownOpen ? 2 : 1,
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 12,
-                                    ),
-                                    child: Text(
-                                      _getDisplayText() ??
-                                          widget.hintText ??
-                                          '',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: _selectedValue == null
-                                            ? const Color(0xFF718096)
-                                            : const Color(0xFF2D3748),
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 12.0),
-                                  child: Icon(
-                                    _isDropdownOpen
-                                        ? Icons.keyboard_arrow_up_rounded
-                                        : Icons.keyboard_arrow_down_rounded,
-                                    color: const Color(0xFF718096),
-                                    size: 24,
-                                  ),
-                                ),
-                              ],
+                onTap: _showSearchDialog,
+                child: FormField<String>(
+                  validator: widget.validator,
+                  initialValue: _selectedValue,
+                  builder: (FormFieldState<String> state) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: kWhite,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: state.hasError
+                                  ? Colors.red
+                                  : const Color(0xFFE2E8F0),
+                              width: 1,
                             ),
                           ),
-                          if (state.hasError)
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(top: 4.0, left: 16.0),
-                              child: Text(
-                                state.errorText!,
-                                style: const TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 12,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                  child: Text(
+                                    _getDisplayText() ?? widget.hintText ?? '',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: _selectedValue == null
+                                          ? const Color(0xFF718096)
+                                          : const Color(0xFF2D3748),
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                               ),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 12.0),
+                                child: Icon(
+                                  Icons.keyboard_arrow_down_rounded,
+                                  color: const Color(0xFF718096),
+                                  size: 24,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (state.hasError)
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(top: 4.0, left: 16.0),
+                            child: Text(
+                              state.errorText!,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 12,
+                              ),
                             ),
-                        ],
-                      );
-                    },
-                  ),
+                          ),
+                      ],
+                    );
+                  },
                 ),
               ),
             ],

@@ -30,6 +30,7 @@ import 'package:familytree/src/interface/components/permission_check_wrapper.dar
 import 'package:familytree/src/interface/components/shimmers/edit_user_shimmer.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/preimum_plan.dart';
 import 'package:familytree/src/data/api_routes/family_api.dart/family_api.dart';
+import 'package:familytree/src/interface/components/DropDown/searchableDropdown.dart';
 import 'package:familytree/src/interface/components/DropDown/selectionDropdown.dart';
 import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/interface/components/loading_indicator/loading_indicator.dart';
@@ -40,6 +41,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:keyboard_avoider/keyboard_avoider.dart';
 
 import 'package:path/path.dart' as Path;
 import 'package:permission_handler/permission_handler.dart';
@@ -204,6 +206,114 @@ class _EditUserState extends ConsumerState<EditUser> {
         _relationship = null;
       });
     }
+  }
+
+  void _showRelationshipConfirmation(String memberName, String relationship) {
+    final currentUserName = nameController.text.trim().isNotEmpty 
+        ? nameController.text 
+        : 'you';
+    
+    // Fix grammar for "you" pronoun
+    final isYou = currentUserName.toLowerCase() == 'you';
+    final verb = isYou ? 'are' : 'is';
+    
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          title: Column(
+            children: [
+              Icon(
+                Icons.people,
+                color: kPrimaryColor,
+                size: 48,
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Confirm Relationship',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: kBlack,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: kBlack,
+                  ),
+                  children: [
+                    TextSpan(text: '$currentUserName '),
+                    TextSpan(text: '$verb '),
+                    TextSpan(text: '$relationship of '),
+                    TextSpan(
+                      text: '$memberName',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    TextSpan(text: '.'),
+                  ],
+                ),
+              ),
+              SizedBox(height: 12),
+              Text(
+                'Is this relationship correct?',
+                style: TextStyle(
+                  color: Colors.grey[700],
+                  fontSize: 14,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Colors.grey[700],
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: kPrimaryColor,
+                foregroundColor: kWhite,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              ),
+              child: Text(
+                'Confirm',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _addRelation(memberName);
+              },
+            ),
+          ],
+          actionsPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        );
+      },
+    );
   }
 
   Future<File?> _pickFile(
@@ -586,6 +696,7 @@ class _EditUserState extends ConsumerState<EditUser> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
+          resizeToAvoidBottomInset: true,
           backgroundColor: kWhite,
           body: asyncUser.when(
             loading: () {
@@ -670,12 +781,19 @@ class _EditUserState extends ConsumerState<EditUser> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(height: 24),
-                              Text(_linkedMember != null
-  ? 'Who are you to ' + (family.members!.firstWhere((m) => m.id == _linkedMember).fullName ?? '')
-  : 'Relationship',
-  style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text(
+                                  _linkedMember != null
+                                      ? 'Who are you to ' +
+                                          (family.members!
+                                                  .firstWhere((m) =>
+                                                      m.id == _linkedMember)
+                                                  .fullName ??
+                                              '')
+                                      : 'Relationship',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
                               SizedBox(height: 16),
-                              SelectionDropDown(
+                              SearchableDropDown(
                                 label: null,
                                 hintText: 'Select existing family member',
                                 value: _linkedMember,
@@ -690,7 +808,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                     .toList(),
                                 onChanged: (val) =>
                                     setState(() => _linkedMember = val),
-                                // validator removed to make selection optional
+                                searchHintText: 'Search members...',
                               ),
                               SizedBox(height: 16),
                               Text('Relationship',
@@ -707,14 +825,17 @@ class _EditUserState extends ConsumerState<EditUser> {
                                     .toList(),
                                 onChanged: (val) =>
                                     setState(() => _relationship = val),
-                                // validator removed to make selection optional
                               ),
                               SizedBox(height: 8),
                               TextButton(
                                 onPressed: () {
-                                  final selectedMember = family.members!
-                                      .firstWhere((m) => m.id == _linkedMember);
-                                  _addRelation(selectedMember.fullName ?? '');
+                                  if (_linkedMember != null && _relationship != null) {
+                                    final selectedMember = family.members!
+                                        .firstWhere((m) => m.id == _linkedMember);
+                                    final memberName = selectedMember.fullName ?? '';
+                                    final relationship = _relationship!;
+                                    _showRelationshipConfirmation(memberName, relationship);
+                                  }
                                 },
                                 child: Text('+ Add Relation',
                                     style: TextStyle(
@@ -861,7 +982,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                           ),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: SelectionDropDown(
+                            child: SearchableDropDown(
                               label: null,
                               hintText: 'Select other family',
                               value: _otherFamily,
@@ -877,6 +998,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                 });
                               },
                               validator: (val) => null, // optional
+                              searchHintText: 'Search families...',
                             ),
                           ),
                         ],
@@ -899,1144 +1021,1162 @@ class _EditUserState extends ConsumerState<EditUser> {
                 child: SafeArea(
                   child: Stack(
                     children: [
-                      SingleChildScrollView(
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            children: [
-                              Container(
-                                child: AppBar(
-                                  scrolledUnderElevation: 0,
-                                  backgroundColor: kWhite,
-                                  elevation: 0,
-                                  leadingWidth: 50,
-                                  leading: Padding(
-                                    padding: const EdgeInsets.only(left: 10),
-                                    child: SizedBox(
-                                      width: 100,
-                                      height: 100,
-                                      child: Image.asset(
-                                          'assets/pngs/familytree_logo.png'),
+                      KeyboardAvoider(
+                        autoScroll: true,
+                        child: SingleChildScrollView(
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              children: [
+                                Container(
+                                  child: AppBar(
+                                    scrolledUnderElevation: 0,
+                                    backgroundColor: kWhite,
+                                    elevation: 0,
+                                    leadingWidth: 50,
+                                    leading: Padding(
+                                      padding: const EdgeInsets.only(left: 10),
+                                      child: SizedBox(
+                                        width: 100,
+                                        height: 100,
+                                        child: Image.asset(
+                                            'assets/pngs/familytree_logo.png'),
+                                      ),
                                     ),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () {
+                                            ref
+                                                .read(userProvider.notifier)
+                                                .refreshUser();
+                                            navigateBasedOnPreviousPage();
+                                          },
+                                          child: Icon(
+                                            Icons.close,
+                                            color: kPrimaryColor,
+                                          )),
+                                    ],
                                   ),
-                                  actions: [
-                                    TextButton(
-                                        onPressed: () {
-                                          ref
-                                              .read(userProvider.notifier)
-                                              .refreshUser();
-                                          navigateBasedOnPreviousPage();
-                                        },
-                                        child: Icon(
-                                          Icons.close,
-                                          color: kPrimaryColor,
-                                        )),
-                                  ],
                                 ),
-                              ),
-                              const SizedBox(height: 35),
-                              FormField<File>(
-                                builder: (FormFieldState<File> state) {
-                                  return Center(
-                                    child: Column(
-                                      children: [
-                                        Stack(
-                                          children: [
-                                            DottedBorder(
-                                              borderType: BorderType.Circle,
-                                              dashPattern: [6, 3],
-                                              color: Colors.grey,
-                                              strokeWidth: 2,
-                                              child: ClipOval(
-                                                child: Container(
-                                                  width: 120,
-                                                  height: 120,
-                                                  color: const Color.fromARGB(
-                                                      255, 255, 255, 255),
-                                                  child: _isProfileImageLoading
-                                                      ? const Center(
-                                                          child:
-                                                              LoadingAnimation())
-                                                      : Image.network(
-                                                          errorBuilder:
-                                                              (context, error,
-                                                                  stackTrace) {
-                                                            return SvgPicture.asset(
-                                                                'assets/svg/icons/dummy_person_large.svg');
-                                                          },
-                                                          user.image ?? '',
-                                                          fit: BoxFit.cover,
-                                                        ),
+                                const SizedBox(height: 35),
+                                FormField<File>(
+                                  builder: (FormFieldState<File> state) {
+                                    return Center(
+                                      child: Column(
+                                        children: [
+                                          Stack(
+                                            children: [
+                                              DottedBorder(
+                                                borderType: BorderType.Circle,
+                                                dashPattern: [6, 3],
+                                                color: Colors.grey,
+                                                strokeWidth: 2,
+                                                child: ClipOval(
+                                                  child: Container(
+                                                    width: 120,
+                                                    height: 120,
+                                                    color: const Color.fromARGB(
+                                                        255, 255, 255, 255),
+                                                    child:
+                                                        _isProfileImageLoading
+                                                            ? const Center(
+                                                                child:
+                                                                    LoadingAnimation())
+                                                            : Image.network(
+                                                                errorBuilder:
+                                                                    (context,
+                                                                        error,
+                                                                        stackTrace) {
+                                                                  return SvgPicture
+                                                                      .asset(
+                                                                          'assets/svg/icons/dummy_person_large.svg');
+                                                                },
+                                                                user.image ??
+                                                                    '',
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                              ),
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                            Positioned(
-                                              bottom: 4,
-                                              right: 4,
-                                              child: InkWell(
-                                                onTap: () {
-                                                  _pickFile(
-                                                      imageType: 'profile');
-                                                },
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    boxShadow: [
-                                                      BoxShadow(
-                                                        color: Colors.black
-                                                            .withOpacity(0.2),
-                                                        offset:
-                                                            const Offset(2, 2),
-                                                        blurRadius: 4,
+                                              Positioned(
+                                                bottom: 4,
+                                                right: 4,
+                                                child: InkWell(
+                                                  onTap: () {
+                                                    _pickFile(
+                                                        imageType: 'profile');
+                                                  },
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color: Colors.black
+                                                              .withOpacity(0.2),
+                                                          offset: const Offset(
+                                                              2, 2),
+                                                          blurRadius: 4,
+                                                        ),
+                                                      ],
+                                                      shape: BoxShape.circle,
+                                                    ),
+                                                    child: const CircleAvatar(
+                                                      radius: 17,
+                                                      backgroundColor: kWhite,
+                                                      child: Icon(
+                                                        Icons.edit,
+                                                        color: kPrimaryColor,
+                                                        size: 16,
                                                       ),
-                                                    ],
-                                                    shape: BoxShape.circle,
-                                                  ),
-                                                  child: const CircleAvatar(
-                                                    radius: 17,
-                                                    backgroundColor: kWhite,
-                                                    child: Icon(
-                                                      Icons.edit,
-                                                      color: kPrimaryColor,
-                                                      size: 16,
                                                     ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                        if (state.hasError)
-                                          Padding(
-                                            padding:
-                                                const EdgeInsets.only(top: 15),
-                                            child: Text(
-                                              state.errorText ?? '',
-                                              style: const TextStyle(
-                                                  color: kPrimaryColor),
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ),
-                              Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 60, left: 16, bottom: 10),
-                                    child: Text('Personal Details',
-                                        style: kSubHeadingB.copyWith(
-                                            color: const Color(0xFF2C2829))),
-                                  ),
-                                ],
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 20, right: 20, top: 10, bottom: 10),
-                                child: Column(
-                                  children: [
-                                    CustomTextFormField(
-                                      title: 'Full Name',
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Please Enter Your Name';
-                                        }
-
-                                        // Regex to allow only basic English letters and spaces (no emojis or fancy unicode)
-                                        final regex =
-                                            RegExp(r'^[a-zA-Z0-9\s.,-]*$');
-
-                                        if (!regex.hasMatch(value)) {
-                                          return 'Only standard letters, numbers, and basic punctuation allowed';
-                                        }
-
-                                        return null;
-                                      },
-                                      textController: nameController,
-                                      labelText: 'Enter your Name',
-                                    ),
-                                    const SizedBox(height: 20.0),
-                                    GestureDetector(
-                                      onTap: () async {
-                                        FocusScope.of(context).unfocus();
-                                        DateTime initialDate = user.birthDate ??
-                                            DateTime(2000, 1, 1);
-                                        DateTime? picked = await showDatePicker(
-                                          context: context,
-                                          initialDate: initialDate,
-                                          firstDate: DateTime(1900),
-                                          lastDate: DateTime.now(),
-                                        );
-                                        if (picked != null) {
-                                          birthDateController.text =
-                                              '${picked.day.toString().padLeft(2, '0')}-${picked.month.toString().padLeft(2, '0')}-${picked.year}';
-                                          ref
-                                              .read(userProvider.notifier)
-                                              .updateBirthDate(picked);
-                                        }
-                                      },
-                                      child: AbsorbPointer(
-                                        child: CustomTextFormField(
-                                          title: 'Birthdate',
-                                          textController: birthDateController,
-                                          labelText: 'Select your Birthdate',
-                                          readOnly: true,
-                                          validator: (value) {
-                                            if (value == null ||
-                                                value.isEmpty) {
-                                              return 'Please select your birthdate';
-                                            }
-                                            return null;
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 20.0),
-                                    CustomTextFormField(
-                                        title: 'Description',
-                                        // validator: (value) {
-                                        //   if (value == null || value.isEmpty) {
-                                        //     return 'Please Enter Your Bio';
-                                        //   }
-                                        //   return null;
-                                        // },
-                                        textController: bioController,
-                                        labelText: 'Bio',
-                                        maxLines: 5),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  top: 20,
-                                  left: 20,
-                                ),
-                                child: Row(
-                                  children: [
-                                    Text('Contact',
-                                        style: kSubHeadingB.copyWith(
-                                            color: const Color(0xFF2C2829))),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 20.0),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
-                                child: CustomTextFormField(
-                                  title: 'Secondary Phone',
-                                  textController: secondaryPhoneController,
-                                  labelText: 'Enter your Secondary Phone',
-                                  textInputType: TextInputType.phone,
-                                  onChanged: () {
-                                    ref
-                                        .read(userProvider.notifier)
-                                        .updateSecondaryPhone(
-                                            secondaryPhoneController.text);
-                                  },
-                                ),
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  // ContactEditor(
-                                  //   value: user.secondaryPhone?.whatsapp ?? '',
-                                  //   icon: FontAwesomeIcons.whatsapp,
-                                  //   onSave: (whatsapp) {
-                                  //     ref
-                                  //         .read(userProvider.notifier)
-                                  //         .updateSecondaryPhone(
-                                  //           whatsapp: whatsapp,
-                                  //         );
-                                  //   },
-                                  //   label: 'Whatsapp',
-                                  // ),
-                                  // ContactEditor(
-                                  //     value: user.email ?? '',
-                                  //     icon: FontAwesomeIcons.at,
-                                  //     onSave: (email) {
-                                  //       ref
-                                  //           .read(userProvider.notifier)
-                                  //           .updateEmail(email);
-                                  //     },
-                                  //     label: 'Email'),
-                                  // ContactEditor(
-                                  //   value: user.secondaryPhone?.business ?? '',
-                                  //   icon: FontAwesomeIcons.b,
-                                  //   onSave: (business) {
-                                  //     ref
-                                  //         .read(userProvider.notifier)
-                                  //         .updateSecondaryPhone(
-                                  //           business: business,
-                                  //         );
-                                  //   },
-                                  //   label: 'Whatsapp Business',
-                                  // ),
-                                  // ContactEditor(
-                                  //     value: user.address ?? '',
-                                  //     icon: FontAwesomeIcons.locationDot,
-                                  //     onSave: (address) {
-                                  //       ref
-                                  //           .read(userProvider.notifier)
-                                  //           .updateAddress(address);
-                                  //     },
-                                  //     label: 'Address'),
-                                ],
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
-                                child: CustomTextFormField(
-                                  title: 'Address',
-                                  textController: addressController,
-                                  labelText: 'Enter your Address',
-                                  onChanged: () {
-                                    ref
-                                        .read(userProvider.notifier)
-                                        .updateAddress(addressController.text);
-                                  },
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 20, left: 20, bottom: 15),
-                                child: Row(
-                                  children: [
-                                    Text('Social Media',
-                                        style: kSubHeadingB.copyWith(
-                                            color: const Color(0xFF2C2829))),
-                                  ],
-                                ),
-                              ),
-
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  SocialMediaEditor(
-                                    icon: FontAwesomeIcons.instagram,
-                                    socialMedias: user.social ?? [],
-                                    platform: 'instagram',
-                                    onSave: (socialMedias, platform, newUrl) {
-                                      ref
-                                          .read(userProvider.notifier)
-                                          .updateSocialMedia(
-                                              socialMedias, platform, newUrl);
-                                    },
-                                  ),
-                                  SocialMediaEditor(
-                                    icon: FontAwesomeIcons.linkedinIn,
-                                    socialMedias: user.social ?? [],
-                                    platform: 'linkedin',
-                                    onSave: (socialMedias, platform, newUrl) {
-                                      ref
-                                          .read(userProvider.notifier)
-                                          .updateSocialMedia(
-                                              socialMedias, platform, newUrl);
-                                    },
-                                  ),
-                                  SocialMediaEditor(
-                                    icon: FontAwesomeIcons.xTwitter,
-                                    socialMedias: user.social ?? [],
-                                    platform: 'twitter',
-                                    onSave: (socialMedias, platform, newUrl) {
-                                      ref
-                                          .read(userProvider.notifier)
-                                          .updateSocialMedia(
-                                              socialMedias, platform, newUrl);
-                                    },
-                                  ),
-                                  SocialMediaEditor(
-                                    icon: FontAwesomeIcons.facebookF,
-                                    socialMedias: user.social ?? [],
-                                    platform: 'facebook',
-                                    onSave: (socialMedias, platform, newUrl) {
-                                      ref
-                                          .read(userProvider.notifier)
-                                          .updateSocialMedia(
-                                              socialMedias, platform, newUrl);
-                                    },
-                                  ),
-                                  // SocialMediaEditor(
-                                  //   icon: FontAwesomeIcons.instagram,
-                                  //   socialMedias: user.social ?? [],
-                                  //   platform: 'Instagram',
-                                  //   onSave: (socialMedias, platform, newUrl) {
-                                  //     ref
-                                  //         .read(userProvider.notifier)
-                                  //         .updateSocialMedia(
-                                  //             socialMedias, platform, newUrl);
-                                  //   },
-                                  // ),
-                                ],
-                              ),
-                              // Insert Other Family section here
-                              otherFamilySection,
-                              // Show relationships section here
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 20, right: 20, top: 10, bottom: 10),
-                                child: relationshipsSection,
-                              ),
-                              // Place relation section here
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 20, right: 20, top: 10, bottom: 10),
-                                child: relationSection,
-                              ),
-
-                              // Padding(
-                              //   padding:
-                              //       const EdgeInsets.only(left: 20, right: 20),
-                              //   child: Row(
-                              //     mainAxisAlignment:
-                              //         MainAxisAlignment.spaceBetween,
-                              //     children: [
-                              //       const Text(
-                              //         'Social Media',
-                              //         style: TextStyle(
-                              //             fontSize: 16,
-                              //             fontWeight: FontWeight.w600),
-                              //       ),
-                              //       // CustomSwitch(
-                              //       //   value:
-                              //       //       ref.watch(isSocialDetailsVisibleProvider),
-                              //       //   onChanged: (bool value) {
-                              //       //     setState(() {
-                              //       //       ref
-                              //       //           .read(isSocialDetailsVisibleProvider
-                              //       //               .notifier)
-                              //       //           .state = value;
-                              //       //     });
-                              //       //   },
-                              //       // ),
-                              //     ],
-                              //   ),
-                              // ),
-                              // // if (isSocialDetailsVisible)
-                              // Padding(
-                              //   padding: const EdgeInsets.only(
-                              //       left: 20, right: 20, top: 20, bottom: 10),
-                              //   child: CustomTextFormField(
-                              //     textController: igController,
-                              //     labelText: 'Enter Instagram',
-                              //     prefixIcon: SvgPicture.asset(
-                              //         'assets/svg/icons/instagram.svg',
-                              //         color: kPrimaryColor),
-                              //   ),
-                              // ),
-                              // // if (isSocialDetailsVisible)
-                              // Padding(
-                              //   padding: const EdgeInsets.only(
-                              //       left: 20, right: 20, top: 20, bottom: 10),
-                              //   child: CustomTextFormField(
-                              //     textController: linkedinController,
-                              //     labelText: 'Enter Linkedin',
-                              //     prefixIcon: SvgPicture.asset(
-                              //         'assets/svg/icons/linkedin.svg',
-                              //         color: kPrimaryColor),
-                              //   ),
-                              // ),
-                              // // if (isSocialDetailsVisible)
-                              // Padding(
-                              //   padding: const EdgeInsets.only(
-                              //       left: 20, right: 20, top: 20, bottom: 10),
-                              //   child: CustomTextFormField(
-                              //     textController: twtitterController,
-                              //     labelText: 'Enter Twitter',
-                              //     prefixIcon: SvgPicture.asset(
-                              //         'assets/svg/icons/twitter.svg',
-                              //         color: kPrimaryColor),
-                              //   ),
-                              // ),
-                              // // if (isSocialDetailsVisible)
-                              // Padding(
-                              //   padding: const EdgeInsets.only(
-                              //       left: 20, right: 20, top: 20, bottom: 10),
-                              //   child: CustomTextFormField(
-                              //     textController: facebookController,
-                              //     labelText: 'Enter Facebook',
-                              //     prefixIcon: const Icon(
-                              //       Icons.facebook,
-                              //       color: kPrimaryColor,
-                              //       size: 28,
-                              //     ),
-                              //   ),
-                              // ),
-                              // // if (isSocialDetailsVisible)
-                              // //   const Padding(
-                              // //     padding: EdgeInsets.only(right: 20, bottom: 50),
-                              // //     child: Row(
-                              // //       mainAxisAlignment: MainAxisAlignment.end,
-                              // //       children: [
-                              // //         Text(
-                              // //           'Add more',
-                              // //           style: TextStyle(
-                              // //               color: kPrimaryColor
-                              // //               fontWeight: FontWeight.w600,
-                              // //               fontSize: 15),
-                              // //         ),
-                              // //         Icon(
-                              // //           Icons.add,
-                              // //           color: kPrimaryColor
-                              // //           size: 18,
-                              // //         )
-                              // //       ],
-                              // //     ),
-                              // //   ),
-                              // ),
-
-                              const Padding(
-                                padding: EdgeInsets.all(20),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Website',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    // CustomSwitch(
-                                    //   value: ref
-                                    //       .watch(isWebsiteDetailsVisibleProvider),
-                                    //   onChanged: (bool value) {
-                                    //     setState(() {
-                                    //       ref
-                                    //           .read(isWebsiteDetailsVisibleProvider
-                                    //               .notifier)
-                                    //           .state = value;
-                                    //     });
-                                    //   },
-                                    // ),
-                                  ],
-                                ),
-                              ),
-                              ListView.builder(
-                                shrinkWrap:
-                                    true, // Let ListView take up only as much space as it needs
-                                physics:
-                                    const NeverScrollableScrollPhysics(), // Disable ListView's internal scrolling
-                                itemCount: user.website?.length,
-                                itemBuilder: (context, index) {
-                                  log('Websites count: ${user.website?.length}');
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 4.0), // Space between items
-                                    child: customWebsiteCard(
-                                        onEdit: () => _editWebsite(index),
-                                        onRemove: () => _removeWebsite(index),
-                                        website: user.website?[index]),
-                                  );
-                                },
-                              ),
-                              // if (isWebsiteDetailsVisible)
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 20, right: 20, bottom: 30),
-                                child: customButton(
-                                    label: 'Add',
-                                    onPressed: () {
-                                      showWebsiteSheet(
-                                          addWebsite: _addNewWebsite,
-                                          textController1:
-                                              websiteNameController,
-                                          textController2:
-                                              websiteLinkController,
-                                          fieldName: 'Add Website',
-                                          title: 'Add Website Link',
-                                          context: context);
-                                    },
-                                    sideColor: kPrimaryColor,
-                                    labelColor: kPrimaryColor,
-                                    buttonColor: Colors.transparent),
-                              ),
-                              const Padding(
-                                padding: EdgeInsets.all(20),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Add Video Link',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    // CustomSwitch(
-                                    //   value:
-                                    //       ref.watch(isVideoDetailsVisibleProvider),
-                                    //   onChanged: (bool value) {
-                                    //     setState(() {
-                                    //       ref
-                                    //           .read(isVideoDetailsVisibleProvider
-                                    //               .notifier)
-                                    //           .state = value;
-                                    //     });
-                                    //   },
-                                    // ),
-                                  ],
-                                ),
-                              ),
-
-                              ListView.builder(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: videos.length,
-                                itemBuilder: (context, index) {
-                                  log('video count: ${videos.length}');
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 4.0), // Space between items
-                                    child: customVideoCard(
-                                        onEdit: () => _editVideo(index),
-                                        onRemove: () => _removeVideo(index),
-                                        video: videos[index]),
-                                  );
-                                },
-                              ),
-                              // if (isVideoDetailsVisible)
-                              // Padding(
-                              //   padding: const EdgeInsets.only(
-                              //       left: 20, right: 20, bottom: 70),
-                              //   child: Row(
-                              //     children: [
-                              //       Expanded(
-                              //         // Ensures the CustomTextFormField takes the available space
-                              //         child: CustomTextFormField(
-                              //           // onTap: () {
-                              //           //   // showVideoLinkSheet(
-                              //           //   //     addVideo: _addNewVideo,
-                              //           //   //     textController1: videoNameController,
-                              //           //   //     textController2: videoLinkController,
-                              //           //   //     fieldName: 'Add Youtube Link',
-                              //           //   //     title: 'Add Video Link',
-                              //           //   //     context: context);
-                              //           // },
-                              //           textController: videoLinkController,
-                              //           readOnly: true,
-                              //           labelText: 'Enter Video Link',
-                              //         ),
-                              //       ),
-                              //     ],
-                              //   ),
-                              // ),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 20, right: 20, bottom: 30),
-                                child: customButton(
-                                    label: 'Add',
-                                    onPressed: () {
-                                      showVideoLinkSheet(
-                                          addVideo: _addNewVideo,
-                                          textController1: videoNameController,
-                                          textController2: videoLinkController,
-                                          fieldName: 'Add Youtube Link',
-                                          title: 'Add Video Link',
-                                          context: context);
-                                    },
-                                    sideColor: kPrimaryColor,
-                                    labelColor: kPrimaryColor,
-                                    buttonColor: Colors.transparent),
-                              ),
-                              const Padding(
-                                padding: EdgeInsets.only(
-                                    left: 20, right: 20, top: 10, bottom: 20),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Enter Awards',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    // CustomSwitch(
-                                    //   value:
-                                    //       ref.watch(isAwardsDetailsVisibleProvider),
-                                    //   onChanged: (bool value) {
-                                    //     ref
-                                    //         .read(isAwardsDetailsVisibleProvider
-                                    //             .notifier)
-                                    //         .state = value;
-
-                                    //     // if (value == false) {
-                                    //     //   setState(
-                                    //     //     () {
-                                    //     //       awards = [];
-                                    //     //     },
-                                    //     //   );
-                                    //     // }
-                                    //   },
-                                    // ),
-                                  ],
-                                ),
-                              ),
-                              // if (isAwardsDetailsVisible)
-                              Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: GridView.builder(
-                                  shrinkWrap:
-                                      true, // Let GridView take up only as much space as it needs
-                                  physics:
-                                      const NeverScrollableScrollPhysics(), // Disable GridView's internal scrolling
-                                  gridDelegate:
-                                      const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2, // Number of columns
-                                    crossAxisSpacing:
-                                        8.0, // Space between columns
-                                    mainAxisSpacing: 8.0, // Space between rows
-                                  ),
-                                  itemCount: awards.length + 1,
-                                  itemBuilder: (context, index) {
-                                    if (index < awards.length) {
-                                      // Regular award cards
-                                      return AwardCard(
-                                        onEdit: () => _onAwardEdit(index),
-                                        award: awards[index],
-                                        onRemove: () => _removeAward(index),
-                                      );
-                                    } else {
-                                      return PermissionWrappers.forAddReward(
-                                        onTap: () {
-                                          FocusManager.instance.primaryFocus
-                                              ?.unfocus();
-                                          _openModalSheet(sheet: 'award');
-                                        },
-                                        child: Container(
-                                          margin: const EdgeInsets.symmetric(
-                                              vertical: 8.0, horizontal: 10.0),
-                                          decoration: BoxDecoration(
-                                            border:
-                                                Border.all(color: kGreyLight),
-                                            color: kWhite,
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              const Icon(
-                                                FontAwesomeIcons.plus,
-                                                color: kPrimaryColor,
-                                                size: 40,
-                                              ),
-                                              const SizedBox(height: 10),
-                                              Text(
-                                                'Add award',
-                                                style: kBodyTitleM.copyWith(
-                                                    color: kPrimaryColor),
-                                              ),
                                             ],
                                           ),
-                                        ),
-                                      );
-                                    }
+                                          if (state.hasError)
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 15),
+                                              child: Text(
+                                                state.errorText ?? '',
+                                                style: const TextStyle(
+                                                    color: kPrimaryColor),
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                    );
                                   },
                                 ),
-                              ),
-                              const Padding(
-                                padding: EdgeInsets.only(
-                                    left: 20, right: 20, top: 10, bottom: 20),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                Row(
                                   children: [
-                                    Text(
-                                      'Enter Certificates',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 60, left: 16, bottom: 10),
+                                      child: Text('Personal Details',
+                                          style: kSubHeadingB.copyWith(
+                                              color: const Color(0xFF2C2829))),
                                     ),
-                                    // CustomSwitch(
-                                    //   value: ref.watch(
-                                    //       isCertificateDetailsVisibleProvider),
-                                    //   onChanged: (bool value) {
-                                    //     setState(() {
+                                  ],
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 20, right: 20, top: 10, bottom: 10),
+                                  child: Column(
+                                    children: [
+                                      CustomTextFormField(
+                                        title: 'Full Name',
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Please Enter Your Name';
+                                          }
+
+                                          // Regex to allow only basic English letters and spaces (no emojis or fancy unicode)
+                                          final regex =
+                                              RegExp(r'^[a-zA-Z0-9\s.,-]*$');
+
+                                          if (!regex.hasMatch(value)) {
+                                            return 'Only standard letters, numbers, and basic punctuation allowed';
+                                          }
+
+                                          return null;
+                                        },
+                                        textController: nameController,
+                                        labelText: 'Enter your Name',
+                                      ),
+                                      const SizedBox(height: 20.0),
+                                      GestureDetector(
+                                        onTap: () async {
+                                          FocusScope.of(context).unfocus();
+                                          DateTime initialDate =
+                                              user.birthDate ??
+                                                  DateTime(2000, 1, 1);
+                                          DateTime? picked =
+                                              await showDatePicker(
+                                            context: context,
+                                            initialDate: initialDate,
+                                            firstDate: DateTime(1900),
+                                            lastDate: DateTime.now(),
+                                          );
+                                          if (picked != null) {
+                                            birthDateController.text =
+                                                '${picked.day.toString().padLeft(2, '0')}-${picked.month.toString().padLeft(2, '0')}-${picked.year}';
+                                            ref
+                                                .read(userProvider.notifier)
+                                                .updateBirthDate(picked);
+                                          }
+                                        },
+                                        child: AbsorbPointer(
+                                          child: CustomTextFormField(
+                                            title: 'Birthdate',
+                                            textController: birthDateController,
+                                            labelText: 'Select your Birthdate',
+                                            readOnly: true,
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return 'Please select your birthdate';
+                                              }
+                                              return null;
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 20.0),
+                                      CustomTextFormField(
+                                          title: 'Description',
+                                          // validator: (value) {
+                                          //   if (value == null || value.isEmpty) {
+                                          //     return 'Please Enter Your Bio';
+                                          //   }
+                                          //   return null;
+                                          // },
+                                          textController: bioController,
+                                          labelText: 'Bio',
+                                          maxLines: 5),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 20,
+                                    left: 20,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Text('Contact',
+                                          style: kSubHeadingB.copyWith(
+                                              color: const Color(0xFF2C2829))),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 20.0),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 10),
+                                  child: CustomTextFormField(
+                                    title: 'Secondary Phone',
+                                    textController: secondaryPhoneController,
+                                    labelText: 'Enter your Secondary Phone',
+                                    textInputType: TextInputType.phone,
+                                    onChanged: () {
+                                      ref
+                                          .read(userProvider.notifier)
+                                          .updateSecondaryPhone(
+                                              secondaryPhoneController.text);
+                                    },
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    // ContactEditor(
+                                    //   value: user.secondaryPhone?.whatsapp ?? '',
+                                    //   icon: FontAwesomeIcons.whatsapp,
+                                    //   onSave: (whatsapp) {
+                                    //     ref
+                                    //         .read(userProvider.notifier)
+                                    //         .updateSecondaryPhone(
+                                    //           whatsapp: whatsapp,
+                                    //         );
+                                    //   },
+                                    //   label: 'Whatsapp',
+                                    // ),
+                                    // ContactEditor(
+                                    //     value: user.email ?? '',
+                                    //     icon: FontAwesomeIcons.at,
+                                    //     onSave: (email) {
                                     //       ref
-                                    //           .read(
-                                    //               isCertificateDetailsVisibleProvider
-                                    //                   .notifier)
-                                    //           .state = value;
-                                    //     });
+                                    //           .read(userProvider.notifier)
+                                    //           .updateEmail(email);
+                                    //     },
+                                    //     label: 'Email'),
+                                    // ContactEditor(
+                                    //   value: user.secondaryPhone?.business ?? '',
+                                    //   icon: FontAwesomeIcons.b,
+                                    //   onSave: (business) {
+                                    //     ref
+                                    //         .read(userProvider.notifier)
+                                    //         .updateSecondaryPhone(
+                                    //           business: business,
+                                    //         );
+                                    //   },
+                                    //   label: 'Whatsapp Business',
+                                    // ),
+                                    // ContactEditor(
+                                    //     value: user.address ?? '',
+                                    //     icon: FontAwesomeIcons.locationDot,
+                                    //     onSave: (address) {
+                                    //       ref
+                                    //           .read(userProvider.notifier)
+                                    //           .updateAddress(address);
+                                    //     },
+                                    //     label: 'Address'),
+                                  ],
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 10),
+                                  child: CustomTextFormField(
+                                    title: 'Address',
+                                    textController: addressController,
+                                    labelText: 'Enter your Address',
+                                    onChanged: () {
+                                      ref
+                                          .read(userProvider.notifier)
+                                          .updateAddress(
+                                              addressController.text);
+                                    },
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 20, left: 20, bottom: 15),
+                                  child: Row(
+                                    children: [
+                                      Text('Social Media',
+                                          style: kSubHeadingB.copyWith(
+                                              color: const Color(0xFF2C2829))),
+                                    ],
+                                  ),
+                                ),
+
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    SocialMediaEditor(
+                                      icon: FontAwesomeIcons.instagram,
+                                      socialMedias: user.social ?? [],
+                                      platform: 'instagram',
+                                      onSave: (socialMedias, platform, newUrl) {
+                                        ref
+                                            .read(userProvider.notifier)
+                                            .updateSocialMedia(
+                                                socialMedias, platform, newUrl);
+                                      },
+                                    ),
+                                    SocialMediaEditor(
+                                      icon: FontAwesomeIcons.linkedinIn,
+                                      socialMedias: user.social ?? [],
+                                      platform: 'linkedin',
+                                      onSave: (socialMedias, platform, newUrl) {
+                                        ref
+                                            .read(userProvider.notifier)
+                                            .updateSocialMedia(
+                                                socialMedias, platform, newUrl);
+                                      },
+                                    ),
+                                    SocialMediaEditor(
+                                      icon: FontAwesomeIcons.xTwitter,
+                                      socialMedias: user.social ?? [],
+                                      platform: 'twitter',
+                                      onSave: (socialMedias, platform, newUrl) {
+                                        ref
+                                            .read(userProvider.notifier)
+                                            .updateSocialMedia(
+                                                socialMedias, platform, newUrl);
+                                      },
+                                    ),
+                                    SocialMediaEditor(
+                                      icon: FontAwesomeIcons.facebookF,
+                                      socialMedias: user.social ?? [],
+                                      platform: 'facebook',
+                                      onSave: (socialMedias, platform, newUrl) {
+                                        ref
+                                            .read(userProvider.notifier)
+                                            .updateSocialMedia(
+                                                socialMedias, platform, newUrl);
+                                      },
+                                    ),
+                                    // SocialMediaEditor(
+                                    //   icon: FontAwesomeIcons.instagram,
+                                    //   socialMedias: user.social ?? [],
+                                    //   platform: 'Instagram',
+                                    //   onSave: (socialMedias, platform, newUrl) {
+                                    //     ref
+                                    //         .read(userProvider.notifier)
+                                    //         .updateSocialMedia(
+                                    //             socialMedias, platform, newUrl);
                                     //   },
                                     // ),
                                   ],
                                 ),
-                              ),
-                              if (certificates.isNotEmpty)
+                                // Insert Other Family section here
+                                otherFamilySection,
+                                // Show relationships section here
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 20, right: 20, top: 10, bottom: 10),
+                                  child: relationshipsSection,
+                                ),
+                                // Place relation section here
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 20, right: 20, top: 10, bottom: 10),
+                                  child: relationSection,
+                                ),
+
+                                // Padding(
+                                //   padding:
+                                //       const EdgeInsets.only(left: 20, right: 20),
+                                //   child: Row(
+                                //     mainAxisAlignment:
+                                //         MainAxisAlignment.spaceBetween,
+                                //     children: [
+                                //       const Text(
+                                //         'Social Media',
+                                //         style: TextStyle(
+                                //             fontSize: 16,
+                                //             fontWeight: FontWeight.w600),
+                                //       ),
+                                //       // CustomSwitch(
+                                //       //   value:
+                                //       //       ref.watch(isSocialDetailsVisibleProvider),
+                                //       //   onChanged: (bool value) {
+                                //       //     setState(() {
+                                //       //       ref
+                                //       //           .read(isSocialDetailsVisibleProvider
+                                //       //               .notifier)
+                                //       //           .state = value;
+                                //       //     });
+                                //       //   },
+                                //       // ),
+                                //     ],
+                                //   ),
+                                // ),
+                                // // if (isSocialDetailsVisible)
+                                // Padding(
+                                //   padding: const EdgeInsets.only(
+                                //       left: 20, right: 20, top: 20, bottom: 10),
+                                //   child: CustomTextFormField(
+                                //     textController: igController,
+                                //     labelText: 'Enter Instagram',
+                                //     prefixIcon: SvgPicture.asset(
+                                //         'assets/svg/icons/instagram.svg',
+                                //         color: kPrimaryColor),
+                                //   ),
+                                // ),
+                                // // if (isSocialDetailsVisible)
+                                // Padding(
+                                //   padding: const EdgeInsets.only(
+                                //       left: 20, right: 20, top: 20, bottom: 10),
+                                //   child: CustomTextFormField(
+                                //     textController: linkedinController,
+                                //     labelText: 'Enter Linkedin',
+                                //     prefixIcon: SvgPicture.asset(
+                                //         'assets/svg/icons/linkedin.svg',
+                                //         color: kPrimaryColor),
+                                //   ),
+                                // ),
+                                // // if (isSocialDetailsVisible)
+                                // Padding(
+                                //   padding: const EdgeInsets.only(
+                                //       left: 20, right: 20, top: 20, bottom: 10),
+                                //   child: CustomTextFormField(
+                                //     textController: twtitterController,
+                                //     labelText: 'Enter Twitter',
+                                //     prefixIcon: SvgPicture.asset(
+                                //         'assets/svg/icons/twitter.svg',
+                                //         color: kPrimaryColor),
+                                //   ),
+                                // ),
+                                // // if (isSocialDetailsVisible)
+                                // Padding(
+                                //   padding: const EdgeInsets.only(
+                                //       left: 20, right: 20, top: 20, bottom: 10),
+                                //   child: CustomTextFormField(
+                                //     textController: facebookController,
+                                //     labelText: 'Enter Facebook',
+                                //     prefixIcon: const Icon(
+                                //       Icons.facebook,
+                                //       color: kPrimaryColor,
+                                //       size: 28,
+                                //     ),
+                                //   ),
+                                // ),
+                                // // if (isSocialDetailsVisible)
+                                // //   const Padding(
+                                // //     padding: EdgeInsets.only(right: 20, bottom: 50),
+                                // //     child: Row(
+                                // //       mainAxisAlignment: MainAxisAlignment.end,
+                                // //       children: [
+                                // //         Text(
+                                // //           'Add more',
+                                // //           style: TextStyle(
+                                // //               color: kPrimaryColor
+                                // //               fontWeight: FontWeight.w600,
+                                // //               fontSize: 15),
+                                // //         ),
+                                // //         Icon(
+                                // //           Icons.add,
+                                // //           color: kPrimaryColor
+                                // //           size: 18,
+                                // //         )
+                                // //       ],
+                                // //     ),
+                                // //   ),
+                                // ),
+
+                                const Padding(
+                                  padding: EdgeInsets.all(20),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Website',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                      // CustomSwitch(
+                                      //   value: ref
+                                      //       .watch(isWebsiteDetailsVisibleProvider),
+                                      //   onChanged: (bool value) {
+                                      //     setState(() {
+                                      //       ref
+                                      //           .read(isWebsiteDetailsVisibleProvider
+                                      //               .notifier)
+                                      //           .state = value;
+                                      //     });
+                                      //   },
+                                      // ),
+                                    ],
+                                  ),
+                                ),
                                 ListView.builder(
                                   shrinkWrap:
                                       true, // Let ListView take up only as much space as it needs
                                   physics:
                                       const NeverScrollableScrollPhysics(), // Disable ListView's internal scrolling
-                                  itemCount: certificates.length,
+                                  itemCount: user.website?.length,
                                   itemBuilder: (context, index) {
+                                    log('Websites count: ${user.website?.length}');
                                     return Padding(
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 4.0), // Space between items
-                                      child: CertificateCard(
-                                        name: certificates[index].caption ?? '',
-                                        url: certificates[index].url ?? '',
-                                        onEdit: () => _editCertificate(index),
-                                        onRemove: () =>
-                                            _removeCertificate(index),
-                                      ),
+                                      child: customWebsiteCard(
+                                          onEdit: () => _editWebsite(index),
+                                          onRemove: () => _removeWebsite(index),
+                                          website: user.website?[index]),
                                     );
                                   },
                                 ),
-                              // if (isCertificateDetailsVisible)
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 25, right: 25, bottom: 60),
-                                child: PermissionWrappers.forAddCertificate(
-                                  onTap: () {
-                                    FocusManager.instance.primaryFocus
-                                        ?.unfocus();
-                                    _openModalSheet(
-                                      sheet: 'certificate',
+                                // if (isWebsiteDetailsVisible)
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 20, right: 20, bottom: 30),
+                                  child: customButton(
+                                      label: 'Add',
+                                      onPressed: () {
+                                        showWebsiteSheet(
+                                            addWebsite: _addNewWebsite,
+                                            textController1:
+                                                websiteNameController,
+                                            textController2:
+                                                websiteLinkController,
+                                            fieldName: 'Add Website',
+                                            title: 'Add Website Link',
+                                            context: context);
+                                      },
+                                      sideColor: kPrimaryColor,
+                                      labelColor: kPrimaryColor,
+                                      buttonColor: Colors.transparent),
+                                ),
+                                const Padding(
+                                  padding: EdgeInsets.all(20),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Add Video Link',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                      // CustomSwitch(
+                                      //   value:
+                                      //       ref.watch(isVideoDetailsVisibleProvider),
+                                      //   onChanged: (bool value) {
+                                      //     setState(() {
+                                      //       ref
+                                      //           .read(isVideoDetailsVisibleProvider
+                                      //               .notifier)
+                                      //           .state = value;
+                                      //     });
+                                      //   },
+                                      // ),
+                                    ],
+                                  ),
+                                ),
+
+                                ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: videos.length,
+                                  itemBuilder: (context, index) {
+                                    log('video count: ${videos.length}');
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 4.0), // Space between items
+                                      child: customVideoCard(
+                                          onEdit: () => _editVideo(index),
+                                          onRemove: () => _removeVideo(index),
+                                          video: videos[index]),
                                     );
                                   },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 25, right: 25, bottom: 60),
-                                    child: Container(
-                                      width: 170,
-                                      height: 170,
-                                      decoration: BoxDecoration(
-                                          border: Border.all(color: kGreyLight),
-                                          color: kWhite,
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
-                                      child: Center(
-                                        child: Column(
-                                          children: [
-                                            const SizedBox(
-                                              height: 40,
+                                ),
+                                // if (isVideoDetailsVisible)
+                                // Padding(
+                                //   padding: const EdgeInsets.only(
+                                //       left: 20, right: 20, bottom: 70),
+                                //   child: Row(
+                                //     children: [
+                                //       Expanded(
+                                //         // Ensures the CustomTextFormField takes the available space
+                                //         child: CustomTextFormField(
+                                //           // onTap: () {
+                                //           //   // showVideoLinkSheet(
+                                //           //   //     addVideo: _addNewVideo,
+                                //           //   //     textController1: videoNameController,
+                                //           //   //     textController2: videoLinkController,
+                                //           //   //     fieldName: 'Add Youtube Link',
+                                //           //   //     title: 'Add Video Link',
+                                //           //   //     context: context);
+                                //           // },
+                                //           textController: videoLinkController,
+                                //           readOnly: true,
+                                //           labelText: 'Enter Video Link',
+                                //         ),
+                                //       ),
+                                //     ],
+                                //   ),
+                                // ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 20, right: 20, bottom: 30),
+                                  child: customButton(
+                                      label: 'Add',
+                                      onPressed: () {
+                                        showVideoLinkSheet(
+                                            addVideo: _addNewVideo,
+                                            textController1:
+                                                videoNameController,
+                                            textController2:
+                                                videoLinkController,
+                                            fieldName: 'Add Youtube Link',
+                                            title: 'Add Video Link',
+                                            context: context);
+                                      },
+                                      sideColor: kPrimaryColor,
+                                      labelColor: kPrimaryColor,
+                                      buttonColor: Colors.transparent),
+                                ),
+                                const Padding(
+                                  padding: EdgeInsets.only(
+                                      left: 20, right: 20, top: 10, bottom: 20),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Enter Awards',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                      // CustomSwitch(
+                                      //   value:
+                                      //       ref.watch(isAwardsDetailsVisibleProvider),
+                                      //   onChanged: (bool value) {
+                                      //     ref
+                                      //         .read(isAwardsDetailsVisibleProvider
+                                      //             .notifier)
+                                      //         .state = value;
+
+                                      //     // if (value == false) {
+                                      //     //   setState(
+                                      //     //     () {
+                                      //     //       awards = [];
+                                      //     //     },
+                                      //     //   );
+                                      //     // }
+                                      //   },
+                                      // ),
+                                    ],
+                                  ),
+                                ),
+                                // if (isAwardsDetailsVisible)
+                                Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: GridView.builder(
+                                    shrinkWrap:
+                                        true, // Let GridView take up only as much space as it needs
+                                    physics:
+                                        const NeverScrollableScrollPhysics(), // Disable GridView's internal scrolling
+                                    gridDelegate:
+                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2, // Number of columns
+                                      crossAxisSpacing:
+                                          8.0, // Space between columns
+                                      mainAxisSpacing:
+                                          8.0, // Space between rows
+                                    ),
+                                    itemCount: awards.length + 1,
+                                    itemBuilder: (context, index) {
+                                      if (index < awards.length) {
+                                        // Regular award cards
+                                        return AwardCard(
+                                          onEdit: () => _onAwardEdit(index),
+                                          award: awards[index],
+                                          onRemove: () => _removeAward(index),
+                                        );
+                                      } else {
+                                        return PermissionWrappers.forAddReward(
+                                          onTap: () {
+                                            FocusManager.instance.primaryFocus
+                                                ?.unfocus();
+                                            _openModalSheet(sheet: 'award');
+                                          },
+                                          child: Container(
+                                            margin: const EdgeInsets.symmetric(
+                                                vertical: 8.0,
+                                                horizontal: 10.0),
+                                            decoration: BoxDecoration(
+                                              border:
+                                                  Border.all(color: kGreyLight),
+                                              color: kWhite,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
                                             ),
-                                            const Icon(
-                                              FontAwesomeIcons.plus,
-                                              color: kPrimaryColor,
-                                              size: 60,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const Icon(
+                                                  FontAwesomeIcons.plus,
+                                                  color: kPrimaryColor,
+                                                  size: 40,
+                                                ),
+                                                const SizedBox(height: 10),
+                                                Text(
+                                                  'Add award',
+                                                  style: kBodyTitleM.copyWith(
+                                                      color: kPrimaryColor),
+                                                ),
+                                              ],
                                             ),
-                                            const SizedBox(
-                                              height: 30,
-                                            ),
-                                            Text('Add certificate',
-                                                style: kBodyTitleM.copyWith(
-                                                    color: kPrimaryColor)),
-                                            // if (subscriptionType != 'premium')
-                                            //   Stack(
-                                            //     alignment: Alignment.center,
-                                            //     children: [
-                                            //       Container(
-                                            //         color:
-                                            //             const Color(0xFFF2F2F2),
-                                            //         child: Column(
-                                            //           children: [
-                                            //             const SizedBox(
-                                            //               height: 30,
-                                            //             ),
-                                            //             Padding(
-                                            //               padding:
-                                            //                   const EdgeInsets
-                                            //                       .only(
-                                            //                       left: 20,
-                                            //                       right: 20),
-                                            //               child: Row(
-                                            //                 mainAxisAlignment:
-                                            //                     MainAxisAlignment
-                                            //                         .spaceBetween,
-                                            //                 children: [
-                                            //                   const Text(
-                                            //                     'Social Media',
-                                            //                     style: TextStyle(
-                                            //                         color: Colors
-                                            //                             .grey,
-                                            //                         fontSize:
-                                            //                             16,
-                                            //                         fontWeight:
-                                            //                             FontWeight
-                                            //                                 .w600),
-                                            //                   ),
-                                            //                   CustomSwitch(
-                                            //                     value: false,
-                                            //                     onChanged: (bool
-                                            //                         value) async {},
-                                            //                   ),
-                                            //                 ],
-                                            //               ),
-                                            //             ),
-                                            //             Padding(
-                                            //               padding:
-                                            //                   const EdgeInsets
-                                            //                       .only(
-                                            //                       left: 20,
-                                            //                       right: 20,
-                                            //                       top: 20),
-                                            //               child: Row(
-                                            //                 mainAxisAlignment:
-                                            //                     MainAxisAlignment
-                                            //                         .spaceBetween,
-                                            //                 children: [
-                                            //                   const Text(
-                                            //                     'Add Website',
-                                            //                     style: TextStyle(
-                                            //                         color: Colors
-                                            //                             .grey,
-                                            //                         fontSize:
-                                            //                             16,
-                                            //                         fontWeight:
-                                            //                             FontWeight
-                                            //                                 .w600),
-                                            //                   ),
-                                            //                   CustomSwitch(
-                                            //                     value: false,
-                                            //                     onChanged: (bool
-                                            //                         value) async {},
-                                            //                   ),
-                                            //                 ],
-                                            //               ),
-                                            //             ),
-                                            //             Padding(
-                                            //               padding:
-                                            //                   const EdgeInsets
-                                            //                       .only(
-                                            //                       left: 20,
-                                            //                       right: 20,
-                                            //                       top: 20),
-                                            //               child: Row(
-                                            //                 mainAxisAlignment:
-                                            //                     MainAxisAlignment
-                                            //                         .spaceBetween,
-                                            //                 children: [
-                                            //                   const Text(
-                                            //                     'Add Video Link',
-                                            //                     style: TextStyle(
-                                            //                         color: Colors
-                                            //                             .grey,
-                                            //                         fontSize:
-                                            //                             16,
-                                            //                         fontWeight:
-                                            //                             FontWeight
-                                            //                                 .w600),
-                                            //                   ),
-                                            //                   CustomSwitch(
-                                            //                     value: false,
-                                            //                     onChanged: (bool
-                                            //                         value) async {},
-                                            //                   ),
-                                            //                 ],
-                                            //               ),
-                                            //             ),
-                                            //             Padding(
-                                            //               padding:
-                                            //                   const EdgeInsets
-                                            //                       .only(
-                                            //                       left: 20,
-                                            //                       right: 20,
-                                            //                       top: 20),
-                                            //               child: Row(
-                                            //                 mainAxisAlignment:
-                                            //                     MainAxisAlignment
-                                            //                         .spaceBetween,
-                                            //                 children: [
-                                            //                   const Text(
-                                            //                     'Enter Awards',
-                                            //                     style: TextStyle(
-                                            //                         color: Colors
-                                            //                             .grey,
-                                            //                         fontSize:
-                                            //                             16,
-                                            //                         fontWeight:
-                                            //                             FontWeight
-                                            //                                 .w600),
-                                            //                   ),
-                                            //                   CustomSwitch(
-                                            //                     value: false,
-                                            //                     onChanged: (bool
-                                            //                         value) async {},
-                                            //                   ),
-                                            //                 ],
-                                            //               ),
-                                            //             ),
-                                            //             Padding(
-                                            //               padding:
-                                            //                   const EdgeInsets
-                                            //                       .only(
-                                            //                       left: 20,
-                                            //                       right: 20,
-                                            //                       top: 20),
-                                            //               child: Row(
-                                            //                 mainAxisAlignment:
-                                            //                     MainAxisAlignment
-                                            //                         .spaceBetween,
-                                            //                 children: [
-                                            //                   const Text(
-                                            //                     'Enter Products',
-                                            //                     style: TextStyle(
-                                            //                         color: Colors
-                                            //                             .grey,
-                                            //                         fontSize:
-                                            //                             16,
-                                            //                         fontWeight:
-                                            //                             FontWeight
-                                            //                                 .w600),
-                                            //                   ),
-                                            //                   CustomSwitch(
-                                            //                     value: false,
-                                            //                     onChanged: (bool
-                                            //                         value) async {},
-                                            //                   ),
-                                            //                 ],
-                                            //               ),
-                                            //             ),
-                                            //             Padding(
-                                            //               padding:
-                                            //                   const EdgeInsets
-                                            //                       .only(
-                                            //                       left: 20,
-                                            //                       right: 20,
-                                            //                       top: 20),
-                                            //               child: Row(
-                                            //                 mainAxisAlignment:
-                                            //                     MainAxisAlignment
-                                            //                         .spaceBetween,
-                                            //                 children: [
-                                            //                   const Text(
-                                            //                     'Enter Certicates',
-                                            //                     style: TextStyle(
-                                            //                         color: Colors
-                                            //                             .grey,
-                                            //                         fontSize:
-                                            //                             16,
-                                            //                         fontWeight:
-                                            //                             FontWeight
-                                            //                                 .w600),
-                                            //                   ),
-                                            //                   CustomSwitch(
-                                            //                     value: false,
-                                            //                     onChanged: (bool
-                                            //                         value) async {},
-                                            //                   ),
-                                            //                 ],
-                                            //               ),
-                                            //             ),
-                                            //             Padding(
-                                            //               padding:
-                                            //                   const EdgeInsets
-                                            //                       .only(
-                                            //                       left: 20,
-                                            //                       right: 20,
-                                            //                       top: 20),
-                                            //               child: Row(
-                                            //                 mainAxisAlignment:
-                                            //                     MainAxisAlignment
-                                            //                         .spaceBetween,
-                                            //                 children: [
-                                            //                   const Text(
-                                            //                     'Enter Borchure',
-                                            //                     style: TextStyle(
-                                            //                         color: Colors
-                                            //                             .grey,
-                                            //                         fontSize:
-                                            //                             16,
-                                            //                         fontWeight:
-                                            //                             FontWeight
-                                            //                                 .w600),
-                                            //                   ),
-                                            //                   CustomSwitch(
-                                            //                     value: false,
-                                            //                     onChanged: (bool
-                                            //                         value) async {},
-                                            //                   ),
-                                            //                 ],
-                                            //               ),
-                                            //             ),
-                                            //             const SizedBox(
-                                            //               height: 80,
-                                            //             )
-                                            //           ],
-                                            //         ),
-                                            //       ),
-                                            //       GestureDetector(
-                                            //         onTap: () => showDialog(
-                                            //           context: context,
-                                            //           builder: (context) =>
-                                            //               const UpgradeDialog(),
-                                            //         ),
-                                            //         child: Container(
-                                            //           padding:
-                                            //               const EdgeInsets.all(
-                                            //                   16),
-                                            //           decoration: BoxDecoration(
-                                            //             color: kWhite,
-                                            //             borderRadius:
-                                            //                 BorderRadius
-                                            //                     .circular(12),
-                                            //             boxShadow: [
-                                            //               BoxShadow(
-                                            //                 color: Colors.black
-                                            //                     .withOpacity(
-                                            //                         0.1),
-                                            //                 blurRadius: 10,
-                                            //                 spreadRadius: 2,
-                                            //                 offset:
-                                            //                     const Offset(
-                                            //                         0, 4),
-                                            //               ),
-                                            //             ],
-                                            //           ),
-                                            //           child: Column(
-                                            //             mainAxisSize:
-                                            //                 MainAxisSize.min,
-                                            //             children: [
-                                            //               SvgPicture.asset(
-                                            //                   'assets/icons/lock_person.svg'),
-                                            //               const SizedBox(
-                                            //                   height: 8),
-                                            //               const Text(
-                                            //                 "Upgrade to",
-                                            //                 style: TextStyle(
-                                            //                   color:
-                                            //                       Colors.black,
-                                            //                   fontSize: 16,
-                                            //                   fontWeight:
-                                            //                       FontWeight
-                                            //                           .w500,
-                                            //                 ),
-                                            //               ),
-                                            //               const Text(
-                                            //                 "unlock",
-                                            //                 style: TextStyle(
-                                            //                   color:
-                                            //                       Colors.black,
-                                            //                   fontSize: 16,
-                                            //                   fontWeight:
-                                            //                       FontWeight
-                                            //                           .w500,
-                                            //                 ),
-                                            //               ),
-                                            //             ],
-                                            //           ),
-                                            //         ),
-                                            //       )
-                                            //     ],
-                                            //   )
-                                          ],
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ),
+                                const Padding(
+                                  padding: EdgeInsets.only(
+                                      left: 20, right: 20, top: 10, bottom: 20),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Enter Certificates',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                      // CustomSwitch(
+                                      //   value: ref.watch(
+                                      //       isCertificateDetailsVisibleProvider),
+                                      //   onChanged: (bool value) {
+                                      //     setState(() {
+                                      //       ref
+                                      //           .read(
+                                      //               isCertificateDetailsVisibleProvider
+                                      //                   .notifier)
+                                      //           .state = value;
+                                      //     });
+                                      //   },
+                                      // ),
+                                    ],
+                                  ),
+                                ),
+                                if (certificates.isNotEmpty)
+                                  ListView.builder(
+                                    shrinkWrap:
+                                        true, // Let ListView take up only as much space as it needs
+                                    physics:
+                                        const NeverScrollableScrollPhysics(), // Disable ListView's internal scrolling
+                                    itemCount: certificates.length,
+                                    itemBuilder: (context, index) {
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical:
+                                                4.0), // Space between items
+                                        child: CertificateCard(
+                                          name:
+                                              certificates[index].caption ?? '',
+                                          url: certificates[index].url ?? '',
+                                          onEdit: () => _editCertificate(index),
+                                          onRemove: () =>
+                                              _removeCertificate(index),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                // if (isCertificateDetailsVisible)
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 25, right: 25, bottom: 60),
+                                  child: PermissionWrappers.forAddCertificate(
+                                    onTap: () {
+                                      FocusManager.instance.primaryFocus
+                                          ?.unfocus();
+                                      _openModalSheet(
+                                        sheet: 'certificate',
+                                      );
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 25, right: 25, bottom: 60),
+                                      child: Container(
+                                        width: 170,
+                                        height: 170,
+                                        decoration: BoxDecoration(
+                                            border:
+                                                Border.all(color: kGreyLight),
+                                            color: kWhite,
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        child: Center(
+                                          child: Column(
+                                            children: [
+                                              const SizedBox(
+                                                height: 40,
+                                              ),
+                                              const Icon(
+                                                FontAwesomeIcons.plus,
+                                                color: kPrimaryColor,
+                                                size: 60,
+                                              ),
+                                              const SizedBox(
+                                                height: 30,
+                                              ),
+                                              Text('Add certificate',
+                                                  style: kBodyTitleM.copyWith(
+                                                      color: kPrimaryColor)),
+                                              // if (subscriptionType != 'premium')
+                                              //   Stack(
+                                              //     alignment: Alignment.center,
+                                              //     children: [
+                                              //       Container(
+                                              //         color:
+                                              //             const Color(0xFFF2F2F2),
+                                              //         child: Column(
+                                              //           children: [
+                                              //             const SizedBox(
+                                              //               height: 30,
+                                              //             ),
+                                              //             Padding(
+                                              //               padding:
+                                              //                   const EdgeInsets
+                                              //                       .only(
+                                              //                       left: 20,
+                                              //                       right: 20),
+                                              //               child: Row(
+                                              //                 mainAxisAlignment:
+                                              //                     MainAxisAlignment
+                                              //                         .spaceBetween,
+                                              //                 children: [
+                                              //                   const Text(
+                                              //                     'Social Media',
+                                              //                     style: TextStyle(
+                                              //                         color: Colors
+                                              //                             .grey,
+                                              //                         fontSize:
+                                              //                             16,
+                                              //                         fontWeight:
+                                              //                             FontWeight
+                                              //                                 .w600),
+                                              //                   ),
+                                              //                   CustomSwitch(
+                                              //                     value: false,
+                                              //                     onChanged: (bool
+                                              //                         value) async {},
+                                              //                   ),
+                                              //                 ],
+                                              //               ),
+                                              //             ),
+                                              //             Padding(
+                                              //               padding:
+                                              //                   const EdgeInsets
+                                              //                       .only(
+                                              //                       left: 20,
+                                              //                       right: 20,
+                                              //                       top: 20),
+                                              //               child: Row(
+                                              //                 mainAxisAlignment:
+                                              //                     MainAxisAlignment
+                                              //                         .spaceBetween,
+                                              //                 children: [
+                                              //                   const Text(
+                                              //                     'Add Website',
+                                              //                     style: TextStyle(
+                                              //                         color: Colors
+                                              //                             .grey,
+                                              //                         fontSize:
+                                              //                             16,
+                                              //                         fontWeight:
+                                              //                             FontWeight
+                                              //                                 .w600),
+                                              //                   ),
+                                              //                   CustomSwitch(
+                                              //                     value: false,
+                                              //                     onChanged: (bool
+                                              //                         value) async {},
+                                              //                   ),
+                                              //                 ],
+                                              //               ),
+                                              //             ),
+                                              //             Padding(
+                                              //               padding:
+                                              //                   const EdgeInsets
+                                              //                       .only(
+                                              //                       left: 20,
+                                              //                       right: 20,
+                                              //                       top: 20),
+                                              //               child: Row(
+                                              //                 mainAxisAlignment:
+                                              //                     MainAxisAlignment
+                                              //                         .spaceBetween,
+                                              //                 children: [
+                                              //                   const Text(
+                                              //                     'Add Video Link',
+                                              //                     style: TextStyle(
+                                              //                         color: Colors
+                                              //                             .grey,
+                                              //                         fontSize:
+                                              //                             16,
+                                              //                         fontWeight:
+                                              //                             FontWeight
+                                              //                                 .w600),
+                                              //                   ),
+                                              //                   CustomSwitch(
+                                              //                     value: false,
+                                              //                     onChanged: (bool
+                                              //                         value) async {},
+                                              //                   ),
+                                              //                 ],
+                                              //               ),
+                                              //             ),
+                                              //             Padding(
+                                              //               padding:
+                                              //                   const EdgeInsets
+                                              //                       .only(
+                                              //                       left: 20,
+                                              //                       right: 20,
+                                              //                       top: 20),
+                                              //               child: Row(
+                                              //                 mainAxisAlignment:
+                                              //                     MainAxisAlignment
+                                              //                         .spaceBetween,
+                                              //                 children: [
+                                              //                   const Text(
+                                              //                     'Enter Awards',
+                                              //                     style: TextStyle(
+                                              //                         color: Colors
+                                              //                             .grey,
+                                              //                         fontSize:
+                                              //                             16,
+                                              //                         fontWeight:
+                                              //                             FontWeight
+                                              //                                 .w600),
+                                              //                   ),
+                                              //                   CustomSwitch(
+                                              //                     value: false,
+                                              //                     onChanged: (bool
+                                              //                         value) async {},
+                                              //                   ),
+                                              //                 ],
+                                              //               ),
+                                              //             ),
+                                              //             Padding(
+                                              //               padding:
+                                              //                   const EdgeInsets
+                                              //                       .only(
+                                              //                       left: 20,
+                                              //                       right: 20,
+                                              //                       top: 20),
+                                              //               child: Row(
+                                              //                 mainAxisAlignment:
+                                              //                     MainAxisAlignment
+                                              //                         .spaceBetween,
+                                              //                 children: [
+                                              //                   const Text(
+                                              //                     'Enter Products',
+                                              //                     style: TextStyle(
+                                              //                         color: Colors
+                                              //                             .grey,
+                                              //                         fontSize:
+                                              //                             16,
+                                              //                         fontWeight:
+                                              //                             FontWeight
+                                              //                                 .w600),
+                                              //                   ),
+                                              //                   CustomSwitch(
+                                              //                     value: false,
+                                              //                     onChanged: (bool
+                                              //                         value) async {},
+                                              //                   ),
+                                              //                 ],
+                                              //               ),
+                                              //             ),
+                                              //             Padding(
+                                              //               padding:
+                                              //                   const EdgeInsets
+                                              //                       .only(
+                                              //                       left: 20,
+                                              //                       right: 20,
+                                              //                       top: 20),
+                                              //               child: Row(
+                                              //                 mainAxisAlignment:
+                                              //                     MainAxisAlignment
+                                              //                         .spaceBetween,
+                                              //                 children: [
+                                              //                   const Text(
+                                              //                     'Enter Certicates',
+                                              //                     style: TextStyle(
+                                              //                         color: Colors
+                                              //                             .grey,
+                                              //                         fontSize:
+                                              //                             16,
+                                              //                         fontWeight:
+                                              //                             FontWeight
+                                              //                                 .w600),
+                                              //                   ),
+                                              //                   CustomSwitch(
+                                              //                     value: false,
+                                              //                     onChanged: (bool
+                                              //                         value) async {},
+                                              //                   ),
+                                              //                 ],
+                                              //               ),
+                                              //             ),
+                                              //             Padding(
+                                              //               padding:
+                                              //                   const EdgeInsets
+                                              //                       .only(
+                                              //                       left: 20,
+                                              //                       right: 20,
+                                              //                       top: 20),
+                                              //               child: Row(
+                                              //                 mainAxisAlignment:
+                                              //                     MainAxisAlignment
+                                              //                         .spaceBetween,
+                                              //                 children: [
+                                              //                   const Text(
+                                              //                     'Enter Borchure',
+                                              //                     style: TextStyle(
+                                              //                         color: Colors
+                                              //                             .grey,
+                                              //                         fontSize:
+                                              //                             16,
+                                              //                         fontWeight:
+                                              //                             FontWeight
+                                              //                                 .w600),
+                                              //                   ),
+                                              //                   CustomSwitch(
+                                              //                     value: false,
+                                              //                     onChanged: (bool
+                                              //                         value) async {},
+                                              //                   ),
+                                              //                 ],
+                                              //               ),
+                                              //             ),
+                                              //             const SizedBox(
+                                              //               height: 80,
+                                              //             )
+                                              //           ],
+                                              //         ),
+                                              //       ),
+                                              //       GestureDetector(
+                                              //         onTap: () => showDialog(
+                                              //           context: context,
+                                              //           builder: (context) =>
+                                              //               const UpgradeDialog(),
+                                              //         ),
+                                              //         child: Container(
+                                              //           padding:
+                                              //               const EdgeInsets.all(
+                                              //                   16),
+                                              //           decoration: BoxDecoration(
+                                              //             color: kWhite,
+                                              //             borderRadius:
+                                              //                 BorderRadius
+                                              //                     .circular(12),
+                                              //             boxShadow: [
+                                              //               BoxShadow(
+                                              //                 color: Colors.black
+                                              //                     .withOpacity(
+                                              //                         0.1),
+                                              //                 blurRadius: 10,
+                                              //                 spreadRadius: 2,
+                                              //                 offset:
+                                              //                     const Offset(
+                                              //                         0, 4),
+                                              //               ),
+                                              //             ],
+                                              //           ),
+                                              //           child: Column(
+                                              //             mainAxisSize:
+                                              //                 MainAxisSize.min,
+                                              //             children: [
+                                              //               SvgPicture.asset(
+                                              //                   'assets/icons/lock_person.svg'),
+                                              //               const SizedBox(
+                                              //                   height: 8),
+                                              //               const Text(
+                                              //                 "Upgrade to",
+                                              //                 style: TextStyle(
+                                              //                   color:
+                                              //                       Colors.black,
+                                              //                   fontSize: 16,
+                                              //                   fontWeight:
+                                              //                       FontWeight
+                                              //                           .w500,
+                                              //                 ),
+                                              //               ),
+                                              //               const Text(
+                                              //                 "unlock",
+                                              //                 style: TextStyle(
+                                              //                   color:
+                                              //                       Colors.black,
+                                              //                   fontSize: 16,
+                                              //                   fontWeight:
+                                              //                       FontWeight
+                                              //                           .w500,
+                                              //                 ),
+                                              //               ),
+                                              //             ],
+                                              //           ),
+                                              //         ),
+                                              //       )
+                                              //     ],
+                                              //   )
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(height: 60),
-                            ],
+                                const SizedBox(height: 60),
+                              ],
+                            ),
                           ),
                         ),
                       ),
