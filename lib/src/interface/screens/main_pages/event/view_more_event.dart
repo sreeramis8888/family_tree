@@ -53,48 +53,17 @@ class _ViewMoreEventPageState extends ConsumerState<ViewMoreEventPage>
   String _getRegistrationButtonLabel() {
     if (widget.event.status == 'cancelled') return 'CANCELLED';
     if (registered) return 'REGISTERED';
-
-    final int limit = widget.event.limit ?? 0;
-    final int registeredCount = widget.event.rsvp?.length ?? 0;
-
-    if (limit > 0) {
-      final spotsLeft = limit - registeredCount;
-      if (spotsLeft <= 0) return 'REGISTRATION FULL';
-
-      if (spotsLeft == 1) {
-        return 'REGISTER (Last seat!)';
-      } else if (spotsLeft <= 5) {
-        return 'REGISTER (Only $spotsLeft seats left!)';
-      }
-      return 'REGISTER ($spotsLeft seats left)';
-    }
-
     return 'REGISTER EVENT';
   }
 
   bool _canRegister() {
     if (registered || widget.event.status == 'cancelled') return false;
-
-    final int limit = widget.event.limit ?? 0;
-    if (limit == 0) return true;
-
-    final int registeredCount = widget.event.rsvp?.length ?? 0;
-    return registeredCount < limit;
+    return true;
   }
 
   String _getRegistrationCountText() {
     final registered = widget.event.rsvp?.length ?? 0;
-    final limit = widget.event.limit!;
-    final remaining = limit - registered;
-
-    if (remaining == 0) {
-      return 'All seats taken ($registered/$limit)';
-    } else if (remaining == 1) {
-      return 'Last seat remaining ($registered/$limit)';
-    } else if (remaining <= 10) {
-      return 'Only $remaining seats left ($registered/$limit)';
-    }
-    return '$registered/$limit registered';
+    return '$registered registered';
   }
 
   @override
@@ -272,9 +241,8 @@ class _ViewMoreEventPageState extends ConsumerState<ViewMoreEventPage>
                       const SizedBox(height: 24),
                       _buildSpeakersSection(),
                       const SizedBox(height: 14),
-                      if (widget.event.limit != null)
-                        _buildInfoSection(
-                            'Registration', _getRegistrationCountText()),
+                      _buildInfoSection(
+                          'Registration', _getRegistrationCountText()),
           
                       const SizedBox(
                           height: 80), // Bottom padding for the register button

@@ -413,74 +413,74 @@ class ProfilePage extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          captureAndShareOrDownloadWidgetScreenshot(context);
-                        },
-                        child: SvgPicture.asset(
-                            color: kPrimaryColor,
-                            'assets/svg/icons/shareButton.svg'),
-                        // child: Container(
-                        //   width: 90,
-                        //   height: 90,
-                        //   decoration: BoxDecoration(
-                        //     color: kPrimaryColor,
-                        //     borderRadius: BorderRadius.circular(
-                        //         50), // Apply circular border to the outer container
-                        //   ),
-                        //   child: Padding(
-                        //     padding: const EdgeInsets.all(4.0),
-                        //     child: Container(
-                        //       decoration: BoxDecoration(
-                        //         borderRadius: BorderRadius.circular(50),
-                        //         color: kPrimaryColor,
-                        //       ),
-                        //       child: Icon(
-                        //         Icons.share,
-                        //         color: kWhite,
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
-                      ),
-                      const SizedBox(width: 40),
-                      GestureDetector(
-                          onTap: () {
-                            navigationService.pushNamed('Card',
-                                arguments: user);
-                          },
-                          child: SvgPicture.asset(
-                            'assets/svg/icons/qrButton.svg',
-                            color: kPrimaryColor,
-                          )
-                          // Container(
-                          //   width: 90,
-                          //   height: 90,
-                          //   decoration: BoxDecoration(
-                          //     color: kWhite,
-                          //     borderRadius: BorderRadius.circular(
-                          //         50), // Apply circular border to the outer container
-                          //   ),
-                          //   child: Padding(
-                          //     padding: const EdgeInsets.all(4.0),
-                          //     child: Container(
-                          //       decoration: BoxDecoration(
-                          //         borderRadius: BorderRadius.circular(50),
-                          //         color: kWhite,
-                          //       ),
-                          //       child: Icon(
-                          //         Icons.qr_code,
-                          //         color: Colors.grey,
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
-                          )
-                    ],
-                  ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: [
+                  //     GestureDetector(
+                  //       onTap: () {
+                  //         captureAndShareOrDownloadWidgetScreenshot(context);
+                  //       },
+                  //       child: SvgPicture.asset(
+                  //           color: kPrimaryColor,
+                  //           'assets/svg/icons/shareButton.svg'),
+                  //       // child: Container(
+                  //       //   width: 90,
+                  //       //   height: 90,
+                  //       //   decoration: BoxDecoration(
+                  //       //     color: kPrimaryColor,
+                  //       //     borderRadius: BorderRadius.circular(
+                  //       //         50), // Apply circular border to the outer container
+                  //       //   ),
+                  //       //   child: Padding(
+                  //       //     padding: const EdgeInsets.all(4.0),
+                  //       //     child: Container(
+                  //       //       decoration: BoxDecoration(
+                  //       //         borderRadius: BorderRadius.circular(50),
+                  //       //         color: kPrimaryColor,
+                  //       //       ),
+                  //       //       child: Icon(
+                  //       //         Icons.share,
+                  //       //         color: kWhite,
+                  //       //       ),
+                  //       //     ),
+                  //       //   ),
+                  //       // ),
+                  //     ),
+                  //     const SizedBox(width: 40),
+                  //     GestureDetector(
+                  //         onTap: () {
+                  //           navigationService.pushNamed('Card',
+                  //               arguments: user);
+                  //         },
+                  //         child: SvgPicture.asset(
+                  //           'assets/svg/icons/qrButton.svg',
+                  //           color: kPrimaryColor,
+                  //         )
+                  //         // Container(
+                  //         //   width: 90,
+                  //         //   height: 90,
+                  //         //   decoration: BoxDecoration(
+                  //         //     color: kWhite,
+                  //         //     borderRadius: BorderRadius.circular(
+                  //         //         50), // Apply circular border to the outer container
+                  //         //   ),
+                  //         //   child: Padding(
+                  //         //     padding: const EdgeInsets.all(4.0),
+                  //         //     child: Container(
+                  //         //       decoration: BoxDecoration(
+                  //         //         borderRadius: BorderRadius.circular(50),
+                  //         //         color: kWhite,
+                  //         //       ),
+                  //         //       child: Icon(
+                  //         //         Icons.qr_code,
+                  //         //         color: Colors.grey,
+                  //         //       ),
+                  //         //     ),
+                  //         //   ),
+                  //         // ),
+                  //         )
+                  //   ],
+                  // ),
                   SizedBox(
                     height: 30,
                   ),

@@ -1,3 +1,4 @@
+import 'package:familytree/src/data/models/chat_conversation_model.dart';
 import 'package:familytree/src/interface/screens/approvals/approvals_page.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/financial_program/program_join_onboarding_page.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/financial_program/program_join_request.dart';
@@ -89,16 +90,17 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       return MaterialPageRoute(builder: (context) => EditUser());
     case 'FinancialAssistancePage':
       return MaterialPageRoute(builder: (context) => FinancialAssistancePage());
-    // case 'IndividualPage':
-    //   final args = settings?.arguments as Map<String, dynamic>?;
-    //   ChatUser sender = args?['sender'];
-    //   ChatUser receiver = args?['receiver'];
+    case 'IndividualPage':
+      final args = settings?.arguments as Map<String, dynamic>?;
+      ChatConversation conversation = args?['conversation'];
+      String currentUserId = args?['currentUserId'];
+      String conversationImage = args?['conversationImage'];
+      String conversationTitle = args?['conversationTitle'];
 
-    //   return MaterialPageRoute(
-    //       builder: (context) => IndividualPage(
-    //             receiver: receiver,
-    //             sender: sender,
-    //           ));
+      return MaterialPageRoute(
+          builder: (context) => IndividualPage(conversation: conversation,conversationImage: conversationImage,conversationTitle: conversationTitle,
+        currentUserId: currentUserId,
+              ));
     case 'ChangeNumber':
       return MaterialPageRoute(builder: (context) => ChangeNumberPage());
     case 'FinancialProgramOnboarding':

@@ -48,11 +48,11 @@ class ProfilePreviewUsingId extends ConsumerWidget {
     required this.userId,
   });
 
-  final List<String> svgIcons = [    'assets/svg/icons/icons8-facebook.svg' ,  'assets/svg/icons/twitter.svg',
+  final List<String> svgIcons = [
+    'assets/svg/icons/icons8-facebook.svg',
+    'assets/svg/icons/twitter.svg',
     'assets/svg/icons/instagram.svg',
     'assets/svg/icons/linkedin.svg',
- 
-
   ];
 
   final ValueNotifier<int> _currentVideo = ValueNotifier<int>(0);
@@ -73,38 +73,38 @@ class ProfilePreviewUsingId extends ConsumerWidget {
             appBar: AppBar(
               flexibleSpace: Container(),
               actions: [
-                if (userId == id)
-                  asyncUser.when(
-                    data: (user) {
-                      return IconButton(
-                        icon: const Icon(
-                          size: 20,
-                          Icons.qr_code,
-                          color: kPrimaryColor,
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => ProfilePage(user: user),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                    error: (error, stackTrace) {
-                      return SizedBox();
-                    },
-                    loading: () {
-                      return IconButton(
-                        icon: const Icon(
-                          size: 20,
-                          Icons.qr_code,
-                          color: kPrimaryColor,
-                        ),
-                        onPressed: () {},
-                      );
-                    },
-                  ),
+                // if (userId == id)
+                //   asyncUser.when(
+                //     data: (user) {
+                //       return IconButton(
+                //         icon: const Icon(
+                //           size: 20,
+                //           Icons.qr_code,
+                //           color: kPrimaryColor,
+                //         ),
+                //         onPressed: () {
+                //           Navigator.of(context).push(
+                //             MaterialPageRoute(
+                //               builder: (context) => ProfilePage(user: user),
+                //             ),
+                //           );
+                //         },
+                //       );
+                //     },
+                //     error: (error, stackTrace) {
+                //       return SizedBox();
+                //     },
+                //     loading: () {
+                //       return IconButton(
+                //         icon: const Icon(
+                //           size: 20,
+                //           Icons.qr_code,
+                //           color: kPrimaryColor,
+                //         ),
+                //         onPressed: () {},
+                //       );
+                //     },
+                //   ),
                 if (userId == id)
                   IconButton(
                     icon: const Icon(
@@ -757,7 +757,11 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                               Navigator.of(context).push(
                                                 MaterialPageRoute(
                                                   builder: (context) =>
-                                                      IndividualPage(conversationImage:user.image??'' ,conversationTitle:user.fullName??'' ,
+                                                      IndividualPage(
+                                                    conversationImage:
+                                                        user.image ?? '',
+                                                    conversationTitle:
+                                                        user.fullName ?? '',
                                                     conversation:
                                                         directConversation,
                                                     currentUserId: id,
@@ -772,7 +776,11 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                               Navigator.of(context).push(
                                                 MaterialPageRoute(
                                                   builder: (context) =>
-                                                      IndividualPage(conversationImage:user.image??'' ,conversationTitle:user.fullName??'' ,
+                                                      IndividualPage(
+                                                    conversationImage:
+                                                        user.image ?? '',
+                                                    conversationTitle:
+                                                        user.fullName ?? '',
                                                     conversation:
                                                         newConversation,
                                                     currentUserId: id,
