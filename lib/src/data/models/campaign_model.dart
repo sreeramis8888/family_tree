@@ -81,7 +81,7 @@ class CampaignModel {
       organizedBy: json['organizedBy'] as String? ?? '',
       status: json['status'] as String? ?? '',
       createdAt: _parseDate(json['createdAt']),
-      donatedAmount: json['donatedAmount'] as int? ?? 0,
+      donatedAmount: json['currentAmount'] as int? ?? 0,
       donatedMembers: (json['donatedMembers'] as List<dynamic>?)
               ?.map((e) => DonatedMember.fromJson(e as Map<String, dynamic>?))
               .toList() ??

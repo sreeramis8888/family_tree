@@ -188,12 +188,15 @@ class _EditUserState extends ConsumerState<EditUser> {
   String? _relationship;
   List<Map<String, String?>> _relations = [];
   final List<String> _relationships = ["spouse", "parent", "child"];
+  String? _lastConfirmedMember;
+  String? _lastConfirmedRelationship;
 
   // Add state for other families
   List<String> _otherFamilies = [];
   // Add state for other family (single selection)
   String? _otherFamily;
 
+  // Add new _addRelation that takes memberName
   void _addRelation(String memberName) {
     if (_linkedMember != null && _relationship != null) {
       setState(() {
@@ -204,19 +207,18 @@ class _EditUserState extends ConsumerState<EditUser> {
         });
         _linkedMember = null;
         _relationship = null;
+        _lastConfirmedMember = null;
+        _lastConfirmedRelationship = null;
       });
     }
   }
 
   void _showRelationshipConfirmation(String memberName, String relationship) {
-    final currentUserName = nameController.text.trim().isNotEmpty 
-        ? nameController.text 
+    final currentUserName = nameController.text.trim().isNotEmpty
+        ? nameController.text
         : 'you';
-    
-    // Fix grammar for "you" pronoun
     final isYou = currentUserName.toLowerCase() == 'you';
     final verb = isYou ? 'are' : 'is';
-    
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -777,90 +779,92 @@ class _EditUserState extends ConsumerState<EditUser> {
                         if (!hasMembers) {
                           return SizedBox.shrink();
                         } else {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(height: 24),
-                              Text(
-                                  _linkedMember != null
-                                      ? 'Who are you to ' +
-                                          (family.members!
-                                                  .firstWhere((m) =>
-                                                      m.id == _linkedMember)
-                                                  .fullName ??
-                                              '')
-                                      : 'Relationship',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                              SizedBox(height: 16),
-                              SearchableDropDown(
-                                label: null,
-                                hintText: 'Select existing family member',
-                                value: _linkedMember,
-                                items: family.members!
-                                    .where((m) =>
-                                        m.id != user.id &&
-                                        !_relations.any(
-                                            (rel) => rel['memberId'] == m.id))
-                                    .map((m) => DropdownMenuItem(
-                                        value: m.id,
-                                        child: Text(m.fullName ?? '')))
-                                    .toList(),
-                                onChanged: (val) =>
-                                    setState(() => _linkedMember = val),
-                                searchHintText: 'Search members...',
-                              ),
-                              SizedBox(height: 16),
-                              Text('Relationship',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                              SizedBox(height: 16),
-                              SelectionDropDown(
-                                label: null,
-                                hintText: 'Select Relationship',
-                                value: _relationship,
-                                items: _relationships
-                                    .map((r) => DropdownMenuItem(
-                                        value: r, child: Text(r.toUpperCase())))
-                                    .toList(),
-                                onChanged: (val) =>
-                                    setState(() => _relationship = val),
-                              ),
-                              SizedBox(height: 8),
-                              TextButton(
-                                onPressed: () {
-                                  if (_linkedMember != null && _relationship != null) {
-                                    final selectedMember = family.members!
-                                        .firstWhere((m) => m.id == _linkedMember);
-                                    final memberName = selectedMember.fullName ?? '';
-                                    final relationship = _relationship!;
-                                    _showRelationshipConfirmation(memberName, relationship);
-                                  }
-                                },
-                                child: Text('+ Add Relation',
-                                    style: TextStyle(
-                                        color: kRed,
-                                        fontWeight: FontWeight.bold)),
-                              ),
-                              ..._relations
-                                  .asMap()
-                                  .entries
-                                  .map((entry) => ListTile(
-                                        title: Text(
-                                            'Member: ${entry.value['memberName']}'),
-                                        subtitle: Text(
-                                            'Relationship: ${entry.value['relationship']}'),
-                                        trailing: IconButton(
-                                          icon: Icon(Icons.delete,
-                                              color: Colors.red),
-                                          onPressed: () {
-                                            setState(() {
-                                              _relations.removeAt(entry.key);
-                                            });
-                                          },
-                                        ),
-                                      )),
-                            ],
+                          // Track previous selection to avoid repeated dialogs
+                          String? lastMember;
+                          String? lastRelation;
+                          return StatefulBuilder(
+                            builder: (context, setStateSB) {
+                              if (_linkedMember != null && _relationship != null &&
+                                  (_linkedMember != lastMember || _relationship != lastRelation)) {
+                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                                  final selectedMember = family.members!
+                                      .firstWhere((m) => m.id == _linkedMember);
+                                  final memberName = selectedMember.fullName ?? '';
+                                  final relationship = _relationship!;
+                                  _showRelationshipConfirmation(memberName, relationship);
+                                  setStateSB(() {
+                                    lastMember = _linkedMember;
+                                    lastRelation = _relationship;
+                                    _lastConfirmedMember = _linkedMember;
+                                    _lastConfirmedRelationship = _relationship;
+                                  });
+                                });
+                              }
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(height: 24),
+                                  Text('Link to Family Member 1 *', style: TextStyle(fontWeight: FontWeight.bold)),
+                                  SizedBox(height: 16),
+                                  SearchableDropDown(
+                                    label: null,
+                                    hintText: 'Select existing family member',
+                                    value: _linkedMember,
+                                    items: family.members!
+                                        .where((m) =>
+                                            m.id != user.id &&
+                                            !_relations.any(
+                                                (rel) => rel['memberId'] == m.id))
+                                        .map((m) => DropdownMenuItem(
+                                            value: m.id,
+                                            child: Text(m.fullName ?? '')))
+                                        .toList(),
+                                    onChanged: (val) => setStateSB(() => _linkedMember = val),
+                                  ),
+                                  SizedBox(height: 16),
+                                  Text(
+                                    _linkedMember != null
+                                        ? 'Who are you to ' +
+                                            (family.members!
+                                                    .firstWhere((m) =>
+                                                        m.id == _linkedMember)
+                                                    .fullName ??
+                                                '')
+                                        : 'Relationship *',
+                                    style: TextStyle(fontWeight: FontWeight.bold)),
+                                  SizedBox(height: 16),
+                                  SelectionDropDown(
+                                    label: null,
+                                    hintText: 'Select Relationship',
+                                    value: _relationship,
+                                    items: _relationships
+                                        .map((r) => DropdownMenuItem(
+                                            value: r, child: Text(r.toUpperCase())))
+                                        .toList(),
+                                    onChanged: (val) => setStateSB(() => _relationship = val),
+                                  ),
+                                  SizedBox(height: 8),
+                                  ..._relations
+                                      .asMap()
+                                      .entries
+                                      .map((entry) => ListTile(
+                                            title: Text(
+                                                'Member: ${entry.value['memberName']}'),
+                                            subtitle: Text(
+                                                'Relationship: ${entry.value['relationship']}'),
+                                            trailing: IconButton(
+                                              icon: Icon(Icons.delete,
+                                                  color: Colors.red),
+                                              onPressed: () {
+                                                setStateSB(() {
+                                                  _relations.removeAt(entry.key);
+                                                });
+                                              },
+                                            ),
+                                          )),
+                                ],
+                              );
+                            },
                           );
                         }
                       },
@@ -998,7 +1002,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                 });
                               },
                               validator: (val) => null, // optional
-                              searchHintText: 'Search families...',
+                            
                             ),
                           ),
                         ],

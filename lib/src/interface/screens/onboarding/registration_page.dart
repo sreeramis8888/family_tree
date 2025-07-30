@@ -49,6 +49,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   bool _isCreatingFamily = false;
   String? _familyCreationError;
+  String? _lastConfirmedMember;
+  String? _lastConfirmedRelationship;
 
   @override
   void initState() {
@@ -99,8 +101,115 @@ class _RegistrationPageState extends State<RegistrationPage> {
         });
         _linkedMember = null;
         _relationship = null;
+        _lastConfirmedMember = null;
+        _lastConfirmedRelationship = null;
       });
     }
+  }
+
+  void _showRelationshipConfirmation(String memberName, String relationship) {
+    final currentUserName = _nameController.text.trim().isNotEmpty
+        ? _nameController.text
+        : 'you';
+    final isYou = currentUserName.toLowerCase() == 'you';
+    final verb = isYou ? 'are' : 'is';
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          title: Column(
+            children: [
+              Icon(
+                Icons.people,
+                color: kPrimaryColor,
+                size: 48,
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Confirm Relationship',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: kBlack,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: kBlack,
+                  ),
+                  children: [
+                    TextSpan(text: '$currentUserName '),
+                    TextSpan(text: '$verb '),
+                    TextSpan(text: '$relationship of '),
+                    TextSpan(
+                      text: '$memberName',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    TextSpan(text: '.'),
+                  ],
+                ),
+              ),
+              SizedBox(height: 12),
+              Text(
+                'Is this relationship correct?',
+                style: TextStyle(
+                  color: Colors.grey[700],
+                  fontSize: 14,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Colors.grey[700],
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: kPrimaryColor,
+                foregroundColor: kWhite,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              ),
+              child: Text(
+                'Confirm',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _addRelation(memberName);
+              },
+            ),
+          ],
+          actionsPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        );
+      },
+    );
   }
 
   Future<void> _submit() async {
@@ -317,7 +426,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 },
                                 validator: (val) =>
                                     val == null ? 'Required' : null,
-                                searchHintText: 'Search families...',
                               ),
                               const SizedBox(height: 8),
                               TextButton.icon(
@@ -603,7 +711,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                       .toList(),
                                   onChanged: (val) =>
                                       setState(() => _parentFamily = val),
-                                  searchHintText: 'Search parent families...',
                                 ),
                               ],
                             );
@@ -652,9 +759,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                         .toList(),
                                     onChanged: (val) =>
                                         setState(() => _linkedMember = val),
-                                    validator: (val) =>
-                                        val == null ? 'Required' : null,
-                                    searchHintText: 'Search members...',
                                   ),
                                   const SizedBox(height: 16),
                                   Text(
@@ -680,161 +784,27 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                         .toList(),
                                     onChanged: (val) =>
                                         setState(() => _relationship = val),
-                                    validator: (val) =>
-                                        val == null ? 'Required' : null,
                                   ),
                                   const SizedBox(height: 8),
-                                  TextButton(
-                                    onPressed: () {
-                                      if (_linkedMember != null &&
-                                          _relationship != null) {
-                                        final selectedMember = family.members!
-                                            .firstWhere(
-                                                (m) => m.id == _linkedMember);
-                                        final memberName =
-                                            selectedMember.fullName ?? '';
-                                        final relationship = _relationship!;
-                                        final currentUserName = _nameController
-                                                .text
-                                                .trim()
-                                                .isNotEmpty
-                                            ? _nameController.text
-                                            : 'you';
-
-                                        // Fix grammar for "you" pronoun
-                                        final isYou =
-                                            currentUserName.toLowerCase() ==
-                                                'you';
-                                        final verb = isYou ? 'are' : 'is';
-
-                                        showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return AlertDialog(
-                                              backgroundColor: Colors.white,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(15),
-                                              ),
-                                              title: Column(
-                                                children: [
-                                                  Icon(
-                                                    Icons.people,
-                                                    color: kPrimaryColor,
-                                                    size: 48,
-                                                  ),
-                                                  SizedBox(height: 16),
-                                                  Text(
-                                                    'Confirm Relationship',
-                                                    style: TextStyle(
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: kBlack,
-                                                    ),
-                                                    textAlign: TextAlign.center,
-                                                  ),
-                                                ],
-                                              ),
-                                              content: Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  RichText(
-                                                    textAlign: TextAlign.center,
-                                                    text: TextSpan(
-                                                      style: TextStyle(
-                                                        fontSize: 16,
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        color: kBlack,
-                                                      ),
-                                                      children: [
-                                                        TextSpan(
-                                                            text:
-                                                                '$currentUserName '),
-                                                        TextSpan(
-                                                            text: '$verb '),
-                                                        TextSpan(
-                                                            text:
-                                                                '$relationship of '),
-                                                        TextSpan(
-                                                          text: '$memberName',
-                                                          style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold),
-                                                        ),
-                                                        TextSpan(text: '.'),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  SizedBox(height: 12),
-                                                  Text(
-                                                    'Is this relationship correct?',
-                                                    style: TextStyle(
-                                                      color: Colors.grey[700],
-                                                      fontSize: 14,
-                                                    ),
-                                                    textAlign: TextAlign.center,
-                                                  ),
-                                                ],
-                                              ),
-                                              actions: [
-                                                TextButton(
-                                                  child: Text(
-                                                    'Cancel',
-                                                    style: TextStyle(
-                                                      color: Colors.grey[700],
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                ),
-                                                ElevatedButton(
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                    backgroundColor:
-                                                        kPrimaryColor,
-                                                    foregroundColor: kWhite,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10),
-                                                    ),
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                            horizontal: 20,
-                                                            vertical: 12),
-                                                  ),
-                                                  child: Text(
-                                                    'Confirm',
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
-                                                    _addRelation(memberName);
-                                                  },
-                                                ),
-                                              ],
-                                              actionsPadding:
-                                                  EdgeInsets.symmetric(
-                                                      horizontal: 16,
-                                                      vertical: 12),
-                                            );
-                                          },
-                                        );
+                                  // Only show the confirmation dialog if the current selection is different from the last confirmed.
+                                  Builder(
+                                    builder: (context) {
+                                      if (_linkedMember != null && _relationship != null &&
+                                          (_linkedMember != _lastConfirmedMember || _relationship != _lastConfirmedRelationship)) {
+                                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                                          final selectedMember = family.members!
+                                              .firstWhere((m) => m.id == _linkedMember);
+                                          final memberName = selectedMember.fullName ?? '';
+                                          final relationship = _relationship!;
+                                          _showRelationshipConfirmation(memberName, relationship);
+                                          setState(() {
+                                            _lastConfirmedMember = _linkedMember;
+                                            _lastConfirmedRelationship = _relationship;
+                                          });
+                                        });
                                       }
+                                      return SizedBox.shrink();
                                     },
-                                    child: Text('+ Add Relation',
-                                        style: TextStyle(
-                                            color: kRed,
-                                            fontWeight: FontWeight.bold)),
                                   ),
                                   ..._relations
                                       .asMap()

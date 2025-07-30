@@ -271,7 +271,7 @@ class _FamilyTreeState extends State<FamilyTree> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              const FamilyTreeWebView(),
+                                               FamilyTreeWebView( familyId: widget.familyId,),
                                         ),
                                       );
                                     },

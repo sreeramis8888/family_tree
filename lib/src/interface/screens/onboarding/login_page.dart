@@ -202,7 +202,10 @@ class PhoneNumberScreen extends ConsumerWidget {
           final resendToken = data['resendToken'];
           if (verificationId != null && verificationId.isNotEmpty) {
             log('Otp Sent successfully');
-
+            id = '';
+            token = '';
+            LoggedIn = false;
+            await SecureStorage.deleteAll();
             Navigator.of(context).pushReplacement(MaterialPageRoute(
               builder: (context) => OTPScreen(
                 phone: _mobileController.text,
@@ -457,7 +460,8 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
           fcmToken: fcmToken,
           smsCode: _otpController.text,
           context: context);
-            await SecureStorage.write('refreshToken',responseMap['refreshToken'] ?? '' );
+      await SecureStorage.write(
+          'refreshToken', responseMap['refreshToken'] ?? '');
       final message = responseMap['message'] ?? '';
       final isRegistered = responseMap['isRegistered'];
       final user = responseMap['user'];
@@ -483,7 +487,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
           responseMap['accessToken'] != null) {
         // Login successful
         String savedToken = responseMap['accessToken'];
-     String savedId = user['person']['_id'];
+        String savedId = user['person']['_id'];
         if (savedToken.isNotEmpty && savedId.isNotEmpty) {
           await SecureStorage.write('token', savedToken);
           await SecureStorage.write('id', savedId);

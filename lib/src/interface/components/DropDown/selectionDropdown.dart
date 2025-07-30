@@ -112,7 +112,7 @@ class _SelectionDropDownState extends State<SelectionDropDown>
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide:
-                        const BorderSide(color: Color(0xFF3182CE), width: 2),
+                        const BorderSide(color: Color(0xFFE2E8F0), width: 2),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
