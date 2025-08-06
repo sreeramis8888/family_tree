@@ -3,18 +3,15 @@ import 'dart:developer';
 import 'package:familytree/src/data/globals.dart';
 import 'package:http/http.dart' as http;
 
-
 class ReportApiService {
   static final _baseUrl = Uri.parse('$baseUrl/reports');
 
   static Map<String, String> _headers() => {
         'Content-Type': 'application/json',
         'accept': '*/*',
+        'Authorization': 'Bearer $token',
       };
 
-  
-
-  /// Post Report
   Future<String?> postReport({required Map<String, dynamic> data}) async {
     try {
       final response = await http.post(_baseUrl,
@@ -32,9 +29,4 @@ class ReportApiService {
       return e.toString();
     }
   }
-
- 
-
- 
 }
-

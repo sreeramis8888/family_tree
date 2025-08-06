@@ -57,3 +57,26 @@ String extractImageUrl(String responseBody) {
   log(name: "image upload response", responseJson.toString());
   return responseJson['data']['fileUrl'];
 }
+
+Future<String> audioUpload(String audioPath) async {
+  File audioFile = File(audioPath);
+  Uint8List audioBytes = await audioFile.readAsBytes();
+  print("Audio file size: ${audioBytes.lengthInBytes / 1024} KB");
+
+  var request = http.MultipartRequest(
+    'POST',
+    Uri.parse('$baseUrl/upload/single'),
+  );
+  request.files.add(await http.MultipartFile.fromPath('file', audioFile.path));
+
+  var response = await request.send();
+
+  if (response.statusCode == 200) {
+    var responseBody = await response.stream.bytesToString();
+    return extractImageUrl(responseBody); // Same extraction function works for any file
+  } else {
+    var responseBody = await response.stream.bytesToString();
+    log(responseBody.toString());
+    throw Exception('Failed to upload audio');
+  }
+}

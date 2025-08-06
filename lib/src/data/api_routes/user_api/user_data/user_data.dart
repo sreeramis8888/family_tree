@@ -74,28 +74,29 @@ class UserService {
   //   }
   // }
 
-  static Future<void> createReport(
-      {required String reportedItemId,
-      required String reportType,
-      required String reason}) async {
-    final url = Uri.parse('$baseUrl/report');
-    final body = {
-      'content': reportedItemId.isNotEmpty ? reportedItemId : ' ',
-      'reportType': reportType,
-    };
+  // static Future<void> createReport(
+  //     {required String reportedItemId,
+  //     required String reportType,
+  //     required String reason}) async {
+  //   final url = Uri.parse('$baseUrl/reports');
+  //   final body = {
+  //     'content': reportedItemId.isNotEmpty ? reportedItemId : ' ',
+  //     'reportType': reportType,
+  //   };
 
-    try {
-      final response =
-          await http.post(url, headers: _headers(), body: jsonEncode(body));
-      if (response.statusCode == 201) {
-        SnackbarService().showSnackBar('Reported to admin');
-      } else {
-        SnackbarService().showSnackBar('Failed to Report');
-      }
-    } catch (e) {
-      log('Error occurred: $e');
-    }
-  }
+  //   try {
+  //     final response =
+  //         await http.post(url, headers: _headers(), body: jsonEncode(body));
+  //     if (response.statusCode == 201) {
+  //       SnackbarService().showSnackBar('Reported to admin');
+  //     } else {
+  //       log(response.body.toString(), name: 'Report response body');
+  //       SnackbarService().showSnackBar('Failed to Report');
+  //     }
+  //   } catch (e) {
+  //     log('Error occurred: $e');
+  //   }
+  // }
 
   static Future<void> blockUser(String userId, String? reason,
       BuildContext context, WidgetRef ref) async {

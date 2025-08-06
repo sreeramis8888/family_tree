@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'package:familytree/src/data/models/chat_model.dart';
-import 'package:familytree/src/interface/components/report/showReportBlockPopup.dart';
+import 'package:familytree/src/interface/components/DropDown/blockreport_dropdown.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +17,6 @@ import 'package:familytree/src/data/models/business_model.dart';
 import 'package:familytree/src/data/models/user_model.dart';
 import 'package:familytree/src/data/notifiers/business_notifier.dart';
 import 'package:familytree/src/interface/components/Dialogs/upgrade_dialog.dart';
-import 'package:familytree/src/interface/components/DropDown/block_repor_dropDown.dart';
 import 'package:familytree/src/interface/components/ModalSheets/addBusinessSheet.dart';
 import 'package:familytree/src/interface/components/custom_widgets/user_tile.dart';
 import 'package:familytree/src/interface/components/expandable_text.dart';
@@ -604,15 +603,7 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                     ],
                   ),
                 ),
-                if (widget.business.author != id)
-                  IconButton(
-                    icon: const Icon(Icons.more_vert, color: Colors.grey),
-                    onPressed: () {
-                      ShowReportPostDialog(
-                          context, widget.business.id.toString());
-                      log(id);
-                    },
-                  ),
+              
               ],
             ),
           ),
@@ -694,7 +685,6 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
 
                 const SizedBox(width: 24),
 
-                // Share button with count
                 if (widget.business.author != id)
                   GestureDetector(
                     onTap: () => widget.onShare(),
@@ -703,7 +693,13 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                         SvgPicture.asset('assets/svg/icons/share.svg'),
                       ],
                     ),
-                  ),
+                  ),   const Spacer(),
+
+                if (widget.business.author != id)
+                  BlockReportDropdown(
+                    isBlocked: false,
+                    feed: widget.business,
+                  )
               ],
             ),
           ),

@@ -16,6 +16,7 @@ class UserModel {
   final List<Link>? social;
   final String? address;
   final List<Link>? website;
+  final List<UserModel>? blockedUsers;
 
   final double? walletBalance;
   final DateTime? lastRecharge;
@@ -51,6 +52,7 @@ class UserModel {
     this.email,
     this.phone,
     this.secondaryPhone,
+    this.blockedUsers,
     this.social,
     this.address,
     this.website,
@@ -84,6 +86,7 @@ class UserModel {
     String? biography,
     List<Media>? media,
     List<String>? familyId,
+    List<String>? blockedUsers,
     String? familyName,
     String? email,
     String? phone,
@@ -163,6 +166,9 @@ class UserModel {
         occupation: json['occupation'],
         biography: json['biography'],
         media: (json['media'] as List?)?.map((e) => Media.fromJson(e)).toList(),
+        blockedUsers: (json['blockedUsers'] as List?)
+            ?.map((e) => UserModel.fromJson(e))
+            .toList(),
         familyId: (json['familyId'] as List?)
             ?.map((e) {
               if (e is String) return e;

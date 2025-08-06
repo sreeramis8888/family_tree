@@ -1,14 +1,15 @@
 import 'dart:developer';
 
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/data/models/business_model.dart';
 import 'package:familytree/src/data/models/msg_model.dart';
 import 'package:familytree/src/data/models/product_model.dart';
 import 'package:familytree/src/data/notifiers/business_notifier.dart';
 import 'package:familytree/src/interface/components/Dialogs/blockPersonDialog.dart';
 import 'package:familytree/src/interface/components/Dialogs/report_dialog.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class BlockReportDropdown extends ConsumerWidget {
   final Business? feed;
@@ -32,7 +33,10 @@ class BlockReportDropdown extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return DropdownButtonHideUnderline(
       child: DropdownButton2(
-        customButton: const Icon(Icons.more_vert), // Trigger icon
+        customButton: const Icon(
+          Icons.more_vert,
+          color: kWhite,
+        ),
         items: [
           const DropdownMenuItem(
             value: 'report',
@@ -58,7 +62,7 @@ class BlockReportDropdown extends ConsumerWidget {
           if (value == 'report') {
             String reportType = '';
             if (feed != null) {
-              reportType = 'Feeds';
+              reportType = 'Requirements';
               showReportPersonDialog(
                   reportedItemId: feed?.id ?? '',
                   context: context,
@@ -66,7 +70,7 @@ class BlockReportDropdown extends ConsumerWidget {
                   reportType: reportType);
             } else if (userId != null) {
               log(userId.toString());
-              reportType = 'User';
+              reportType = 'Users';
               showReportPersonDialog(
                   reportedItemId: userId ?? '',
                   context: context,
@@ -94,7 +98,7 @@ class BlockReportDropdown extends ConsumerWidget {
             if (feed != null) {
               showBlockPersonDialog(
                   context: context,
-                  userId: feed?.author ?? '',
+                  userId: feed?.author?? '',
                   onBlockStatusChanged: () {
                     ref.invalidate(businessNotifierProvider);
                   });
@@ -118,7 +122,7 @@ class BlockReportDropdown extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(vertical: 6),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            color: const Color.fromARGB(255, 255, 255, 255),
+            color: kTertiary,
           ),
           offset: const Offset(0, 0),
         ),
