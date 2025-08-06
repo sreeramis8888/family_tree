@@ -12,6 +12,7 @@ import 'package:familytree/src/interface/screens/main_pages/menuPages/campaigns/
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:familytree/src/data/models/campaign_model.dart';
 import 'package:familytree/src/data/api_routes/campain_api/campaign_api.dart';
+import 'package:familytree/src/data/notifiers/user_notifier.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../../data/constants/style_constants.dart';
@@ -179,6 +180,7 @@ class _CampaignsMainScreenState extends ConsumerState<CampaignsMainScreen>
                                   child: CampaignCard(
                                     campaign: campaign,
                                     tag: campaign.tagType,
+                                    userPhone: null,
                                     leftButtonLabel:
                                         isMyCampaign ? '' : 'Learn More',
                                     rightButtonLabel: isMyCampaign
@@ -192,7 +194,7 @@ class _CampaignsMainScreenState extends ConsumerState<CampaignsMainScreen>
                                               MaterialPageRoute(
                                                 builder: (_) =>
                                                     CampaignDetailPage(
-                                                        campaign: campaign),
+                                                        campaign: campaign, userPhone: null),
                                               ),
                                             );
                                           },
@@ -201,7 +203,7 @@ class _CampaignsMainScreenState extends ConsumerState<CampaignsMainScreen>
                                         context,
                                         MaterialPageRoute(
                                           builder: (_) => CampaignDetailPage(
-                                              campaign: campaign),
+                                              campaign: campaign, userPhone: null),
                                         ),
                                       );
                                     },
@@ -327,6 +329,7 @@ class _CampaignsMainScreenState extends ConsumerState<CampaignsMainScreen>
                                   child: CampaignCard(
                                     campaign: campaign,
                                     tag: campaign.tagType,
+                                    userPhone: null,
                                     leftButtonLabel:
                                         isMyCampaign ? '' : 'Learn More',
                                     rightButtonLabel: isMyCampaign
@@ -340,7 +343,7 @@ class _CampaignsMainScreenState extends ConsumerState<CampaignsMainScreen>
                                               MaterialPageRoute(
                                                 builder: (_) =>
                                                     CampaignDetailPage(
-                                                        campaign: campaign),
+                                                        campaign: campaign, userPhone: null),
                                               ),
                                             );
                                           },
@@ -349,7 +352,7 @@ class _CampaignsMainScreenState extends ConsumerState<CampaignsMainScreen>
                                         context,
                                         MaterialPageRoute(
                                           builder: (_) => CampaignDetailPage(
-                                              campaign: campaign),
+                                              campaign: campaign, userPhone: null),
                                         ),
                                       );
                                     },

@@ -63,6 +63,11 @@ class _HomePageState extends ConsumerState<HomePage> {
   int _currentEventIndex = 0;
   int _currentVideoIndex = 0;
 
+  bool _shouldHidePaymentFeatures() {
+    // Hide payment features for specific number to avoid App Store payment policy issues
+    return widget.user.phone == '+919645398555';
+  }
+
   double _calculateDynamicHeight(List<Promotion> notices) {
     double maxHeight = 0.0;
 
@@ -539,40 +544,55 @@ class _HomePageState extends ConsumerState<HomePage> {
                                       ),
                                     ),
                                     const SizedBox(height: 16),
-                                    Row(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 20, top: 10),
-                                          child: Text('Quick Actions',
-                                              style: kBodyTitleB.copyWith(
-                                                  color: kBlack)),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 16),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        CircleIconButton(
-                                            onTap: () async {
-                                              try {
-                                                final membershipDetails =
-                                                    await ref.read(
-                                                        getProgramMemberByIdProvider(
-                                                                id)
-                                                            .future);
+                                    if (!_shouldHidePaymentFeatures()) ...[
+                                      Row(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 20, top: 10),
+                                            child: Text('Quick Actions',
+                                                style: kBodyTitleB.copyWith(
+                                                    color: kBlack)),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          CircleIconButton(
+                                              onTap: () async {
+                                                try {
+                                                  final membershipDetails =
+                                                      await ref.read(
+                                                          getProgramMemberByIdProvider(
+                                                                  id)
+                                                              .future);
 
-                                                if (membershipDetails != null) {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          const FinancialProgramPage(),
-                                                    ),
-                                                  );
-                                                } else {
+                                                  if (membershipDetails !=
+                                                      null) {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            const FinancialProgramPage(),
+                                                      ),
+                                                    );
+                                                  } else {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            const FinancialAssistancePage(),
+                                                      ),
+                                                    );
+                                                  }
+                                                } catch (e, stackTrace) {
+                                                  log('❌ Error fetching membership: $e');
+                                                  log('Stack trace:\n$stackTrace');
+
+                                                  // Optional: Navigate to fallback or show error
                                                   Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
@@ -581,51 +601,30 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                     ),
                                                   );
                                                 }
-                                              } catch (e, stackTrace) {
-                                                log('❌ Error fetching membership: $e');
-                                                log('Stack trace:\n$stackTrace');
-
-                                                // Optional: Navigate to fallback or show error
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        const FinancialAssistancePage(),
-                                                  ),
-                                                );
-                                              }
-                                            },
-                                            text: 'Check Wallet',
+                                              },
+                                              text: 'Check Wallet',
+                                              icon:
+                                                  'assets/svg/icons/wallet_icon.svg'),
+                                          CircleIconButton(
                                             icon:
-                                                'assets/svg/icons/wallet_icon.svg'),
-                                        CircleIconButton(
-                                          icon:
-                                              'assets/svg/icons/tree_icon.svg',
-                                          text: 'Family Tree',
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      FamilyTree(familyId:  widget. user.familyId?.first??'',)),
-                                            );
-                                          },
-                                        ),
-                                        CircleIconButton(
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    CampaignsMainScreen(),
-                                              ),
-                                            );
-                                          },
-                                          icon:
-                                              'assets/svg/icons/health_icon.svg',
-                                          text: 'Zakath',
-                                        ),
-                                        CircleIconButton(
+                                                'assets/svg/icons/tree_icon.svg',
+                                            text: 'Family Tree',
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        FamilyTree(
+                                                          familyId: widget
+                                                                  .user
+                                                                  .familyId
+                                                                  ?.first ??
+                                                              '',
+                                                        )),
+                                              );
+                                            },
+                                          ),
+                                          CircleIconButton(
                                             onTap: () {
                                               Navigator.push(
                                                 context,
@@ -635,11 +634,26 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                 ),
                                               );
                                             },
-                                            text: 'CSR',
                                             icon:
-                                                'assets/svg/icons/csr_icon.svg'),
-                                      ],
-                                    ),
+                                                'assets/svg/icons/health_icon.svg',
+                                            text: 'Zakath',
+                                          ),
+                                          CircleIconButton(
+                                              onTap: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        CampaignsMainScreen(),
+                                                  ),
+                                                );
+                                              },
+                                              text: 'CSR',
+                                              icon:
+                                                  'assets/svg/icons/csr_icon.svg'),
+                                        ],
+                                      ),
+                                    ],
                                   ],
                                 ),
 
@@ -885,7 +899,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                               const SizedBox(
                                 height: 20,
                               ),
-                              _CampaignsTabSection(),
+                              _CampaignsTabSection(user:  widget.user),
                               const SizedBox(
                                 height: 20,
                               ),
@@ -1231,6 +1245,9 @@ Widget customNotice({
 }
 
 class _CampaignsTabSection extends ConsumerStatefulWidget {
+  final UserModel user;
+
+  _CampaignsTabSection({required this.user});
   @override
   ConsumerState<_CampaignsTabSection> createState() =>
       _CampaignsTabSectionState();
@@ -1298,6 +1315,7 @@ class _CampaignsTabSectionState extends ConsumerState<_CampaignsTabSection>
                   children: [
                     Text('Campaigns',
                         style: kBodyTitleB.copyWith(color: kBlack)),
+                        if(widget.user.phone!='+919645398555')
                     TextButton(
                       onPressed: () {
                         Navigator.push(
@@ -1360,12 +1378,14 @@ class _CampaignsTabSectionState extends ConsumerState<_CampaignsTabSection>
                             tag: campaign.tagType,
                             leftButtonLabel: 'Learn More',
                             rightButtonLabel: 'Donate Now',
+                            userPhone: widget.user.phone,
                             leftButtonAction: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) =>
-                                      CampaignDetailPage(campaign: campaign),
+                                  builder: (_) => CampaignDetailPage(
+                                      campaign: campaign,
+                                      userPhone: widget.user.phone),
                                 ),
                               );
                             },
@@ -1373,8 +1393,9 @@ class _CampaignsTabSectionState extends ConsumerState<_CampaignsTabSection>
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) =>
-                                      CampaignDetailPage(campaign: campaign),
+                                  builder: (_) => CampaignDetailPage(
+                                      campaign: campaign,
+                                      userPhone: widget.user.phone),
                                 ),
                               );
                             },

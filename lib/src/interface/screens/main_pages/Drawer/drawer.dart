@@ -6,7 +6,6 @@ import 'package:familytree/src/interface/screens/main_pages/menuPages/financial_
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:familytree/src/data/api_routes/user_api/user_data/edit_user.dart';
 import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/data/models/user_model.dart';
 import 'package:familytree/src/data/services/navgitor_service.dart';
@@ -22,6 +21,11 @@ Widget customDrawer(
     required BuildContext context,
     required WidgetRef ref}) {
   NavigationService navigationService = NavigationService();
+  
+  bool _shouldHidePaymentFeatures() {
+    // Hide payment features for specific number to avoid App Store payment policy issues
+    return user.phone == '+919645398555';
+  }
   return Drawer(
     child: Column(
       children: [
@@ -112,44 +116,45 @@ Widget customDrawer(
               children: [
                 const SizedBox(height: 8),
 
-                _buildDrawerItem(
-                  icon: 'assets/svg/icons/financial_logo.svg',
-                  label: 'Financial Program',
-                  onTap: () async {
-                    try {
-                      final membershipDetails = await ref
-                          .read(getProgramMemberByIdProvider(id).future);
+                if (!_shouldHidePaymentFeatures())
+                  _buildDrawerItem(
+                    icon: 'assets/svg/icons/financial_logo.svg',
+                    label: 'Financial Program',
+                    onTap: () async {
+                      try {
+                        final membershipDetails = await ref
+                            .read(getProgramMemberByIdProvider(id).future);
 
-                      if (membershipDetails != null) {
+                        if (membershipDetails != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const FinancialProgramPage(),
+                            ),
+                          );
+                        } else {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const FinancialAssistancePage(),
+                            ),
+                          );
+                        }
+                      } catch (e, stackTrace) {
+                        log('❌ Error fetching membership: $e');
+                        log('Stack trace:\n$stackTrace');
+
+                        // Optional: Navigate to fallback or show error
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const FinancialProgramPage(),
-                          ),
-                        );
-                      } else {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const FinancialAssistancePage(),
+                            builder: (context) => const FinancialAssistancePage(),
                           ),
                         );
                       }
-                    } catch (e, stackTrace) {
-                      log('❌ Error fetching membership: $e');
-                      log('Stack trace:\n$stackTrace');
-
-                      // Optional: Navigate to fallback or show error
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const FinancialAssistancePage(),
-                        ),
-                      );
-                    }
-                  },
-                ),
+                    },
+                  ),
                 if (user.isFamilyAdmin == true)
                   _buildDrawerItem(
                     icon: 'assets/svg/icons/approvals.svg',
@@ -180,18 +185,19 @@ Widget customDrawer(
                     navigationService.pushNamed('MyEvents');
                   },
                 ),
-                _buildDrawerItem(
-                  icon: 'assets/svg/icons/my_transactions.svg',
-                  label: 'My Transactions',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const MyTransactionsPage(),
-                      ),
-                    );
-                  },
-                ),
+                if (!_shouldHidePaymentFeatures())
+                  _buildDrawerItem(
+                    icon: 'assets/svg/icons/my_transactions.svg',
+                    label: 'My Transactions',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const MyTransactionsPage(),
+                        ),
+                      );
+                    },
+                  ),
                 // _buildDrawerItem(
                 //   icon: 'assets/svg/icons/my_post.svg',
                 //   label: 'My Post',

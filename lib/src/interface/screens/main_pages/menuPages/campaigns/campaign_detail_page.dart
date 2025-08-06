@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:familytree/src/data/services/payment_service/CampaignDonationPayment.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -9,7 +8,8 @@ import 'package:familytree/src/data/constants/style_constants.dart';
 
 class CampaignDetailPage extends StatefulWidget {
   final CampaignModel campaign;
-  const CampaignDetailPage({Key? key, required this.campaign})
+  final String? userPhone;
+  const CampaignDetailPage({Key? key, required this.campaign, this.userPhone})
       : super(key: key);
 
   @override
@@ -46,11 +46,16 @@ class _CampaignDetailPageState extends State<CampaignDetailPage> {
     );
   }
 
+  bool _shouldHidePaymentFeatures() {
+    // Hide payment features for specific number to avoid App Store payment policy issues
+    return widget.userPhone == '+919645398555';
+  }
+
   @override
   Widget build(BuildContext context) {
     final campaign = widget.campaign;
-    final collected = campaign.donatedAmount ?? 0;
-    final target = campaign.targetAmount ?? 0;
+    final collected = campaign.donatedAmount;
+    final target = campaign.targetAmount;
     final progress = (collected / target).clamp(0.0, 1.0);
     final dueDate = DateFormat('dd MMM yyyy').format(campaign.deadline);
 
@@ -152,80 +157,82 @@ class _CampaignDetailPageState extends State<CampaignDetailPage> {
             const SizedBox(height: 10),
             Text(campaign.description, style: kSmallerTitleR),
             const SizedBox(height: 28),
-            Text('Enter Donation Amount', style: kSmallTitleB),
-            const SizedBox(height: 8),
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: kGreyLight),
-                borderRadius: BorderRadius.circular(10),
-                color: kWhite,
-              ),
-              child: Row(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 12.0),
-                    child: Text('₹', style: TextStyle(fontSize: 20)),
-                  ),
-                  Expanded(
-                    child: TextField(
-                      controller: _donationController,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Amount',
+            if (!_shouldHidePaymentFeatures()) ...[
+              Text('Enter Donation Amount', style: kSmallTitleB),
+              const SizedBox(height: 8),
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: kGreyLight),
+                  borderRadius: BorderRadius.circular(10),
+                  color: kWhite,
+                ),
+                child: Row(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 12.0),
+                      child: Text('₹', style: TextStyle(fontSize: 20)),
+                    ),
+                    Expanded(
+                      child: TextField(
+                        controller: _donationController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Amount',
+                        ),
+                        style: const TextStyle(fontSize: 16),
                       ),
-                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+              // const Text(
+              //   'Your donation will help provide educational support to children in need',
+              //   style: TextStyle(fontSize: 13, color: kGrey),
+              // ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 44,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: kPrimaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 8),
-            // const Text(
-            //   'Your donation will help provide educational support to children in need',
-            //   style: TextStyle(fontSize: 13, color: kGrey),
-            // ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 44,
-              child: ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: kPrimaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                icon: const Icon(Icons.volunteer_activism, color: kWhite),
-                label: const Text('Donate Now',
-                    style: TextStyle(fontSize: 18, color: kWhite)),
-                onPressed: () async {
-                  try {
-                    final amountText = _donationController.text.trim();
-                    final amount = double.tryParse(amountText);
+                  icon: const Icon(Icons.volunteer_activism, color: kWhite),
+                  label: const Text('Donate Now',
+                      style: TextStyle(fontSize: 18, color: kWhite)),
+                  onPressed: () async {
+                    try {
+                      final amountText = _donationController.text.trim();
+                      final amount = double.tryParse(amountText);
 
-                    if (amount == null || amount <= 0) {
-                      _showSnackBar("Please enter a valid amount");
-                      return;
+                      if (amount == null || amount <= 0) {
+                        _showSnackBar("Please enter a valid amount");
+                        return;
+                      }
+
+                      _paymentService = CampaignPaymentService(
+                        campaign: widget.campaign,
+                        amount: amount,
+                        onError: (msg) => _showSnackBar(msg),
+                        onSuccess: (msg) => _showSnackBar(msg),
+                      );
+                      _paymentService.initRazorpayListeners();
+                      await _paymentService.startPaymentProcess();
+
+                      _donationController.clear();
+                    } catch (e, stack) {
+                      debugPrint("❌ Error: $e\n$stack");
+                      _showSnackBar("Something went wrong");
                     }
-
-                    _paymentService = CampaignPaymentService(
-                      campaign: widget.campaign,
-                      amount: amount,
-                      onError: (msg) => _showSnackBar(msg),
-                      onSuccess: (msg) => _showSnackBar(msg),
-                    );
-                    _paymentService.initRazorpayListeners();
-                    await _paymentService.startPaymentProcess();
-
-                    _donationController.clear();
-                  } catch (e, stack) {
-                    debugPrint("❌ Error: $e\n$stack");
-                    _showSnackBar("Something went wrong");
-                  }
-                },
+                  },
+                ),
               ),
-            ),
+            ],
             const SizedBox(height: 24),
           ],
         ),

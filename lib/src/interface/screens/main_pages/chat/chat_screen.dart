@@ -1,10 +1,8 @@
 import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/data/constants/style_constants.dart';
-import 'package:familytree/src/data/globals.dart';
 import 'package:familytree/src/data/notifiers/user_notifier.dart';
 import 'package:familytree/src/interface/components/Dialogs/blockPersonDialog.dart';
 import 'package:familytree/src/interface/components/Dialogs/report_dialog.dart';
-import 'package:familytree/src/interface/components/DropDown/blockreport_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:familytree/src/data/api_routes/chat_api/chat_api.dart';
@@ -16,11 +14,8 @@ import 'package:familytree/src/data/services/socket_service.dart';
 import 'package:familytree/src/data/models/chat_model.dart';
 import 'dart:async';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:familytree/src/data/services/image_upload.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
-
-import 'dart:io';
 
 class IndividualPage extends ConsumerStatefulWidget {
   final String conversationTitle;
@@ -733,16 +728,7 @@ class _IndividualPageState extends ConsumerState<IndividualPage>
                 _takePicture();
               },
             ),
-            ListTile(
-              leading: Icon(Icons.mic, color: kPrimaryColor),
-              title: Text('Audio'),
-              onTap: () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Audio recording is disabled')),
-                );
-              },
-            ),
+
           ],
         ),
       ),
