@@ -1,4 +1,4 @@
-package com.skybertech.familytree
+package com.skybertech.knfamilyconnect
 
 import io.flutter.embedding.android.FlutterActivity
 
