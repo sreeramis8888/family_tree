@@ -30,7 +30,7 @@ import 'package:keyboard_avoider/keyboard_avoider.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:familytree/src/interface/screens/onboarding/registration_page.dart';
 import 'package:familytree/src/interface/screens/onboarding/approval_waiting_page.dart';
-
+import 'package:sms_autofill/sms_autofill.dart';
 TextEditingController _mobileController = TextEditingController();
 TextEditingController _otpController = TextEditingController();
 
@@ -93,10 +93,15 @@ class PhoneNumberScreen extends ConsumerWidget {
                     const SizedBox(height: 20),
                     IntlPhoneField(
                       validator: (phone) {
-                        if (phone!.number.length > 9) {
-                          if (phone.number.length > 10) {
-                            return 'Phone number cannot exceed 10 digits';
-                          }
+                        // if (phone!.number.length > 9) {
+                        //   if (phone.number.length > 10) {
+                        //     return 'Phone number cannot exceed 10 digits';
+                        //   }
+                        // }
+                        if (phone!.number.length < 10) {
+                          return 'Phone number must be exactly 10 digits';
+                        } else if (phone.number.length > 10) {
+                          return 'Phone number cannot exceed 10 digits';
                         }
                         return null;
                       },
@@ -274,11 +279,23 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
   int _start = 59;
 
   bool _isButtonDisabled = true;
+  bool _isVerifyButtonDisabled = true;
 
   @override
   void initState() {
     super.initState();
+    _otpController.addListener(() {
+      setState(() {
+        _isVerifyButtonDisabled = _otpController.text.length != 6;
+      });
+    });
+    //Listen for otp
+    listenForOtp();
     startTimer();
+  }
+
+  Future<void> listenForOtp() async {
+    await SmsAutoFill().listenForCode();
   }
 
   void startTimer() {
@@ -307,6 +324,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
   @override
   void dispose() {
     _timer?.cancel();
+    SmsAutoFill().unregisterListener();
     super.dispose();
   }
 
@@ -367,6 +385,12 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
                   PinCodeTextField(
                     appContext: context,
                     length: 6, // Number of OTP digits
+                    // controller :_otpController,
+                    // onChanged:(value) {
+                    //   setState(() {
+                    //     _isVerifyButtonDisabled = value.length != 6;
+                    //   });
+                    // },
                     obscureText: false,
                     keyboardType: TextInputType.number, // Number-only keyboard
                     animationType: AnimationType.fade,
@@ -430,7 +454,8 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
                       width: double.infinity,
                       child: customButton(
                         label: 'Verify',
-                        onPressed: isLoading
+                        //verify button is only clickable whent the 6 digits are entered
+                        onPressed: (isLoading || _isVerifyButtonDisabled)
                             ? null
                             : () => _handleOtpVerification(context, ref),
                         fontSize: 16,
