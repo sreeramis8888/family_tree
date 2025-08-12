@@ -59,6 +59,19 @@ class ProfilePreviewUsingId extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+
+//for launching dialar
+  Future<void> _launchDialer(String number) async {
+  final Uri launchUrL = Uri(
+    scheme: 'tel',
+    path: number,
+    );
+  if (!await launchUrl(launchUrL)) {
+    throw Exception('Could not launch $number');
+  }
+  }
+
+
     final reviewsToShow = ref.watch(reviewsProvider);
     PageController _videoCountController = PageController();
 
@@ -346,15 +359,18 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                               color: kBlack),
                                         ),
                                         const SizedBox(height: 15),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            CustomIconContainer(
-                                                icon: Icons.phone),
-                                            const SizedBox(width: 10),
-                                            Text(user.phone.toString()),
-                                          ],
+                                        GestureDetector(
+                                          onTap: () => _launchDialer(user.phone.toString()),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              CustomIconContainer(
+                                                  icon: Icons.phone),
+                                              const SizedBox(width: 10),
+                                              Text(user.phone.toString()),
+                                            ],
+                                          ),
                                         ),
                                         if (user.address != null &&
                                             user.address != '')

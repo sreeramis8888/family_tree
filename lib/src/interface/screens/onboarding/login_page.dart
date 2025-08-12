@@ -31,8 +31,9 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:familytree/src/interface/screens/onboarding/registration_page.dart';
 import 'package:familytree/src/interface/screens/onboarding/approval_waiting_page.dart';
 import 'package:sms_autofill/sms_autofill.dart';
+
 TextEditingController _mobileController = TextEditingController();
-TextEditingController _otpController = TextEditingController();
+// TextEditingController _otpController = TextEditingController();
 
 final countryCodeProvider = StateProvider<String?>((ref) => '91');
 
@@ -280,6 +281,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
 
   bool _isButtonDisabled = true;
   bool _isVerifyButtonDisabled = true;
+  final TextEditingController _otpController = TextEditingController();
 
   @override
   void initState() {
@@ -456,9 +458,16 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
                         label: 'Verify',
                         //verify button is only clickable whent the 6 digits are entered
                         onPressed: (isLoading || _isVerifyButtonDisabled)
-                            ? null
+                            ? (null)
                             : () => _handleOtpVerification(context, ref),
                         fontSize: 16,
+                        //button is color is grey until it is enabled
+                        buttonColor: (isLoading || _isVerifyButtonDisabled)
+                            ? kGrey
+                            : kPrimaryColor,
+                        sideColor: (isLoading || _isVerifyButtonDisabled)
+                            ? kGrey
+                            : kPrimaryColor,
                         isLoading: isLoading,
                       ),
                     ),
@@ -521,6 +530,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
           log('savedToken: $savedToken');
           log('savedId: $savedId');
 
+     
           Navigator.of(context).pushReplacement(MaterialPageRoute(
               builder: (context) => const EulaAgreementScreen()));
         }

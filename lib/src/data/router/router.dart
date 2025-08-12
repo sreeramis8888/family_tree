@@ -34,7 +34,6 @@ import 'package:familytree/src/interface/screens/main_pages/profile/editUser.dar
 import 'package:familytree/src/interface/screens/main_pages/profile/idcard.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/my_subscription.dart';
 import 'package:familytree/src/interface/screens/main_pages/profile/profile_preview_withUserId.dart';
-
 import 'package:familytree/src/interface/screens/splash_screen.dart';
 
 Route<dynamic> generateRoute(RouteSettings? settings) {

@@ -36,6 +36,8 @@ class EulaAgreementScreen extends StatelessWidget {
                         onPressed: () async {
                           await SecureStorage.write('eula_agreed', 'true');
 
+                          
+
                           try {
                             final membershipDetails = await ref
                                 .read(getProgramMemberByIdProvider(id).future);
