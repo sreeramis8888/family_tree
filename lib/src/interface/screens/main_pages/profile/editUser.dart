@@ -214,9 +214,8 @@ class _EditUserState extends ConsumerState<EditUser> {
   }
 
   void _showRelationshipConfirmation(String memberName, String relationship) {
-    final currentUserName = nameController.text.trim().isNotEmpty
-        ? nameController.text
-        : 'you';
+    final currentUserName =
+        nameController.text.trim().isNotEmpty ? nameController.text : 'you';
     final isYou = currentUserName.toLowerCase() == 'you';
     final verb = isYou ? 'are' : 'is';
     showDialog(
@@ -437,15 +436,34 @@ class _EditUserState extends ConsumerState<EditUser> {
     _awardImageFIle = null;
   }
 
+  // void _removeAward(int index) async {
+  //   print('remove award is working');
+  //   ref.read(userProvider.notifier).removeAward(ref
+  //           .read(userProvider)
+  //           .value
+  //           ?.media
+  //           ?.where((m) => m.metadata == 'award')
+  //           .toList() ??
+  //       [][index]);
+  // }
   void _removeAward(int index) async {
-    ref.read(userProvider.notifier).removeAward(ref
-            .read(userProvider)
-            .value
-            ?.media
-            ?.where((m) => m.metadata == 'award')
-            .toList() ??
-        [][index]);
+  print('remove award is working');
+
+  final awardsList = ref
+      .read(userProvider)
+      .value
+      ?.media
+      ?.where((m) => m.metadata == 'award')
+      .toList() ?? [];
+
+  if (index < awardsList.length) {
+    ref.read(userProvider.notifier).removeAward(awardsList[index]);
+  } else {
+    print('Invalid award index: $index');
   }
+}
+
+
 
   void _addNewWebsite() async {
     Link newWebsite = Link(
@@ -484,15 +502,36 @@ class _EditUserState extends ConsumerState<EditUser> {
     videoNameController.clear();
   }
 
-  void _removeVideo(int index) async {
-    ref.read(userProvider.notifier).removeVideo(ref
-            .read(userProvider)
-            .value
-            ?.media
-            ?.where((m) => m.metadata == 'video')
-            .toList() ??
-        [][index]);
+  // void _removeVideo(int index) async {
+  //   print('remove video funtion is working');
+  //   ref.read(userProvider.notifier).removeVideo(ref
+  //           .read(userProvider)
+  //           .value
+  //           ?.media
+  //           ?.where((m) => m.metadata == 'video')
+  //           .toList() ??
+  //       [][index]);
+  // }
+
+  void _removeVideo(int index) {
+  print('remove video function is working');
+
+  // Get only the videos from media
+  final videosList = ref
+      .read(userProvider)
+      .value
+      ?.media
+      ?.where((m) => m.metadata == 'video')
+      .toList();
+
+  // Ensure list exists and index is valid
+  if (videosList != null && index < videosList.length) {
+    ref.read(userProvider.notifier).removeVideo(videosList[index]);
+  } else {
+    print('No video found at index $index');
   }
+}
+
 
   Future<void> _addNewCertificate() async {
     await imageUpload(_certificateImageFIle!.path).then((url) {
@@ -517,15 +556,32 @@ class _EditUserState extends ConsumerState<EditUser> {
     _certificateImageFIle = null;
   }
 
+  // void _removeCertificate(int index) async {
+  //   ref.read(userProvider.notifier).removeCertificate(ref
+  //           .read(userProvider)
+  //           .value
+  //           ?.media
+  //           ?.where((m) => m.metadata == 'certificate')
+  //           .toList() ??
+  //       [][index]);
+  // }
   void _removeCertificate(int index) async {
-    ref.read(userProvider.notifier).removeCertificate(ref
-            .read(userProvider)
-            .value
-            ?.media
-            ?.where((m) => m.metadata == 'certificate')
-            .toList() ??
-        [][index]);
+  print('remove certificate is working');
+
+  final certificatesList = ref
+      .read(userProvider)
+      .value
+      ?.media
+      ?.where((m) => m.metadata == 'certificate')
+      .toList() ?? [];
+
+  if (index < certificatesList.length) {
+    ref.read(userProvider.notifier).removeCertificate(certificatesList[index]);
+  } else {
+    print('Invalid certificate index: $index');
   }
+}
+
 
   @override
   void dispose() {
@@ -784,14 +840,19 @@ class _EditUserState extends ConsumerState<EditUser> {
                           String? lastRelation;
                           return StatefulBuilder(
                             builder: (context, setStateSB) {
-                              if (_linkedMember != null && _relationship != null &&
-                                  (_linkedMember != lastMember || _relationship != lastRelation)) {
-                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (_linkedMember != null &&
+                                  _relationship != null &&
+                                  (_linkedMember != lastMember ||
+                                      _relationship != lastRelation)) {
+                                WidgetsBinding.instance
+                                    .addPostFrameCallback((_) {
                                   final selectedMember = family.members!
                                       .firstWhere((m) => m.id == _linkedMember);
-                                  final memberName = selectedMember.fullName ?? '';
+                                  final memberName =
+                                      selectedMember.fullName ?? '';
                                   final relationship = _relationship!;
-                                  _showRelationshipConfirmation(memberName, relationship);
+                                  _showRelationshipConfirmation(
+                                      memberName, relationship);
                                   setStateSB(() {
                                     lastMember = _linkedMember;
                                     lastRelation = _relationship;
@@ -804,7 +865,9 @@ class _EditUserState extends ConsumerState<EditUser> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   SizedBox(height: 24),
-                                  Text('Link to Family Member 1 *', style: TextStyle(fontWeight: FontWeight.bold)),
+                                  Text('Link to Family Member 1 *',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)),
                                   SizedBox(height: 16),
                                   SearchableDropDown(
                                     label: null,
@@ -813,25 +876,27 @@ class _EditUserState extends ConsumerState<EditUser> {
                                     items: family.members!
                                         .where((m) =>
                                             m.id != user.id &&
-                                            !_relations.any(
-                                                (rel) => rel['memberId'] == m.id))
+                                            !_relations.any((rel) =>
+                                                rel['memberId'] == m.id))
                                         .map((m) => DropdownMenuItem(
                                             value: m.id,
                                             child: Text(m.fullName ?? '')))
                                         .toList(),
-                                    onChanged: (val) => setStateSB(() => _linkedMember = val),
+                                    onChanged: (val) =>
+                                        setStateSB(() => _linkedMember = val),
                                   ),
                                   SizedBox(height: 16),
                                   Text(
-                                    _linkedMember != null
-                                        ? 'Who are you to ' +
-                                            (family.members!
-                                                    .firstWhere((m) =>
-                                                        m.id == _linkedMember)
-                                                    .fullName ??
-                                                '')
-                                        : 'Relationship *',
-                                    style: TextStyle(fontWeight: FontWeight.bold)),
+                                      _linkedMember != null
+                                          ? 'Who are you to ' +
+                                              (family.members!
+                                                      .firstWhere((m) =>
+                                                          m.id == _linkedMember)
+                                                      .fullName ??
+                                                  '')
+                                          : 'Relationship *',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)),
                                   SizedBox(height: 16),
                                   SelectionDropDown(
                                     label: null,
@@ -839,9 +904,11 @@ class _EditUserState extends ConsumerState<EditUser> {
                                     value: _relationship,
                                     items: _relationships
                                         .map((r) => DropdownMenuItem(
-                                            value: r, child: Text(r.toUpperCase())))
+                                            value: r,
+                                            child: Text(r.toUpperCase())))
                                         .toList(),
-                                    onChanged: (val) => setStateSB(() => _relationship = val),
+                                    onChanged: (val) =>
+                                        setStateSB(() => _relationship = val),
                                   ),
                                   SizedBox(height: 8),
                                   ..._relations
@@ -857,7 +924,8 @@ class _EditUserState extends ConsumerState<EditUser> {
                                                   color: Colors.red),
                                               onPressed: () {
                                                 setStateSB(() {
-                                                  _relations.removeAt(entry.key);
+                                                  _relations
+                                                      .removeAt(entry.key);
                                                 });
                                               },
                                             ),
@@ -1002,7 +1070,6 @@ class _EditUserState extends ConsumerState<EditUser> {
                                 });
                               },
                               validator: (val) => null, // optional
-                            
                             ),
                           ),
                         ],
@@ -1213,7 +1280,7 @@ class _EditUserState extends ConsumerState<EditUser> {
                                         },
                                         child: AbsorbPointer(
                                           child: CustomTextFormField(
-                                            title: 'Birthdate',
+                                            title: 'Date of Birth',
                                             textController: birthDateController,
                                             labelText: 'Select your Birthdate',
                                             readOnly: true,
@@ -2315,6 +2382,7 @@ class _EditUserState extends ConsumerState<EditUser> {
   }
 
   void _editVideo(int index) {
+    print('edit video is working');
     final videos = ref
             .read(userProvider)
             .value
