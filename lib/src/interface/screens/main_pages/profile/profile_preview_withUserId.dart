@@ -278,7 +278,7 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                                   const SizedBox(width: 10),
                                                   if (user.birthDate != null)
                                                     Text(
-                                                        'BirthDate: ${DateFormat('yyyy-MM-dd').format(user.birthDate!)}',
+                                                        'Date of Birth: ${DateFormat('yyyy-MM-dd').format(user.birthDate!)}',
                                                         style: kSmallerTitleB
                                                             .copyWith(
                                                                 color:

@@ -11,10 +11,22 @@ import 'package:familytree/src/data/services/navgitor_service.dart';
 import 'package:familytree/src/data/services/share_qr.dart';
 import 'package:familytree/src/interface/components/animations/glowing_profile.dart';
 import 'package:familytree/src/interface/screens/main_pages/profile/idcard.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 class ProfilePage extends ConsumerWidget {
   final UserModel user;
   const ProfilePage({super.key, required this.user});
+  //for launching dialar
+  Future<void> _launchDialer(String number) async {
+  final Uri launchUrL = Uri(
+    scheme: 'tel',
+    path: number,
+    );
+  if (!await launchUrl(launchUrL)) {
+    throw Exception('Could not launch $number');
+  }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -318,7 +330,7 @@ class ProfilePage extends ConsumerWidget {
                                                               if (user.birthDate !=
                                                                   null)
                                                                 Text(
-                                                                    'BirthDate: ${DateFormat('yyyy-MM-dd').format(user.birthDate!)}',
+                                                                    'Date of Birth: ${DateFormat('yyyy-MM-dd').format(user.birthDate!)}',
                                                                     style: kSmallerTitleB
                                                                         .copyWith(
                                                                             color:
@@ -350,12 +362,16 @@ class ProfilePage extends ConsumerWidget {
                                                           ),
                                                           child: Column(
                                                             children: [
-                                                              ContactRow(
-                                                                  icon: Icons
-                                                                      .phone,
-                                                                  text:
-                                                                      user.phone ??
-                                                                          ''),
+                                                              GestureDetector(
+                                                                //rediricting to dialer
+                                                                onTap: () => _launchDialer(user.phone.toString()),
+                                                                child: ContactRow(
+                                                                    icon: Icons
+                                                                        .phone,
+                                                                    text:
+                                                                        user.phone ??
+                                                                            ''),
+                                                              ),
                                                               if (user.email !=
                                                                       '' &&
                                                                   user.email !=
