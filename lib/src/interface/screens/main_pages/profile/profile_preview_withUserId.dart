@@ -59,18 +59,28 @@ class ProfilePreviewUsingId extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
 //for launching dialar
-  Future<void> _launchDialer(String number) async {
-  final Uri launchUrL = Uri(
-    scheme: 'tel',
-    path: number,
-    );
-  if (!await launchUrl(launchUrL)) {
-    throw Exception('Could not launch $number');
-  }
-  }
+    Future<void> _launchDialer(String number) async {
+      final Uri launchUrL = Uri(
+        scheme: 'tel',
+        path: number,
+      );
+      if (!await launchUrl(launchUrL)) {
+        throw Exception('Could not launch $number');
+      }
+    }
 
+    // For launching email app
+    Future<void> _launchEmail(String email) async {
+      final Uri emailUri = Uri(
+        scheme: 'mailto',
+        path: email,
+      );
+
+      if (!await launchUrl(emailUri)) {
+        throw Exception('Could not launch $email');
+      }
+    }
 
     final reviewsToShow = ref.watch(reviewsProvider);
     PageController _videoCountController = PageController();
@@ -360,7 +370,11 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                         ),
                                         const SizedBox(height: 15),
                                         GestureDetector(
-                                          onTap: () => _launchDialer(user.phone.toString()),
+                                          onTap: () {
+                                            _launchDialer(
+                                                user.phone.toString());
+                                                print('Address value: ${user.address}');
+                                          },
                                           child: Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
@@ -372,22 +386,28 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                             ],
                                           ),
                                         ),
+
                                         if (user.address != null &&
                                             user.address != '')
                                           const SizedBox(height: 15),
                                         if (user.email != null &&
                                             user.email != '')
-                                          Row(
-                                            children: [
-                                              CustomIconContainer(
-                                                  icon: Icons.email),
-                                              const SizedBox(width: 10),
-                                              Text(user.email ?? ''),
-                                            ],
+                                          GestureDetector(
+                                            onTap: () => _launchEmail(
+                                                user.email.toString()),
+                                            child: Row(
+                                              children: [
+                                                CustomIconContainer(
+                                                    icon: Icons.email),
+                                                const SizedBox(width: 10),
+                                                Text(user.email ?? ''),
+                                              ],
+                                            ),
                                           ),
                                         if (user.address != null &&
                                             user.address != '')
-                                          const SizedBox(height: 15),
+                                          const SizedBox(
+                                              height: 15),
                                         if (user.address != null &&
                                             user.address != '')
                                           Row(
@@ -396,9 +416,7 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                                   icon: Icons.location_on),
                                               const SizedBox(width: 10),
                                               Expanded(
-                                                child: Text(
-                                                  user.address!,
-                                                ),
+                                                child: Text(user.address ?? ''),
                                               )
                                             ],
                                           ),

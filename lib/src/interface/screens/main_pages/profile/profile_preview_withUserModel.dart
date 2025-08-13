@@ -31,6 +31,7 @@ class ProfilePreviewWithUserModel extends StatelessWidget {
   final UserModel user;
   ProfilePreviewWithUserModel({Key? key, required this.user}) : super(key: key);
 
+
   final List<String> svgIcons = [
     'assets/svg/icons/icons8-facebook.svg',
     'assets/svg/icons/twitter.svg',
@@ -38,6 +39,37 @@ class ProfilePreviewWithUserModel extends StatelessWidget {
     'assets/svg/icons/linkedin.svg',
   ];
   final ValueNotifier<int> _currentVideo = ValueNotifier<int>(0);
+
+
+    //for launching dialar
+  Future<void> _launchDialer(String number) async {
+  final Uri launchUrL = Uri(
+    scheme: 'tel',
+    path: number,
+    );
+  if (!await launchUrl(launchUrL)) {
+    throw Exception('Could not launch $number');
+  }
+  }
+
+
+
+
+
+  // For launching email app
+  Future<void> _launchEmail(String email) async {
+  final Uri emailUri = Uri(
+    scheme: 'mailto',
+    path: email,
+    
+  );
+
+  if (!await launchUrl(emailUri)) {
+    throw Exception('Could not launch $email');
+  }
+  }
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -166,7 +198,7 @@ class ProfilePreviewWithUserModel extends StatelessWidget {
                                         const SizedBox(width: 10),
                                         if (user.birthDate != null)
                                           Text(
-                                              'BirthDate: ${DateFormat('yyyy-MM-dd').format(user.birthDate!)}',
+                                              'Date of Birth: ${DateFormat('yyyy-MM-dd').format(user.birthDate!)}',
                                               style: kSmallerTitleB.copyWith(
                                                   color: kPrimaryColor)),
                                       ],
@@ -240,23 +272,29 @@ class ProfilePreviewWithUserModel extends StatelessWidget {
                                 style: kBodyTitleB.copyWith(color: kBlack),
                               ),
                               const SizedBox(height: 15),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  CustomIconContainer(icon: Icons.phone),
-                                  const SizedBox(width: 10),
-                                  Text(user.phone.toString()),
-                                ],
+                              GestureDetector(
+                                onTap: () => _launchDialer(user.phone.toString()),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    CustomIconContainer(icon: Icons.phone),
+                                    const SizedBox(width: 10),
+                                    Text(user.phone.toString()),
+                                  ],
+                                ),
                               ),
                               if (user.address != null && user.address != '')
                                 const SizedBox(height: 15),
                               if (user.email != null && user.email != '')
-                                Row(
-                                  children: [
-                                    CustomIconContainer(icon: Icons.email),
-                                    const SizedBox(width: 10),
-                                    Text(user.email ?? ''),
-                                  ],
+                                GestureDetector(
+                                  onTap: () => _launchEmail(user.email.toString()),
+                                  child: Row(
+                                    children: [
+                                      CustomIconContainer(icon: Icons.email),
+                                      const SizedBox(width: 10),
+                                      Text(user.email ?? ''),
+                                    ],
+                                  ),
                                 ),
                               if (user.address != null && user.address != '')
                                 const SizedBox(height: 15),

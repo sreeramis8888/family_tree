@@ -612,7 +612,8 @@ class _EditUserState extends ConsumerState<EditUser> {
       'email': user.email,
       'phone': user.phone,
       'secondaryPhone': user.secondaryPhone,
-      'address': user.address,
+      // 'address': user.address,
+      'address': addressController.text.trim(), //takes from controller
       'image': user.image,
       'location': user.location,
       'social': user.social?.map((e) => e.toJson()).toList(),
