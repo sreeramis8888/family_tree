@@ -313,7 +313,9 @@ class _BusinessViewState extends ConsumerState<BusinessView> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => IndividualPage(conversationImage:user.image??'' ,conversationTitle:user.fullName??'' ,
+                        builder: (context) => IndividualPage(
+                          conversationImage: user.image ?? '',
+                          conversationTitle: user.fullName ?? '',
                           conversation: conversation,
                           currentUserId: id,
                           initialMessage: feed.content ?? '',
@@ -406,6 +408,7 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
   }
 
   void _openCommentModal() {
+    print('comments:${widget.business.comments?.length}');
     log('comments: ${widget.business.comments?.length}');
     showModalBottomSheet(
       context: context,
@@ -459,6 +462,38 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                         itemBuilder: (context, index) {
                           return Consumer(
                             builder: (context, ref, child) {
+                              final commentUser =
+                                  widget.business.comments![index].user;
+
+                              Widget titleWidget;
+
+                              // 1) Use the embedded name if present
+                              if (commentUser?.name != null &&
+                                  commentUser!.name!.trim().isNotEmpty) {
+                                titleWidget = Text(commentUser.name!);
+                                print("1 is working");
+                              }
+                              // 2) Otherwise fetch full user by id and use fullName
+                              else if (commentUser?.id != null &&
+                                  commentUser!.id!.trim().isNotEmpty) {
+                                print('2 is working');
+                                final asyncUser = ref.watch(
+                                    fetchUserDetailsProvider(commentUser.id!));
+                                titleWidget = asyncUser.when(
+                                  data: (u) => Text(
+                                    (u.fullName?.trim().isNotEmpty == true
+                                        ? u.fullName!
+                                        : 'Unknown User'),
+                                  ),
+                                  loading: () => const Text('...'),
+                                  error: (_, __) => const Text('Unknown User'),
+                                );
+                              }
+                              // 3) Last resort
+                              else {
+                                titleWidget = const Text('Unknown User');
+                              }
+
                               return ListTile(
                                 leading: ClipOval(
                                   child: Container(
@@ -466,29 +501,63 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                                     height: 30,
                                     color: const Color.fromARGB(
                                         255, 255, 255, 255),
-                                    child: widget.business.comments?[index].user
-                                                ?.image !=
-                                            null
-                                        ? Image.network(
-                                            fit: BoxFit.fill,
-                                            widget.business.comments![index]
-                                                .user!.image!)
+                                    child: (commentUser?.image != null &&
+                                            commentUser!.image!.isNotEmpty)
+                                        ? Image.network(commentUser.image!,
+                                            fit: BoxFit.fill)
                                         : const Icon(Icons.person),
                                   ),
                                 ),
-                                title: Text(
-                                    widget.business.comments![index].user !=
-                                            null
-                                        ? widget.business.comments![index].user!
-                                                .name ??
-                                            'Unknown User'
-                                        : 'Unknown User'),
+                                title: titleWidget,
                                 subtitle: Text(
                                     widget.business.comments?[index].comment ??
                                         ''),
                               );
                             },
                           );
+
+                          // return Consumer(
+                          //   builder: (context, ref, child) {
+                          //     return
+                          //     ListTile(
+                          //       leading: ClipOval(
+                          //         child: Container(
+                          //           width: 30,
+                          //           height: 30,
+                          //           color: const Color.fromARGB(
+                          //               255, 255, 255, 255),
+                          //           child: widget.business.comments?[index].user
+                          //                       ?.image !=
+                          //                   null
+                          //               ? Image.network(
+                          //                   fit: BoxFit.fill,
+                          //                   widget.business.comments![index]
+                          //                       .user!.image!)
+                          //               : const Icon(Icons.person),
+                          //         ),
+                          //       ),
+                          //       title:
+                          //       Text(
+                          //           widget.business.comments![index].user !=
+                          //                   null
+                          //               ? widget.business.comments![index].user!
+                          //                       .name ??
+                          //                   'Unknown User'
+                          //               : 'Unknown User'),
+
+                          //       // Text(
+                          //       //       widget.business.comments![index].user != null
+                          //       //     ? (widget.business.comments![index].user!.fullName ??
+                          //       //      widget.business.comments![index].user!.name ??
+                          //       //     'Unknown User')
+                          //       //     : 'Unknown User'
+                          //       //   ),
+                          //       subtitle: Text(
+                          //           widget.business.comments?[index].comment ??
+                          //               ''),
+                          //     );
+                          //   },
+                          // );
                         },
                       ),
                     ),
@@ -603,7 +672,6 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                     ],
                   ),
                 ),
-              
               ],
             ),
           ),
@@ -628,7 +696,6 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
             child: ExpandableText(text: widget.business.content ?? ''),
           ),
 
-      
           const SizedBox(height: 16),
 
           // Post image
@@ -693,7 +760,8 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                         SvgPicture.asset('assets/svg/icons/share.svg'),
                       ],
                     ),
-                  ),   const Spacer(),
+                  ),
+                const Spacer(),
 
                 if (widget.business.author != id)
                   BlockReportDropdown(
