@@ -139,7 +139,10 @@ class _ChatDashState extends ConsumerState<ChatDash> {
                           conversation: conversation,
                           currentUserId: id,
                         ),
-                      ));
+                      )).then((_) {
+                           // This will refresh the list when coming back
+                           ref.invalidate(fetchChatConversationsProvider);
+                        });
                     },
                   ),
                   Divider(
