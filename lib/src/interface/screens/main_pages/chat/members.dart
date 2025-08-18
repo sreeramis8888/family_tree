@@ -55,10 +55,12 @@ class _MembersPageState extends ConsumerState<MembersPage> {
   }
 
   void _onSearchChanged(String query) {
-    if (_debounce?.isActive ?? false) _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 300), () {
-      ref.read(peopleNotifierProvider.notifier).searchUsers(query);
-    });
+    // if (_debounce?.isActive ?? false) _debounce?.cancel();
+    // _debounce = Timer(const Duration(milliseconds: 300), () {
+    //   ref.read(peopleNotifierProvider.notifier).searchUsers(query);
+    // });
+    setState(() {});
+
   }
 
   void _onSearchSubmitted(String query) {
@@ -72,7 +74,13 @@ class _MembersPageState extends ConsumerState<MembersPage> {
     final isFirstLoad = ref.read(peopleNotifierProvider.notifier).isFirstLoad;
     final conversationsAsync = ref.watch(fetchChatConversationsProvider);
     // Filter out the current user
-    final users = usersRaw.where((user) => user.id != id).toList();
+    // final users = usersRaw.where((user) => user.id != id).toList();
+    final query = _searchController.text.toLowerCase();
+    final users = usersRaw
+    .where((user) => user.id != id)
+    .where((user) => user.fullName?.toLowerCase().contains(query) ?? false)
+    .toList();
+
 
     return Scaffold(
       backgroundColor: kWhite,
@@ -257,31 +265,76 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                                   padding: EdgeInsets.zero,
                                   constraints: const BoxConstraints(),
                                   onPressed: () async {
-                                    if (directConversation != null) {
-                                         final otherUser = directConversation.participants[1].userId ?? ChatUser();
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) => IndividualPage(conversationImage:otherUser.image??'' ,conversationTitle:otherUser.fullName??'' ,
-                                            conversation: directConversation,
-                                            currentUserId: id,
+                                      if (directConversation != null) {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) => IndividualPage(
+                                              conversationImage: user.image ?? '',
+                                              conversationTitle: user.fullName ?? 'Chat',
+                                              conversation: directConversation,
+                                              currentUserId: id,
+                                            ),
                                           ),
-                                        ),
-                                      );
-                                    } else {
-                                      final newConversation = await ChatApi()
-                                          .fetchDirectConversation(userId);
-                                      log('DIRECT CONVERSATION:${newConversation.toJson()}');
-                                             final otherUser = newConversation.participants[1].userId ?? ChatUser();
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) => IndividualPage(
-                                            conversation: newConversation,conversationImage:otherUser.image??'' ,conversationTitle:otherUser.fullName??'' ,
-                                            currentUserId: id,
+                                        ).then((_) {
+                                          ref.invalidate(fetchChatConversationsProvider);
+                                        });
+                                      } else {
+                                        final newConversation = await ChatApi().fetchDirectConversation(userId);
+                                        log('DIRECT CONVERSATION:${newConversation.toJson()}');
+
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) => IndividualPage(
+                                              conversationImage: user.image ?? '',
+                                              conversationTitle: user.fullName ?? 'Chat',
+                                              conversation: newConversation,
+                                              currentUserId: id,
+                                            ),
                                           ),
-                                        ),
-                                      );
+                                        ).then((_) {
+                                          ref.invalidate(fetchChatConversationsProvider);
+                                        });
+                                      }
                                     }
-                                  },
+
+                                  // onPressed: () async {
+                                  //       if (directConversation != null) {
+                                  //         Navigator.of(context).push(
+                                  //           MaterialPageRoute(
+                                  //             builder: (context) => IndividualPage(
+                                  //               conversationImage: directConversation.participants[1].user?.image ?? '',
+                                  //               conversationTitle: directConversation.participants[1].user?.fullName ?? '',
+                                  //               conversation: directConversation,
+                                  //               currentUserId: id,
+                                  //             ),
+                                  //           ),
+                                  //         ).then((_) {
+                                  //           // 🔥 Force ChatDash to update when you come back
+                                  //           ref.invalidate(fetchChatConversationsProvider);
+                                  //         });
+
+
+                                  //       } else {
+                                  //         final newConversation = await ChatApi().fetchDirectConversation(userId);
+                                  //         log('DIRECT CONVERSATION:${newConversation.toJson()}');
+
+                                  //         Navigator.of(context).push(
+                                  //           MaterialPageRoute(
+                                  //             builder: (context) => IndividualPage(
+                                  //               conversationImage: newConversation.participants[1].user?.image ?? '',
+                                  //               conversationTitle: newConversation.participants[1].user?.fullName ?? '',
+                                  //               conversation: newConversation,
+                                  //               currentUserId: id,
+                                  //             ),
+                                  //           ),
+                                  //         ).then((_) {
+                                  //           // 🔥 Same for new chats
+                                  //           ref.invalidate(fetchChatConversationsProvider);
+                                  //         });
+                                  //       }
+                                  //     }
+                                  
+                                  
                                 ),
                               ),
                             ),

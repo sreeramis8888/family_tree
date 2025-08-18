@@ -476,7 +476,7 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                               // 2) Otherwise fetch full user by id and use fullName
                               else if (commentUser?.id != null &&
                                   commentUser!.id!.trim().isNotEmpty) {
-                                print('2 is working');
+                                    print('2 is working');
                                 final asyncUser = ref.watch(
                                     fetchUserDetailsProvider(commentUser.id!));
                                 titleWidget = asyncUser.when(
@@ -512,6 +512,7 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                                 subtitle: Text(
                                     widget.business.comments?[index].comment ??
                                         ''),
+                                
                               );
                             },
                           );

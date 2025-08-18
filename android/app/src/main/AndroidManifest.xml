@@ -12,6 +12,39 @@
 <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application android:name="${applicationName}" android:icon="@mipmap/ic_launcher" android:label="KN Family Connect" android:theme="@style/Theme.MaterialComponents.Light.NoActionBar">
+        
+
+		<receiver android:name="com.shounakmulay.telephony.sms.IncomingSmsReceiver"
+		    android:permission="android.permission.BROADCAST_SMS" android:exported="true">
+		    <intent-filter>
+			<action android:name="android.provider.Telephony.SMS_RECEIVED"/>
+		    </intent-filter>
+		</receiver>
+        
+        
+        <!-- <receiver
+        android:name="com.google.android.gms.auth.api.phone.SmsRetriever"
+        android:exported="true">
+        <intent-filter>
+            <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED"/>
+        </intent-filter>
+            </receiver> -->
+
+        
+
+            <!-- The sms_autofill package might also require its own receiver -->
+            <!-- <receiver android:name="io.inthel.smstextfill.SmsTextFillBroadcastReceiver"
+                android:permission="com.google.android.gms.auth.api.phone.permission.SEND"
+                android:exported="true">
+                <intent-filter>
+                    <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED" />
+                    <action android:name="android.intent.action.PACKAGE_REPLACED" />
+                    <data android:scheme="package" />
+                </intent-filter>
+            </receiver> -->
+
+
+
         <activity android:name=".MainActivity" android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode" android:exported="true" android:hardwareAccelerated="true" android:launchMode="singleTop" android:theme="@style/LaunchTheme" android:windowSoftInputMode="adjustResize">
             <!-- Specifies an Android theme to apply to this Activity as soon as
                  the Android process has started. This theme is visible to the user
@@ -19,8 +52,8 @@
                  to determine the Window background behind the Flutter UI. -->
             <meta-data android:name="io.flutter.embedding.android.NormalTheme" android:resource="@style/NormalTheme"/>
             <meta-data android:name="io.flutter.embedding.android.EnableImpeller" android:value="false"/>
-            <meta-data android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVER_API"
-                    android:value="true" />
+            <meta-data android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVER_API" android:value="true" />
+            <meta-data android:name="sms_autofill_app_id" android:value="5gbuXjiAlHM" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
