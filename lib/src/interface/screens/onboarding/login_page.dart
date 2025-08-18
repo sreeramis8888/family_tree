@@ -530,9 +530,15 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
           log('savedToken: $savedToken');
           log('savedId: $savedId');
 
-     
-          Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (context) => const EulaAgreementScreen()));
+          final isFirstLaunch =
+              await SecureStorage.read('has_launched_before') ?? 'false';
+          if (isFirstLaunch == 'true') {
+            Navigator.of(context).pushReplacement(MaterialPageRoute(
+                builder: (context) => const EulaAgreementScreen()));
+          } else {
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const MainPage()));
+          }
         }
       } else {
         // CustomSnackbar.showSnackbar(context, 'Wrong OTP');

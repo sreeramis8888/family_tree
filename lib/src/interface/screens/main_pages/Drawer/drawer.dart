@@ -21,11 +21,12 @@ Widget customDrawer(
     required BuildContext context,
     required WidgetRef ref}) {
   NavigationService navigationService = NavigationService();
-  
+
   bool _shouldHidePaymentFeatures() {
     // Hide payment features for specific number to avoid App Store payment policy issues
     return user.phone == '+919645398555';
   }
+
   return Drawer(
     child: Column(
       children: [
@@ -129,7 +130,8 @@ Widget customDrawer(
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const FinancialProgramPage(),
+                              builder: (context) =>
+                                  const FinancialProgramPage(),
                             ),
                           );
                         } else {
@@ -149,7 +151,8 @@ Widget customDrawer(
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const FinancialAssistancePage(),
+                            builder: (context) =>
+                                const FinancialAssistancePage(),
                           ),
                         );
                       }
@@ -237,7 +240,7 @@ Widget customDrawer(
                     LoggedIn = false;
                     subscriptionType = 'free';
                     // Reset userProvider state
-                    ref.invalidate(userProvider);
+
                     navigationService.pushNamedAndRemoveUntil('PhoneNumber');
                     // await editUser({
                     //   "fcm": "",
