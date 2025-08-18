@@ -265,41 +265,74 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                                   padding: EdgeInsets.zero,
                                   constraints: const BoxConstraints(),
                                   onPressed: () async {
-                                        if (directConversation != null) {
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (context) => IndividualPage(
-                                                conversationImage: directConversation.participants[1].user?.image ?? '',
-                                                conversationTitle: directConversation.participants[1].user?.fullName ?? '',
-                                                conversation: directConversation,
-                                                currentUserId: id,
-                                              ),
+                                      if (directConversation != null) {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) => IndividualPage(
+                                              conversationImage: user.image ?? '',
+                                              conversationTitle: user.fullName ?? 'Chat',
+                                              conversation: directConversation,
+                                              currentUserId: id,
                                             ),
-                                          ).then((_) {
-                                            // 🔥 Force ChatDash to update when you come back
-                                            ref.invalidate(fetchChatConversationsProvider);
-                                          });
+                                          ),
+                                        ).then((_) {
+                                          ref.invalidate(fetchChatConversationsProvider);
+                                        });
+                                      } else {
+                                        final newConversation = await ChatApi().fetchDirectConversation(userId);
+                                        log('DIRECT CONVERSATION:${newConversation.toJson()}');
 
-
-                                        } else {
-                                          final newConversation = await ChatApi().fetchDirectConversation(userId);
-                                          log('DIRECT CONVERSATION:${newConversation.toJson()}');
-
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (context) => IndividualPage(
-                                                conversationImage: newConversation.participants[1].user?.image ?? '',
-                                                conversationTitle: newConversation.participants[1].user?.fullName ?? '',
-                                                conversation: newConversation,
-                                                currentUserId: id,
-                                              ),
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) => IndividualPage(
+                                              conversationImage: user.image ?? '',
+                                              conversationTitle: user.fullName ?? 'Chat',
+                                              conversation: newConversation,
+                                              currentUserId: id,
                                             ),
-                                          ).then((_) {
-                                            // 🔥 Same for new chats
-                                            ref.invalidate(fetchChatConversationsProvider);
-                                          });
-                                        }
+                                          ),
+                                        ).then((_) {
+                                          ref.invalidate(fetchChatConversationsProvider);
+                                        });
                                       }
+                                    }
+
+                                  // onPressed: () async {
+                                  //       if (directConversation != null) {
+                                  //         Navigator.of(context).push(
+                                  //           MaterialPageRoute(
+                                  //             builder: (context) => IndividualPage(
+                                  //               conversationImage: directConversation.participants[1].user?.image ?? '',
+                                  //               conversationTitle: directConversation.participants[1].user?.fullName ?? '',
+                                  //               conversation: directConversation,
+                                  //               currentUserId: id,
+                                  //             ),
+                                  //           ),
+                                  //         ).then((_) {
+                                  //           // 🔥 Force ChatDash to update when you come back
+                                  //           ref.invalidate(fetchChatConversationsProvider);
+                                  //         });
+
+
+                                  //       } else {
+                                  //         final newConversation = await ChatApi().fetchDirectConversation(userId);
+                                  //         log('DIRECT CONVERSATION:${newConversation.toJson()}');
+
+                                  //         Navigator.of(context).push(
+                                  //           MaterialPageRoute(
+                                  //             builder: (context) => IndividualPage(
+                                  //               conversationImage: newConversation.participants[1].user?.image ?? '',
+                                  //               conversationTitle: newConversation.participants[1].user?.fullName ?? '',
+                                  //               conversation: newConversation,
+                                  //               currentUserId: id,
+                                  //             ),
+                                  //           ),
+                                  //         ).then((_) {
+                                  //           // 🔥 Same for new chats
+                                  //           ref.invalidate(fetchChatConversationsProvider);
+                                  //         });
+                                  //       }
+                                  //     }
                                   
                                   
                                 ),
