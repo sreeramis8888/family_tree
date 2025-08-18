@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:familytree/src/data/globals.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as dio;
 
 Future<void> likeFeed(String feedId) async {
   final url = Uri.parse('$baseUrl/feeds/$feedId/like');
@@ -30,6 +31,32 @@ Future<void> likeFeed(String feedId) async {
   }
 }
 
+
+//deleting comment
+Future<void> deleteComment(String feedId, String commentId) async {
+  final url = Uri.parse('$baseUrl/feeds/$feedId/comments/$commentId');
+  try {
+    final response = await http.delete(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'accept': '*/*',
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete comment: ${response.body}');
+    }
+  } catch (e) {
+    throw Exception('Error deleting comment: $e');
+  }
+}
+
+
+
+
+
+
+//posting comment
 Future<void> postComment(
     {required String feedId, required String comment}) async {
   final url = Uri.parse('$baseUrl/feeds/$feedId/comment');

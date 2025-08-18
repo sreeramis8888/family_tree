@@ -67,15 +67,38 @@ class Business {
   }
 }
 
-// Comment model with fromJson and toJson methods
+// // Comment model with fromJson and toJson methods
+// class Comment {
+//   FeedUser? user;
+//   String? comment;
+
+//   Comment({this.user, this.comment});
+
+//   factory Comment.fromJson(Map<String, dynamic> json) {
+//     return Comment(
+//       user: json['user'] != null ? FeedUser.fromJson(json['user']) : null,
+//       comment: json['comment'] as String?,
+//     );
+//   }
+
+//   Map<String, dynamic> toJson() {
+//     return {
+//       'user': user?.toJson(),
+//       'comment': comment,
+//     };
+//   }
+// }
+
 class Comment {
+  String? id; // <-- add this
   FeedUser? user;
   String? comment;
 
-  Comment({this.user, this.comment});
+  Comment({this.id, this.user, this.comment});
 
   factory Comment.fromJson(Map<String, dynamic> json) {
     return Comment(
+      id: json['_id'] ?? json['id'], // adapt this key to match your API
       user: json['user'] != null ? FeedUser.fromJson(json['user']) : null,
       comment: json['comment'] as String?,
     );
@@ -83,11 +106,16 @@ class Comment {
 
   Map<String, dynamic> toJson() {
     return {
+      '_id': id,
       'user': user?.toJson(),
       'comment': comment,
     };
   }
 }
+
+
+
+
 
 // User model with fromJson and toJson methods
 class FeedUser {

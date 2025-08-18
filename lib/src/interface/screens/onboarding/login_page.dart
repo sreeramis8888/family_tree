@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:familytree/src/data/utils/size.dart';
+// import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:familytree/src/data/api_routes/user_api/admin/admin_activities_api.dart';
@@ -31,6 +32,7 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:familytree/src/interface/screens/onboarding/registration_page.dart';
 import 'package:familytree/src/interface/screens/onboarding/approval_waiting_page.dart';
 import 'package:sms_autofill/sms_autofill.dart';
+import 'package:telephony/telephony.dart';
 
 TextEditingController _mobileController = TextEditingController();
 // TextEditingController _otpController = TextEditingController();
@@ -282,6 +284,8 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
   bool _isButtonDisabled = true;
   bool _isVerifyButtonDisabled = true;
   final TextEditingController _otpController = TextEditingController();
+  final Telephony telephony = Telephony.instance;
+  String textReceived = '';
 
   @override
   void initState() {
@@ -296,8 +300,63 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
     startTimer();
   }
 
-  Future<void> listenForOtp() async {
-    await SmsAutoFill().listenForCode();
+  // Future<void> listenForOtp() async {
+  //   await SmsAutoFill().listenForCode();
+  //   SmsAutoFill().code.listen((code) {
+  //   if (code != null && code.isNotEmpty) {
+  //     _otpController.text = code; // This will auto-fill PinCodeTextField
+  //   }
+  // });
+
+  // }
+
+// Future<void> listenForOtp() async {
+//   String? appSignature = await SmsAutoFill().getAppSignature;
+//   log("App Signature: $appSignature");
+
+//   // Start listening for incoming OTPs
+//   await SmsAutoFill().listenForCode();
+
+//   // Listen for OTP value from SmsAutoFill
+//   SmsAutoFill().code.listen((code) {
+//     if (code != null && code.isNotEmpty) {
+//       log("Received OTP: $code");
+//       setState(() {
+//         _otpController.text = code.trim(); // Auto-fill the field
+//         _isVerifyButtonDisabled = _otpController.text.length != 6;
+//       });
+//     }
+//   });
+// }
+
+  // Future<void> listenForOtp() async {
+  //   String? appSignature = await SmsAutoFill().getAppSignature;
+  //   print("App Signature: $appSignature");
+
+  //   await SmsAutoFill().listenForCode();
+
+  //   SmsAutoFill().code.listen((code) {
+  //     if (code != null && code.isNotEmpty) {
+  //       print("Received OTP: $code");
+  //       setState(() {
+  //         _otpController.text = code.trim();
+  //         _isVerifyButtonDisabled = code.trim().length != 6;
+  //       });
+  //     } else {
+  //       print('nothing recived');
+  //     }
+  //   });
+  // }
+
+  void listenForOtp() {
+    telephony.listenIncomingSms(onNewMessage: (SmsMessage message) {
+      setState(() {
+        textReceived = message.body!;
+        print(textReceived);
+      });
+    },
+    listenInBackground: false
+    );
   }
 
   void startTimer() {
@@ -419,7 +478,9 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
                     backgroundColor: Colors.transparent,
                     enableActiveFill: true,
                     controller: _otpController,
-                    onChanged: (value) {},
+                    onChanged: (value) {
+                      _isVerifyButtonDisabled = value.length != 6;
+                    },
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -530,7 +591,6 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
           log('savedToken: $savedToken');
           log('savedId: $savedId');
 
-     
           Navigator.of(context).pushReplacement(MaterialPageRoute(
               builder: (context) => const EulaAgreementScreen()));
         }
