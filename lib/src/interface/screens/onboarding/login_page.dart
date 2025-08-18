@@ -284,7 +284,6 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
   bool _isButtonDisabled = true;
   bool _isVerifyButtonDisabled = true;
   final TextEditingController _otpController = TextEditingController();
-  final Telephony telephony = Telephony.instance;
 
   @override
   void initState() {
@@ -295,7 +294,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
       });
     });
     //Listen for otp
-    listenForOtp();
+    // listenForOtp();
     startTimer();
   }
 
@@ -347,19 +346,19 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
   //   });
   // }
 
-  void listenForOtp() {
-    telephony.listenIncomingSms(
-        onNewMessage: (SmsMessage message) {
-          if (message.body!.contains('familytree-7458')) {
-            String otpCode = message.body!.substring(0, 6);
-            setState(() {
-              print(message.body!);
-              _otpController.text = otpCode;
-            });
-          }
-        },
-        listenInBackground: false);
-  }
+  // void listenForOtp() {
+  //   telephony.listenIncomingSms(
+  //       onNewMessage: (SmsMessage message) {
+  //         if (message.body!.contains('familytree-7458')) {
+  //           String otpCode = message.body!.substring(0, 6);
+  //           setState(() {
+  //             print(message.body!);
+  //             _otpController.text = otpCode;
+  //           });
+  //         }
+  //       },
+  //       listenInBackground: false);
+  // }
 
   void startTimer() {
     _isButtonDisabled = true;
