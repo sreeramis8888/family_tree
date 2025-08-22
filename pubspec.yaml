@@ -83,8 +83,7 @@ dependencies:
   shared_preferences: ^2.5.3
   flutter_inappwebview: ^6.0.0
   youtube_player_flutter: ^9.1.2
-  sms_autofill: ^2.4.1
-  telephony: ^0.2.0
+
 
 dev_dependencies:
   flutter_test:

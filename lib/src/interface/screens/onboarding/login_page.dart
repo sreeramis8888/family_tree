@@ -31,8 +31,6 @@ import 'package:keyboard_avoider/keyboard_avoider.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:familytree/src/interface/screens/onboarding/registration_page.dart';
 import 'package:familytree/src/interface/screens/onboarding/approval_waiting_page.dart';
-import 'package:sms_autofill/sms_autofill.dart';
-import 'package:telephony/telephony.dart';
 
 TextEditingController _mobileController = TextEditingController();
 // TextEditingController _otpController = TextEditingController();
@@ -386,7 +384,6 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
   @override
   void dispose() {
     _timer?.cancel();
-    SmsAutoFill().unregisterListener();
     super.dispose();
   }
 
