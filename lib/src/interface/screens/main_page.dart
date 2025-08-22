@@ -1,21 +1,17 @@
 import 'dart:developer';
 
+import 'package:familytree/src/interface/screens/family_tree/family_tree.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:familytree/src/data/api_routes/chat_api/chat_api.dart';
-import 'package:familytree/src/data/api_routes/levels_api/levels_api.dart';
 import 'package:familytree/src/data/api_routes/user_api/user_data/edit_user.dart';
-import 'package:familytree/src/data/api_routes/user_api/user_data/user_data.dart';
 import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/data/globals.dart';
 import 'package:familytree/src/data/models/user_model.dart';
 import 'package:familytree/src/data/notifiers/user_notifier.dart';
 import 'package:familytree/src/data/router/nav_router.dart';
-import 'package:familytree/src/data/services/navgitor_service.dart';
 import 'package:familytree/src/data/utils/secure_storage.dart';
-import 'package:familytree/src/interface/components/Buttons/primary_button.dart';
 import 'package:familytree/src/interface/components/loading_indicator/loading_indicator.dart';
 import 'package:familytree/src/interface/components/shimmers/promotion_shimmers.dart';
 import 'package:familytree/src/interface/screens/main_pages/admin/allocate_member.dart';
@@ -78,17 +74,13 @@ class MainPage extends ConsumerStatefulWidget {
 }
 
 class _MainPageState extends ConsumerState<MainPage> {
-
-
   @override
   void initState() {
     super.initState();
-
   }
 
   @override
   void dispose() {
-
     super.dispose();
   }
 
@@ -112,20 +104,23 @@ class _MainPageState extends ConsumerState<MainPage> {
       ),
       // BusinessPage(),
       ProfilePage(user: user),
+      FamilyTree(
+        familyId: user.familyId?.first ?? '',
+      ),
       NewsListPage(),
       PeoplePage(),
     ];
     _activeIcons = [
       'assets/svg/icons/active_home.svg',
-      // 'assets/svg/icons/active_business.svg',
-      'assets/svg/icons/active_analytics.svg',
+      'assets/svg/icons/active_profile.svg',
+      'assets/svg/icons/active_family_tree_icon.svg',
       'assets/svg/icons/active_news.svg',
       'assets/svg/icons/active_chat.svg',
     ];
     _inactiveIcons = [
       'assets/svg/icons/inactive_home.svg',
-      // 'assets/svg/icons/inactive_business.svg',
-      'assets/svg/icons/inactive_analytics.svg',
+      'assets/svg/icons/inactive_profile.svg',
+      'assets/svg/icons/inactive_family_tree_icon.svg',
       'assets/svg/icons/inactive_news.svg',
       'assets/svg/icons/inactive_chat.svg',
     ];
@@ -166,31 +161,17 @@ class _MainPageState extends ConsumerState<MainPage> {
                 ),
                 child: BottomNavigationBar(
                   type: BottomNavigationBarType.fixed,
-                  items: List.generate(4, (index) {
+                  items: List.generate(5, (index) {
                     final isSelected = selectedIndex == index;
-                    final isProfile = index == 2;
 
                     Widget iconWidget;
 
-                    if (isProfile) {
-                      iconWidget = user.image != null && user.image != ''
-                          ? CircleAvatar(
-                              backgroundImage: NetworkImage(user.image!),
-                              radius: 15,
-                            )
-                          : SvgPicture.asset(
-                              'assets/svg/icons/dummy_person_small.svg',
-                              height: 24,
-                              width: 24,
-                            );
-                    } else {
-                      iconWidget = IconResolver(
-                        iconPath: isSelected
-                            ? _activeIcons[index]
-                            : _inactiveIcons[index],
-                        color: isSelected ? kWhite : Colors.grey,
-                      );
-                    }
+                    iconWidget = IconResolver(
+                      iconPath: isSelected
+                          ? _activeIcons[index]
+                          : _inactiveIcons[index],
+                      color: isSelected ? kWhite : Colors.grey,
+                    );
 
                     return BottomNavigationBarItem(
                       label: '',

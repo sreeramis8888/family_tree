@@ -26,6 +26,8 @@ import 'package:intl/intl.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
+import 'package:familytree/src/data/api_routes/chat_api/chat_api.dart';
+import 'package:familytree/src/interface/screens/main_pages/chat/chat_screen.dart';
 
 class ReviewsState extends StateNotifier<int> {
   ReviewsState() : super(1);
@@ -47,16 +49,39 @@ class ProfilePreviewUsingId extends ConsumerWidget {
   });
 
   final List<String> svgIcons = [
+    'assets/svg/icons/icons8-facebook.svg',
+    'assets/svg/icons/twitter.svg',
     'assets/svg/icons/instagram.svg',
     'assets/svg/icons/linkedin.svg',
-    'assets/svg/icons/twitter.svg',
-    'assets/svg/icons/icons8-facebook.svg'
   ];
 
   final ValueNotifier<int> _currentVideo = ValueNotifier<int>(0);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+//for launching dialar
+    Future<void> _launchDialer(String number) async {
+      final Uri launchUrL = Uri(
+        scheme: 'tel',
+        path: number,
+      );
+      if (!await launchUrl(launchUrL)) {
+        throw Exception('Could not launch $number');
+      }
+    }
+
+    // For launching email app
+    Future<void> _launchEmail(String email) async {
+      final Uri emailUri = Uri(
+        scheme: 'mailto',
+        path: email,
+      );
+
+      if (!await launchUrl(emailUri)) {
+        throw Exception('Could not launch $email');
+      }
+    }
+
     final reviewsToShow = ref.watch(reviewsProvider);
     PageController _videoCountController = PageController();
 
@@ -71,38 +96,38 @@ class ProfilePreviewUsingId extends ConsumerWidget {
             appBar: AppBar(
               flexibleSpace: Container(),
               actions: [
-                if (userId == id)
-                  asyncUser.when(
-                    data: (user) {
-                      return IconButton(
-                        icon: const Icon(
-                          size: 20,
-                          Icons.qr_code,
-                          color: kPrimaryColor,
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => ProfilePage(user: user),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                    error: (error, stackTrace) {
-                      return SizedBox();
-                    },
-                    loading: () {
-                      return IconButton(
-                        icon: const Icon(
-                          size: 20,
-                          Icons.qr_code,
-                          color: kPrimaryColor,
-                        ),
-                        onPressed: () {},
-                      );
-                    },
-                  ),
+                // if (userId == id)
+                //   asyncUser.when(
+                //     data: (user) {
+                //       return IconButton(
+                //         icon: const Icon(
+                //           size: 20,
+                //           Icons.qr_code,
+                //           color: kPrimaryColor,
+                //         ),
+                //         onPressed: () {
+                //           Navigator.of(context).push(
+                //             MaterialPageRoute(
+                //               builder: (context) => ProfilePage(user: user),
+                //             ),
+                //           );
+                //         },
+                //       );
+                //     },
+                //     error: (error, stackTrace) {
+                //       return SizedBox();
+                //     },
+                //     loading: () {
+                //       return IconButton(
+                //         icon: const Icon(
+                //           size: 20,
+                //           Icons.qr_code,
+                //           color: kPrimaryColor,
+                //         ),
+                //         onPressed: () {},
+                //       );
+                //     },
+                //   ),
                 if (userId == id)
                   IconButton(
                     icon: const Icon(
@@ -133,9 +158,16 @@ class ProfilePreviewUsingId extends ConsumerWidget {
             backgroundColor: kWhite,
             body: asyncUser.when(
               data: (user) {
-                List<Media> videos = user.media?.where((m) => m.metadata == 'video').toList() ?? [];
-                List<Media> certificates = user.media?.where((m) => m.metadata == 'certificate').toList() ?? [];
-                List<Media> awards = user.media?.where((m) => m.metadata == 'award').toList() ?? [];
+                List<Media> videos =
+                    user.media?.where((m) => m.metadata == 'video').toList() ??
+                        [];
+                List<Media> certificates = user.media
+                        ?.where((m) => m.metadata == 'certificate')
+                        .toList() ??
+                    [];
+                List<Media> awards =
+                    user.media?.where((m) => m.metadata == 'award').toList() ??
+                        [];
 
                 // final designations = user.company!
                 //     .map((i) => i.designation)
@@ -173,13 +205,12 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                     defaultAvatarAsset:
                                         'assets/svg/icons/dummy_person_large.svg',
                                     size: 110,
-                                    glowColor: kWhite,
+                                    glowColor: kRed,
                                     borderColor: kWhite,
                                     borderWidth: 3.0,
                                   ),
                                   Text(
-                          
-                                user.fullName ?? '',
+                                    user.fullName ?? '',
                                     style: kHeadTitleSB,
                                   ),
                                   const SizedBox(height: 5),
@@ -214,8 +245,10 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                         //         ),
                                         //     ],
                                         //   ),
-                                        Text('${user.occupation}'),
-                                        const SizedBox(height: 5),
+                                        if (user.occupation != null)
+                                          Text('${user.occupation}'),
+                                        if (user.occupation != null)
+                                          const SizedBox(height: 5),
                                         // Text(
                                         //   'Joined Date: $joinedDate',
                                         //   style: const TextStyle(
@@ -226,42 +259,44 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                         SizedBox(
                                           height: 20,
                                         ),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 10, vertical: 6),
-                                          decoration: BoxDecoration(
-                                              color: kWhite,
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              border: Border.all(
-                                                  color: const Color.fromARGB(
-                                                      255, 234, 226, 226))),
-                                          child: IntrinsicWidth(
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 10),
-                                                  child: Image.asset(
-                                                      scale: 30,
-                                                      'assets/pngs/familytree_logo.png'),
-                                                ),
-                                                const SizedBox(width: 10),
-                                                Text(
-                                                    'Member ID: ${user.email}',
-                                                    style:
-                                                        kSmallerTitleB.copyWith(
-                                                            color:
-                                                                kPrimaryColor)),
-                                              ],
+                                        if (user.birthDate != null)
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 10, vertical: 6),
+                                            decoration: BoxDecoration(
+                                                color: kWhite,
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                border: Border.all(
+                                                    color: const Color.fromARGB(
+                                                        255, 234, 226, 226))),
+                                            child: IntrinsicWidth(
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 10),
+                                                    child: Image.asset(
+                                                        scale: 40,
+                                                        'assets/pngs/familytree_logo.png'),
+                                                  ),
+                                                  const SizedBox(width: 10),
+                                                  if (user.birthDate != null)
+                                                    Text(
+                                                        'Date of Birth: ${DateFormat('yyyy-MM-dd').format(user.birthDate!)}',
+                                                        style: kSmallerTitleB
+                                                            .copyWith(
+                                                                color:
+                                                                    kPrimaryColor)),
+                                                ],
+                                              ),
                                             ),
                                           ),
-                                        ),
                                         SizedBox(
                                           height: 20,
                                         )
@@ -334,32 +369,45 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                               color: kBlack),
                                         ),
                                         const SizedBox(height: 15),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            CustomIconContainer(
-                                                icon: Icons.phone),
-                                            const SizedBox(width: 10),
-                                            Text(user.phone.toString()),
-                                          ],
+                                        GestureDetector(
+                                          onTap: () {
+                                            _launchDialer(
+                                                user.phone.toString());
+                                                print('Address value: ${user.address}');
+                                          },
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              CustomIconContainer(
+                                                  icon: Icons.phone),
+                                              const SizedBox(width: 10),
+                                              Text(user.phone.toString()),
+                                            ],
+                                          ),
                                         ),
+
                                         if (user.address != null &&
                                             user.address != '')
                                           const SizedBox(height: 15),
                                         if (user.email != null &&
                                             user.email != '')
-                                          Row(
-                                            children: [
-                                              CustomIconContainer(
-                                                  icon: Icons.email),
-                                              const SizedBox(width: 10),
-                                              Text(user.email ?? ''),
-                                            ],
+                                          GestureDetector(
+                                            onTap: () => _launchEmail(
+                                                user.email.toString()),
+                                            child: Row(
+                                              children: [
+                                                CustomIconContainer(
+                                                    icon: Icons.email),
+                                                const SizedBox(width: 10),
+                                                Text(user.email ?? ''),
+                                              ],
+                                            ),
                                           ),
                                         if (user.address != null &&
                                             user.address != '')
-                                          const SizedBox(height: 15),
+                                          const SizedBox(
+                                              height: 15),
                                         if (user.address != null &&
                                             user.address != '')
                                           Row(
@@ -368,9 +416,7 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                                   icon: Icons.location_on),
                                               const SizedBox(width: 10),
                                               Expanded(
-                                                child: Text(
-                                                  user.address!,
-                                                ),
+                                                child: Text(user.address ?? ''),
                                               )
                                             ],
                                           ),
@@ -563,8 +609,7 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                                 index++)
                                               customSocialPreview(index,
                                                   isWebsite: true,
-                                                  social:
-                                                      user.website![index]),
+                                                  social: user.website![index]),
                                         ],
                                       ),
                                     ),
@@ -585,9 +630,11 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                         itemCount: videos.length,
                                         physics: const PageScrollPhysics(),
                                         itemBuilder: (context, index) {
-                                          return profileVideo(   title: videos[index].caption??'',
+                                          return profileVideo(
+                                              title:
+                                                  videos[index].caption ?? '',
                                               context: context,
-                                              url: videos[index].url??'');
+                                              url: videos[index].url ?? '');
                                         },
                                       ),
                                     ),
@@ -612,7 +659,7 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                 const SizedBox(
                                   height: 30,
                                 ),
-      
+
                               SizedBox(
                                 height: 20,
                               ),
@@ -641,9 +688,8 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                         return CertificateCard(
                                           onEdit: null,
                                           name:
-                                              certificates[index].caption??'',
-                                          url:
-                                              certificates[index].url??'',
+                                              certificates[index].caption ?? '',
+                                          url: certificates[index].url ?? '',
                                           onRemove: null,
                                         );
                                       },
@@ -718,18 +764,67 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                         buttonHeight: 60,
                                         fontSize: 16,
                                         label: 'SAY HI',
-                                        onPressed: () {
-                                          // final Participant receiver = Participant(
-                                          //   id: user.id,
-                                          //   image: user.image ?? '',
-                                          //   name: user.name,
-                                          // );
-                                          // final Participant sender = Participant(id: id);
-                                          // Navigator.of(context).push(MaterialPageRoute(
-                                          //     builder: (context) => IndividualPage(
-                                          //           receiver: receiver,
-                                          //           sender: sender,
-                                          //         )));
+                                        onPressed: () async {
+                                          final userId = user.id ?? '';
+                                          try {
+                                            final conversations =
+                                                await ChatApi()
+                                                    .fetchConversations();
+                                            final directConversation = conversations
+                                                    .where((c) =>
+                                                        c.type == 'direct' &&
+                                                        c.participants.any(
+                                                            (p) =>
+                                                                p.userId ==
+                                                                userId))
+                                                    .isNotEmpty
+                                                ? conversations
+                                                    .where((c) =>
+                                                        c.type == 'direct' &&
+                                                        c.participants.any(
+                                                            (p) =>
+                                                                p.userId ==
+                                                                userId))
+                                                    .first
+                                                : null;
+                                            if (directConversation != null) {
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      IndividualPage(
+                                                    conversationImage:
+                                                        user.image ?? '',
+                                                    conversationTitle:
+                                                        user.fullName ?? '',
+                                                    conversation:
+                                                        directConversation,
+                                                    currentUserId: id,
+                                                  ),
+                                                ),
+                                              );
+                                            } else {
+                                              final newConversation =
+                                                  await ChatApi()
+                                                      .fetchDirectConversation(
+                                                          userId);
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      IndividualPage(
+                                                    conversationImage:
+                                                        user.image ?? '',
+                                                    conversationTitle:
+                                                        user.fullName ?? '',
+                                                    conversation:
+                                                        newConversation,
+                                                    currentUserId: id,
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          } catch (e) {
+                                            // Handle error (show snackbar, etc.)
+                                          }
                                         }),
                                   ),
                                   const SizedBox(
@@ -771,11 +866,12 @@ class ProfilePreviewUsingId extends ConsumerWidget {
     );
   }
 
-  Widget profileVideo({required BuildContext context, required String url,required String title}) {
-  
-
+  Widget profileVideo(
+      {required BuildContext context,
+      required String url,
+      required String title}) {
     final ytController = YoutubePlayerController.fromVideoId(
-      videoId: YoutubePlayerController.convertUrlToId(url )!,
+      videoId: YoutubePlayerController.convertUrlToId(url)!,
       autoPlay: false,
       params: const YoutubePlayerParams(
         enableJavaScript: true,

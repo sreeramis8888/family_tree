@@ -5,10 +5,19 @@ import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:custom_image_crop/custom_image_crop.dart';
 
+enum CropShape { circle, rectangle }
+
 class CropImageScreen extends StatefulWidget {
   final File imageFile;
+  final CropShape shape;
+  final Size? aspectRatio;
 
-  const CropImageScreen({super.key, required this.imageFile});
+  const CropImageScreen({
+    super.key,
+    required this.imageFile,
+    this.shape = CropShape.circle,
+    this.aspectRatio,
+  });
 
   @override
   _CropImageScreenState createState() => _CropImageScreenState();
@@ -35,12 +44,14 @@ class _CropImageScreenState extends State<CropImageScreen> {
       _isLoading = true;
     });
 
-    // Method 1: Try the standard approach
-    final croppedResult = await controller.onCropImage();
+    final MemoryImage? croppedResult = await controller.onCropImage();
 
     if (croppedResult != null) {
-      final Uint8List imageBytes = croppedResult.bytes;
-      Navigator.of(context).pop(imageBytes);
+      Navigator.of(context).pop(croppedResult.bytes);
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -81,7 +92,14 @@ class _CropImageScreenState extends State<CropImageScreen> {
                 backgroundColor: Colors.black,
                 cropController: controller,
                 image: FileImage(widget.imageFile),
-                shape: CustomCropShape.Circle,
+                ratio: widget.aspectRatio != null
+                    ? Ratio(
+                        width: widget.aspectRatio!.width,
+                        height: widget.aspectRatio!.height)
+                    : null,
+                shape: widget.shape == CropShape.circle
+                    ? CustomCropShape.Circle
+                    : CustomCropShape.Square,
                 borderRadius: 0,
                 canRotate: true,
                 canMove: true,

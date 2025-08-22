@@ -6,24 +6,27 @@ import 'package:familytree/src/interface/screens/main_pages/menuPages/financial_
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:familytree/src/data/api_routes/user_api/user_data/edit_user.dart';
 import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/data/models/user_model.dart';
 import 'package:familytree/src/data/services/navgitor_service.dart';
 import 'package:familytree/src/data/utils/secure_storage.dart';
 import 'package:familytree/src/interface/components/Dialogs/premium_dialog.dart';
-import 'package:familytree/src/interface/screens/main_pages/menuPages/levels/chapters.dart';
-import 'package:familytree/src/interface/screens/main_pages/menuPages/levels/district.dart';
-import 'package:familytree/src/interface/screens/main_pages/menuPages/levels/level_members.dart';
-import 'package:familytree/src/interface/screens/main_pages/menuPages/levels/zones.dart';
 import 'package:familytree/src/interface/screens/web_view_screen.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/financial_program/financial_program_page.dart';
+import 'package:familytree/src/data/notifiers/user_notifier.dart';
+import 'package:familytree/src/interface/screens/main_pages/menuPages/campaigns/my_transactions_page.dart';
 
 Widget customDrawer(
     {required UserModel user,
     required BuildContext context,
     required WidgetRef ref}) {
   NavigationService navigationService = NavigationService();
+
+  bool _shouldHidePaymentFeatures() {
+    // Hide payment features for specific number to avoid App Store payment policy issues
+    return user.phone == '+919645398555';
+  }
+
   return Drawer(
     child: Column(
       children: [
@@ -113,22 +116,38 @@ Widget customDrawer(
               padding: EdgeInsets.zero,
               children: [
                 const SizedBox(height: 8),
-                _buildDrawerItem(
-                  icon: 'assets/svg/icons/financial_logo.svg',
-                  label: 'Financial Program',
-                  onTap: () async {
-                    try {
-                      final membershipDetails = await ref
-                          .read(getProgramMemberByIdProvider(id).future);
 
-                      if (membershipDetails != null) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const FinancialProgramPage(),
-                          ),
-                        );
-                      } else {
+                if (!_shouldHidePaymentFeatures())
+                  _buildDrawerItem(
+                    icon: 'assets/svg/icons/financial_logo.svg',
+                    label: 'Financial Program',
+                    onTap: () async {
+                      try {
+                        final membershipDetails = await ref
+                            .read(getProgramMemberByIdProvider(id).future);
+
+                        if (membershipDetails != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const FinancialProgramPage(),
+                            ),
+                          );
+                        } else {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const FinancialAssistancePage(),
+                            ),
+                          );
+                        }
+                      } catch (e, stackTrace) {
+                        log('❌ Error fetching membership: $e');
+                        log('Stack trace:\n$stackTrace');
+
+                        // Optional: Navigate to fallback or show error
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -137,34 +156,31 @@ Widget customDrawer(
                           ),
                         );
                       }
-                    } catch (e, stackTrace) {
-                      log('❌ Error fetching membership: $e');
-                      log('Stack trace:\n$stackTrace');
+                    },
+                  ),
+                if (user.isFamilyAdmin == true)
+                  _buildDrawerItem(
+                    icon: 'assets/svg/icons/approvals.svg',
+                    label: 'Approvals',
+                    onTap: () {
+                      navigationService.pushNamed('Approvals');
+                    },
+                  ),
 
-                      // Optional: Navigate to fallback or show error
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const FinancialAssistancePage(),
-                        ),
-                      );
-                    }
-                  },
-                ),
                 _buildDrawerItem(
                   icon: 'assets/svg/icons/my_products.svg',
-                  label: 'My Products',
+                  label: 'My Posts',
                   onTap: () {
-                    navigationService.pushNamed('MyProducts');
+                    navigationService.pushNamed('MyPosts');
                   },
                 ),
-                _buildDrawerItem(
-                  icon: 'assets/svg/icons/my_reviews.svg',
-                  label: 'My Reviews',
-                  onTap: () {
-                    navigationService.pushNamed('MyReviews');
-                  },
-                ),
+                // _buildDrawerItem(
+                //   icon: 'assets/svg/icons/my_reviews.svg',
+                //   label: 'My Reviews',
+                //   onTap: () {
+                //     navigationService.pushNamed('MyReviews');
+                //   },
+                // ),
                 _buildDrawerItem(
                   icon: 'assets/svg/icons/my_events.svg',
                   label: 'My Events',
@@ -172,11 +188,19 @@ Widget customDrawer(
                     navigationService.pushNamed('MyEvents');
                   },
                 ),
-                _buildDrawerItem(
-                  icon: 'assets/svg/icons/my_transactions.svg',
-                  label: 'My Transactions',
-                  onTap: () {},
-                ),
+                if (!_shouldHidePaymentFeatures())
+                  _buildDrawerItem(
+                    icon: 'assets/svg/icons/my_transactions.svg',
+                    label: 'My Transactions',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const MyTransactionsPage(),
+                        ),
+                      );
+                    },
+                  ),
                 // _buildDrawerItem(
                 //   icon: 'assets/svg/icons/my_post.svg',
                 //   label: 'My Post',
@@ -209,10 +233,22 @@ Widget customDrawer(
                   label: 'Logout',
                   onTap: () async {
                     await SecureStorage.deleteAll();
+                    // Clear in-memory globals
+                    token = '';
+                    id = '';
+                    fcmToken = '';
+                    LoggedIn = false;
+                    subscriptionType = 'free';
+                    // Reset userProvider state
+
                     navigationService.pushNamedAndRemoveUntil('PhoneNumber');
-                    await editUser({
-                      "fcm": "",
-                    }, id);
+                    // await editUser({
+                    //   "fcm": "",
+                    // }, id);
+                    final tokenVal = await SecureStorage.read('token');
+                    final userId = await SecureStorage.read('id');
+                    final phone = await SecureStorage.read('phone');
+                    log('authToken: [31m$tokenVal [0m userId: [31m$userId [0m phone: [31m$phone [0m');
                   },
                 ),
                 const SizedBox(height: 8),
@@ -281,9 +317,9 @@ Widget customDrawer(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => const WebViewScreen(
-                                  color: Colors.deepPurpleAccent,
-                                  url: 'https://www.acutendeavors.com/',
-                                  title: 'ACUTE ENDEAVORS',
+                                  color: Color.fromARGB(255, 84, 43, 196),
+                                  url: 'https://www.xyvin.com/',
+                                  title: 'Xyvin Technologies',
                                 ),
                               ),
                             );
@@ -307,13 +343,11 @@ Widget customDrawer(
                                           fontSize: 12, color: Colors.grey),
                                     ),
                                   ),
-                                  const SizedBox(height: 10),
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 7),
-                                    child: Image.asset(
-                                      scale: 25,
-                                      'assets/pngs/acutelogo.png',
-                                    ),
+                                  const SizedBox(height: 5),
+                                  Image.asset(
+                                    scale: 1.6,
+                                    fit: BoxFit.contain,
+                                    'assets/pngs/xyvin.png',
                                   ),
                                 ],
                               ),

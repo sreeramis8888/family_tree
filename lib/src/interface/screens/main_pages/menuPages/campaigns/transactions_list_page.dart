@@ -25,9 +25,8 @@
 //     TransactionModel(
 //       id: 'VCRU65789900',
 //       type: 'csr',
-//       dateTime: '18th May 2025, 10:45 am',
-//       amountPaid: 1500,
-//       status: 'pending',
+//       date: '18th May 2025, 10:45 am',
+//       amount: 1500,
 //     ),
 //     TransactionModel(
 //       id: 'VCRU65789901',

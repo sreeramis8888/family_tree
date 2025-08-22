@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:familytree/src/data/utils/size.dart';
+// import 'package:flutter_riverpod/legacy.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:familytree/src/data/api_routes/user_api/admin/admin_activities_api.dart';
@@ -30,9 +31,11 @@ import 'package:keyboard_avoider/keyboard_avoider.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:familytree/src/interface/screens/onboarding/registration_page.dart';
 import 'package:familytree/src/interface/screens/onboarding/approval_waiting_page.dart';
+import 'package:sms_autofill/sms_autofill.dart';
+import 'package:telephony/telephony.dart';
 
 TextEditingController _mobileController = TextEditingController();
-TextEditingController _otpController = TextEditingController();
+// TextEditingController _otpController = TextEditingController();
 
 final countryCodeProvider = StateProvider<String?>((ref) => '91');
 
@@ -93,10 +96,15 @@ class PhoneNumberScreen extends ConsumerWidget {
                     const SizedBox(height: 20),
                     IntlPhoneField(
                       validator: (phone) {
-                        if (phone!.number.length > 9) {
-                          if (phone.number.length > 10) {
-                            return 'Phone number cannot exceed 10 digits';
-                          }
+                        // if (phone!.number.length > 9) {
+                        //   if (phone.number.length > 10) {
+                        //     return 'Phone number cannot exceed 10 digits';
+                        //   }
+                        // }
+                        if (phone!.number.length < 10) {
+                          return 'Phone number must be exactly 10 digits';
+                        } else if (phone.number.length > 10) {
+                          return 'Phone number cannot exceed 10 digits';
                         }
                         return null;
                       },
@@ -202,7 +210,10 @@ class PhoneNumberScreen extends ConsumerWidget {
           final resendToken = data['resendToken'];
           if (verificationId != null && verificationId.isNotEmpty) {
             log('Otp Sent successfully');
-
+            id = '';
+            token = '';
+            LoggedIn = false;
+            await SecureStorage.deleteAll();
             Navigator.of(context).pushReplacement(MaterialPageRoute(
               builder: (context) => OTPScreen(
                 phone: _mobileController.text,
@@ -271,12 +282,83 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
   int _start = 59;
 
   bool _isButtonDisabled = true;
+  bool _isVerifyButtonDisabled = true;
+  final TextEditingController _otpController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    _otpController.addListener(() {
+      setState(() {
+        _isVerifyButtonDisabled = _otpController.text.length != 6;
+      });
+    });
+    //Listen for otp
+    // listenForOtp();
     startTimer();
   }
+
+  // Future<void> listenForOtp() async {
+  //   await SmsAutoFill().listenForCode();
+  //   SmsAutoFill().code.listen((code) {
+  //   if (code != null && code.isNotEmpty) {
+  //     _otpController.text = code; // This will auto-fill PinCodeTextField
+  //   }
+  // });
+
+  // }
+
+// Future<void> listenForOtp() async {
+//   String? appSignature = await SmsAutoFill().getAppSignature;
+//   log("App Signature: $appSignature");
+
+//   // Start listening for incoming OTPs
+//   await SmsAutoFill().listenForCode();
+
+//   // Listen for OTP value from SmsAutoFill
+//   SmsAutoFill().code.listen((code) {
+//     if (code != null && code.isNotEmpty) {
+//       log("Received OTP: $code");
+//       setState(() {
+//         _otpController.text = code.trim(); // Auto-fill the field
+//         _isVerifyButtonDisabled = _otpController.text.length != 6;
+//       });
+//     }
+//   });
+// }
+
+  // Future<void> listenForOtp() async {
+  //   String? appSignature = await SmsAutoFill().getAppSignature;
+  //   print("App Signature: $appSignature");
+
+  //   await SmsAutoFill().listenForCode();
+
+  //   SmsAutoFill().code.listen((code) {
+  //     if (code != null && code.isNotEmpty) {
+  //       print("Received OTP: $code");
+  //       setState(() {
+  //         _otpController.text = code.trim();
+  //         _isVerifyButtonDisabled = code.trim().length != 6;
+  //       });
+  //     } else {
+  //       print('nothing recived');
+  //     }
+  //   });
+  // }
+
+  // void listenForOtp() {
+  //   telephony.listenIncomingSms(
+  //       onNewMessage: (SmsMessage message) {
+  //         if (message.body!.contains('familytree-7458')) {
+  //           String otpCode = message.body!.substring(0, 6);
+  //           setState(() {
+  //             print(message.body!);
+  //             _otpController.text = otpCode;
+  //           });
+  //         }
+  //       },
+  //       listenInBackground: false);
+  // }
 
   void startTimer() {
     _isButtonDisabled = true;
@@ -304,6 +386,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
   @override
   void dispose() {
     _timer?.cancel();
+    SmsAutoFill().unregisterListener();
     super.dispose();
   }
 
@@ -364,6 +447,12 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
                   PinCodeTextField(
                     appContext: context,
                     length: 6, // Number of OTP digits
+                    // controller :_otpController,
+                    // onChanged:(value) {
+                    //   setState(() {
+                    //     _isVerifyButtonDisabled = value.length != 6;
+                    //   });
+                    // },
                     obscureText: false,
                     keyboardType: TextInputType.number, // Number-only keyboard
                     animationType: AnimationType.fade,
@@ -390,7 +479,9 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
                     backgroundColor: Colors.transparent,
                     enableActiveFill: true,
                     controller: _otpController,
-                    onChanged: (value) {},
+                    onChanged: (value) {
+                      _isVerifyButtonDisabled = value.length != 6;
+                    },
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -427,10 +518,18 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
                       width: double.infinity,
                       child: customButton(
                         label: 'Verify',
-                        onPressed: isLoading
-                            ? null
+                        //verify button is only clickable whent the 6 digits are entered
+                        onPressed: (isLoading || _isVerifyButtonDisabled)
+                            ? (null)
                             : () => _handleOtpVerification(context, ref),
                         fontSize: 16,
+                        //button is color is grey until it is enabled
+                        buttonColor: (isLoading || _isVerifyButtonDisabled)
+                            ? kGrey
+                            : kPrimaryColor,
+                        sideColor: (isLoading || _isVerifyButtonDisabled)
+                            ? kGrey
+                            : kPrimaryColor,
                         isLoading: isLoading,
                       ),
                     ),
@@ -457,7 +556,8 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
           fcmToken: fcmToken,
           smsCode: _otpController.text,
           context: context);
-
+      await SecureStorage.write(
+          'refreshToken', responseMap['refreshToken'] ?? '');
       final message = responseMap['message'] ?? '';
       final isRegistered = responseMap['isRegistered'];
       final user = responseMap['user'];
@@ -483,7 +583,7 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
           responseMap['accessToken'] != null) {
         // Login successful
         String savedToken = responseMap['accessToken'];
-     String savedId = user['person']['_id'];
+        String savedId = user['person']['_id'];
         if (savedToken.isNotEmpty && savedId.isNotEmpty) {
           await SecureStorage.write('token', savedToken);
           await SecureStorage.write('id', savedId);
@@ -492,8 +592,15 @@ class _OTPScreenState extends ConsumerState<OTPScreen> {
           log('savedToken: $savedToken');
           log('savedId: $savedId');
 
-          Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (context) => const EulaAgreementScreen()));
+              final isFirstLaunch =
+              await SecureStorage.read('has_launched_before') ?? 'false';
+          if (isFirstLaunch == 'true') {
+            Navigator.of(context).pushReplacement(MaterialPageRoute(
+                builder: (context) => const EulaAgreementScreen()));
+          } else {
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const MainPage()));
+          }
         }
       } else {
         // CustomSnackbar.showSnackbar(context, 'Wrong OTP');

@@ -28,12 +28,12 @@ class SocketService {
     _notifyStatus();
 
     _socket = IO.io(
-      'http://192.168.1.5:3000',
+      'https://connect.kalathingalneelatt.com',
       <String, dynamic>{
         'transports': ['websocket'],
         'autoConnect': false,
         'extraHeaders': {
-          'token': token, 
+          'token': token,
         },
         'query': {
           'userId': id,
@@ -127,7 +127,6 @@ class SocketService {
   //     }
   //   });
   // }
-
 
   void onUserStatusUpdate(
       void Function(String userId, String status, String? lastSeen) callback) {

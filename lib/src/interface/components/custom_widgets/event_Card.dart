@@ -117,16 +117,6 @@ Widget eventWidget({
                           arguments: event);
                     },
                   )),
-                  const SizedBox(width: 10),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: kWhite,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    padding: const EdgeInsets.all(8),
-                    child:
-                        const Icon(Icons.bookmark_border, color: Colors.black),
-                  ),
                 ],
               ),
             ],

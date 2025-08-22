@@ -33,8 +33,8 @@ class TransactionCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Transaction ID: ${transaction.id}',
-              style: kSubHeadingB,
+              'Transaction ID: 2${transaction.id}',
+              style: kSubHeadingB.copyWith(fontSize: 13),
             ),
             const SizedBox(height: 12),
             _buildInfoRow('Type', transaction.type.toUpperCase()),
@@ -55,14 +55,14 @@ class TransactionCard extends StatelessWidget {
             flex: 2,
             child: Text(
               label,
-              style: kSmallerTitleR.copyWith(color: kGrey),
+              style: kSmallerTitleR.copyWith(color: kGrey, fontSize: 11),
             ),
           ),
           Expanded(
             flex: 3,
             child: Text(
               value,
-              style: kSmallTitleB,
+              style: kSmallTitleB.copyWith(fontSize: 12),
             ),
           ),
         ],
@@ -79,7 +79,7 @@ class TransactionCard extends StatelessWidget {
             flex: 2,
             child: Text(
               label,
-              style: kSmallerTitleR.copyWith(color: kGrey),
+              style: kSmallerTitleR.copyWith(color: kGrey, fontSize: 11),
             ),
           ),
           Expanded(
@@ -94,7 +94,7 @@ class TransactionCard extends StatelessWidget {
                 ),
                 child: Text(
                   value,
-                  style: kSmallerTitleB.copyWith(color: kPrimaryLightColor),
+                  style: kSmallerTitleB.copyWith(color: kPrimaryLightColor, fontSize: 11),
                 ),
               ),
             ),

@@ -1,5 +1,6 @@
 import 'package:familytree/src/data/constants/style_constants.dart';
 import 'package:familytree/src/data/globals.dart';
+import 'package:familytree/src/data/services/payment_service/checkwalletapi.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/financial_program/financial_program_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,6 +8,7 @@ import 'package:familytree/src/data/api_routes/finance_api/finance_api.dart';
 import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/interface/components/Buttons/primary_button.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:familytree/src/interface/screens/main_page.dart';
 
 class FinancialProgramJoinPaymentPage extends ConsumerWidget {
   const FinancialProgramJoinPaymentPage({Key? key}) : super(key: key);
@@ -159,25 +161,50 @@ class FinancialProgramJoinPaymentPage extends ConsumerWidget {
 
                     const Spacer(),
 
-                    // Proceed To Pay Button
                     Padding(
                         padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
                         child: customButton(
                           label: 'Proceed to Pay',
                           onPressed: () async {
-                            final bool success =
-                                await FinanceApiService.joinProgram(
-                                    memberId: id,
-                                    amount: minBalance?.minimumAmount ?? 0);
-                            if (success) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const FinancialProgramPage(),
-                                ),
-                              );
-                            }
+                            final topupPayment = TopupPaymentService(
+                              amount: int.parse(
+                                  minBalance?.minimumAmount.toString() ?? '0'),
+                              onSuccess: (msg) async {
+                                final bool success =
+                                    await FinanceApiService.joinProgram(
+                                        memberId: id,
+                                        amount: int.parse(minBalance
+                                                ?.minimumAmount
+                                                .toString() ??
+                                            '0'));
+                                if (success) {
+                                  Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const MainPage(),
+                                    ),
+                                    (route) => false,
+                                  );
+                                }
+                                await handleTopupSuccess(
+                                  ref: ref,
+                                  context: context,
+                                  id: id,
+                                  amount: int.parse(
+                                      minBalance?.minimumAmount.toString() ??
+                                          '0'),
+                                );
+                              },
+                              onError: (msg) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(msg)),
+                                  );
+                                }
+                              },
+                            );
+                            topupPayment.init();
+                            await topupPayment.startPayment();
                           },
                         )),
                   ],

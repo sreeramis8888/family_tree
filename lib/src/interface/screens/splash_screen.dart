@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'package:familytree/src/data/services/auth_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -178,9 +179,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   void proceedWithAppFlow() {
     // checkAppVersion(context).then((_) {
-      // if (!isAppUpdateRequired && !hasVersionCheckError) {
-        initialize();
-      // }
+    // if (!isAppUpdateRequired && !hasVersionCheckError) {
+    initialize();
+    // }
     // });
   }
 
@@ -255,94 +256,113 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     await checktoken();
     Timer(Duration(seconds: 2), () async {
       // if (!isAppUpdateRequired) {
-        print('Logged in : $LoggedIn');
-        if (LoggedIn) {
-          final container = ProviderContainer();
-          final asyncUser = container.read(userProvider);
-          UserModel? user;
-          if (asyncUser is AsyncData<UserModel>) {
-            user = asyncUser.value;
-          } else {
-            await container.read(userProvider.notifier).refreshUser();
-            final refreshed = container.read(userProvider);
-            if (refreshed is AsyncData<UserModel>) {
-              user = refreshed.value;
-            }
-          }
-          if (user != null &&
-              user.status?.toLowerCase() == 'awaiting_payment') {
-            navigationService.pushNamedReplacement('MySubscriptionPage');
-            return;
-          }
-
-          final pendingDeepLink = _deepLinkService.pendingDeepLink;
-          if (pendingDeepLink != null) {
-            navigationService.pushNamedReplacement('MainPage').then((_) {
-              _deepLinkService.handleDeepLink(pendingDeepLink);
-              _deepLinkService.clearPendingDeepLink();
-            });
-          } else {
-            navigationService.pushNamedReplacement('MainPage');
-          }
+      print('Logged in : $LoggedIn');
+      if (LoggedIn) {
+        final container = ProviderContainer();
+        final asyncUser = container.read(userProvider);
+        UserModel? user;
+        if (asyncUser is AsyncData<UserModel>) {
+          user = asyncUser.value;
         } else {
-          // Check for pending registration
-          String? phone = await SecureStorage.getPhoneNumber();
-          if (phone != null && phone.isNotEmpty) {
-            // Call verifyOtp API to check status
-            try {
-              Map<String, dynamic> responseMap = await verifyUserDB(
-                phone: phone,
-     
-                fcmToken: fcmToken,
-           
-                context: context,
-              );
-              final message = responseMap['message'] ?? '';
-              final isRegistered = responseMap['isRegistered'];
-              final user = responseMap['user'];
-              if (isRegistered == false && user == null && message.toString().toLowerCase().contains('phone verified')) {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => RegistrationPage(phone: phone),
-                ));
-              } else if (message.toString().toLowerCase().contains('pending')) {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => const ApprovalWaitingPage(),
-                ));
-              } else if (isRegistered == true && user != null && responseMap['accessToken'] != null) {
-                String savedToken = responseMap['accessToken'];
-                String savedId = user['id'];
-                if (savedToken.isNotEmpty && savedId.isNotEmpty) {
-                  await SecureStorage.write('token', savedToken);
-                  await SecureStorage.write('id', savedId);
-                  token = savedToken;
-                  id = savedId;
-                  Navigator.of(context).pushReplacementNamed('MainPage');
-                }
-              } else {
-                Navigator.of(context).pushReplacementNamed('PhoneNumber');
-              }
-            } catch (e) {
-              Navigator.of(context).pushReplacementNamed('PhoneNumber');
-            }
-          } else {
-            Navigator.of(context).pushReplacementNamed('PhoneNumber');
+          await container.read(userProvider.notifier).refreshUser();
+          final refreshed = container.read(userProvider);
+          if (refreshed is AsyncData<UserModel>) {
+            user = refreshed.value;
           }
         }
+        if (user != null && user.status?.toLowerCase() == 'awaiting_payment') {
+          navigationService.pushNamedReplacement('MySubscriptionPage');
+          return;
+        }
+
+        final pendingDeepLink = _deepLinkService.pendingDeepLink;
+        if (pendingDeepLink != null) {
+          navigationService.pushNamedReplacement('MainPage').then((_) {
+            _deepLinkService.handleDeepLink(pendingDeepLink);
+            _deepLinkService.clearPendingDeepLink();
+          });
+        } else {
+          navigationService.pushNamedReplacement('MainPage');
+        }
+      } else {
+        // Check for pending registration
+        String? phone = await SecureStorage.getPhoneNumber();
+        if (phone != null && phone.isNotEmpty) {
+          // Call verifyOtp API to check status
+          try {
+            Map<String, dynamic> responseMap = await verifyUserDB(
+              phone: phone,
+              fcmToken: fcmToken,
+              context: context,
+            );
+            final message = responseMap['message'] ?? '';
+            final isRegistered = responseMap['isRegistered'];
+            final user = responseMap['user'];
+            if (isRegistered == false &&
+                user == null &&
+                message.toString().toLowerCase().contains('phone verified')) {
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                builder: (context) => RegistrationPage(phone: phone),
+              ));
+            } else if (message.toString().toLowerCase().contains('pending')) {
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                builder: (context) => const ApprovalWaitingPage(),
+              ));
+            } else if (isRegistered == true &&
+                user != null &&
+                responseMap['accessToken'] != null) {
+              String savedToken = responseMap['accessToken'];
+              String savedId = user['person']['_id'];
+              if (savedToken.isNotEmpty && savedId.isNotEmpty) {
+                await SecureStorage.write('token', savedToken);
+                await SecureStorage.write('id', savedId);
+                token = savedToken;
+                id = savedId;
+                Navigator.of(context).pushReplacementNamed('MainPage');
+              }
+            } else {
+              Navigator.of(context).pushReplacementNamed('PhoneNumber');
+            }
+          } catch (e) {
+            Navigator.of(context).pushReplacementNamed('PhoneNumber');
+          }
+        } else {
+          Navigator.of(context).pushReplacementNamed('PhoneNumber');
+        }
+      }
       // }
     });
   }
 
   Future<void> checktoken() async {
-    String? savedtoken = await SecureStorage.read('token') ?? '';
+    String? savedToken = await SecureStorage.read('token') ?? '';
     String? savedId = await SecureStorage.read('id') ?? '';
-    log('token:$savedtoken');
-    log('userId:$savedId');
-    if (savedtoken != '' && savedtoken.isNotEmpty && savedId != '') {
+
+    log('token: $savedToken');
+    log('userId: $savedId');
+
+    if (savedToken.isNotEmpty && savedId.isNotEmpty) {
       setState(() {
         LoggedIn = true;
-        token = savedtoken;
+        token = savedToken;
         id = savedId;
       });
+    } else {
+      // 🔁 Try refreshing token
+      final success = await AuthService.refreshAccessToken();
+      if (success) {
+        String? newToken = await SecureStorage.read('token');
+        String? newId = await SecureStorage.read('id');
+        setState(() {
+          LoggedIn = true;
+          token = newToken ?? '';
+          id = newId ?? '';
+        });
+      } else {
+        setState(() {
+          LoggedIn = false;
+        });
+      }
     }
   }
 

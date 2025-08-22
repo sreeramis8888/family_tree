@@ -98,7 +98,7 @@ class FinanceApiService {
   static Future<bool> joinProgram({
     required String memberId,
     String? membershipStatus,
-    double? amount,
+    int? amount,
   }) async {
     final url = Uri.parse('$_baseUrl/join');
     final body = json.encode({
@@ -125,6 +125,7 @@ class FinanceApiService {
       'limit': limit.toString(),
     };
     final uri = Uri.parse('$_baseUrl').replace(queryParameters: queryParams);
+    log('Requesting Url: $uri');
     final response = await http.get(uri, headers: _headers());
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -157,7 +158,7 @@ class FinanceApiService {
       if (search != null) 'search': search,
       if (method != null) 'method': method,
       if (type != null) 'type': type,
- 'personId': id,
+      'personId': id,
       if (startDate != null) 'startDate': startDate,
       if (endDate != null) 'endDate': endDate,
       if (minAmount != null) 'minAmount': minAmount.toString(),
@@ -165,7 +166,8 @@ class FinanceApiService {
       'sortBy': sortBy,
       'sortOrder': sortOrder,
     };
-    final uri = Uri.parse('$baseUrl/transactions').replace(queryParameters: queryParams);
+    final uri = Uri.parse('$baseUrl/transactions')
+        .replace(queryParameters: queryParams);
     final response = await http.get(uri, headers: _headers());
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -187,7 +189,6 @@ Future<FinancialAssistance?> getProgramMemberById(Ref ref, String id) {
   return FinanceApiService.getProgramMemberById(id);
 }
 
-
 @riverpod
 Future<List<ProgramMember>> getAllFlatProgramMembers(
   Ref ref, {
@@ -205,7 +206,7 @@ Future<bool> joinProgram(
   Ref ref, {
   required String memberId,
   String? membershipStatus,
-  double? amount,
+  int? amount,
 }) {
   return FinanceApiService.joinProgram(
     memberId: memberId,
@@ -214,24 +215,22 @@ Future<bool> joinProgram(
   );
 }
 
-
 @riverpod
 Future<List<TransactionModel>> getAllTransactions(
   Ref ref, {
-    int page = 1,
-    int limit = 20,
-    String? search,
-    String? method,
-    String? type,
-    String? personId,
-    String? startDate,
-    String? endDate,
-    double? minAmount,
-    double? maxAmount,
-    String sortBy = 'date',
-    String sortOrder = 'desc',
-  }
-) {
+  int page = 1,
+  int limit = 20,
+  String? search,
+  String? method,
+  String? type,
+  String? personId,
+  String? startDate,
+  String? endDate,
+  double? minAmount,
+  double? maxAmount,
+  String sortBy = 'date',
+  String sortOrder = 'desc',
+}) {
   return FinanceApiService.getAllTransactions(
     page: page,
     limit: limit,

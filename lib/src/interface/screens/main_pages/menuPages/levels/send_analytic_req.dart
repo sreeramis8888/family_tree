@@ -718,29 +718,31 @@ class _SendAnalyticRequestPageState
                   ],
                 ),
               const SizedBox(height: 20.0),
-              customButton(
-                label: 'Send Request',
-                isLoading: _buttonPressed,
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    setState(() => _buttonPressed = true);
+              SafeArea(
+                child: customButton(
+                  label: 'Send Request',
+                  isLoading: _buttonPressed,
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      setState(() => _buttonPressed = true);
 
-                    String? response =
-                        await createAnalytic(countryCode ?? '91');
+                      String? response =
+                          await createAnalytic(countryCode ?? '91');
 
-                    setState(() => _buttonPressed = false);
+                      setState(() => _buttonPressed = false);
 
-                    if (response != null && response.contains('success')) {
-                      Navigator.pop(context);
-                      ref.invalidate(fetchAnalyticsProvider);
-                    } else {
-                      SnackbarService service = SnackbarService();
-                      service.showSnackBar(response ?? 'Error');
+                      if (response != null && response.contains('success')) {
+                        Navigator.pop(context);
+                        ref.invalidate(fetchAnalyticsProvider);
+                      } else {
+                        SnackbarService service = SnackbarService();
+                        service.showSnackBar(response ?? 'Error');
+                      }
+
+                      print('Form Submitted');
                     }
-
-                    print('Form Submitted');
-                  }
-                },
+                  },
+                ),
               ),
             ],
           ),

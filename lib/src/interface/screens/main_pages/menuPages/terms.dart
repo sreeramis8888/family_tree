@@ -35,10 +35,10 @@ class TermsAndConditionsPage extends StatelessWidget {
             color: kPrimaryColor,
           ),
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: kPrimaryColor),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        // leading: IconButton(
+        //   icon: const Icon(Icons.arrow_back, color: kPrimaryColor),
+        //   onPressed: () => Navigator.of(context).pop(),
+        // ),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),

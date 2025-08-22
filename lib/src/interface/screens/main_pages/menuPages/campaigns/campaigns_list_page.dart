@@ -1,4 +1,6 @@
+import 'package:familytree/src/data/api_routes/transaction_api/transaction_api.dart';
 import 'package:familytree/src/data/constants/color_constants.dart';
+import 'package:familytree/src/data/models/transaction_model.dart';
 import 'package:familytree/src/interface/components/loading_indicator/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:familytree/src/interface/components/Cards/campaign_card.dart';
@@ -10,6 +12,8 @@ import 'package:familytree/src/interface/screens/main_pages/menuPages/campaigns/
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:familytree/src/data/models/campaign_model.dart';
 import 'package:familytree/src/data/api_routes/campain_api/campaign_api.dart';
+import 'package:familytree/src/data/notifiers/user_notifier.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../../data/constants/style_constants.dart';
 
@@ -36,6 +40,10 @@ class _CampaignsMainScreenState extends ConsumerState<CampaignsMainScreen>
     'CSR Campaigns',
     'Zakath Campaigns'
   ];
+  final fetchCampaignTransactionsProvider =
+      FutureProvider.family<List<TransactionModel>, String>((ref, type) async {
+    return await TransactionApiService.getTransactions(type: type);
+  });
 
   @override
   void initState() {
@@ -172,6 +180,7 @@ class _CampaignsMainScreenState extends ConsumerState<CampaignsMainScreen>
                                   child: CampaignCard(
                                     campaign: campaign,
                                     tag: campaign.tagType,
+                                    userPhone: null,
                                     leftButtonLabel:
                                         isMyCampaign ? '' : 'Learn More',
                                     rightButtonLabel: isMyCampaign
@@ -185,7 +194,7 @@ class _CampaignsMainScreenState extends ConsumerState<CampaignsMainScreen>
                                               MaterialPageRoute(
                                                 builder: (_) =>
                                                     CampaignDetailPage(
-                                                        campaign: campaign),
+                                                        campaign: campaign, userPhone: null),
                                               ),
                                             );
                                           },
@@ -194,7 +203,7 @@ class _CampaignsMainScreenState extends ConsumerState<CampaignsMainScreen>
                                         context,
                                         MaterialPageRoute(
                                           builder: (_) => CampaignDetailPage(
-                                              campaign: campaign),
+                                              campaign: campaign, userPhone: null),
                                         ),
                                       );
                                     },
@@ -214,8 +223,60 @@ class _CampaignsMainScreenState extends ConsumerState<CampaignsMainScreen>
               );
             },
           ),
+          Consumer(
+            builder: (context, ref, _) {
+              final asyncTransactions =
+                  ref.watch(fetchCampaignTransactionsProvider('Donation'));
 
-          Text(''),
+              return asyncTransactions.when(
+                data: (transactions) {
+                  if (transactions.isEmpty) {
+                    return const Center(child: Text('No transactions found'));
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(12),
+                    itemCount: transactions.length,
+                    itemBuilder: (context, index) {
+                      final t = transactions[index];
+                      final formattedDate = DateFormat('d MMMM y, hh:mm a')
+                          .format(t.date.toLocal());
+                      return Container(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Transaction ID: ${t.transactionId}',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 12),
+                              _buildRow('Type', '${t.type}'),
+                              _buildRow(
+                                'date & time',
+                                formattedDate,
+                              ),
+                              _buildRow('Amount paid', '₹ ${t.amount}'),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+                loading: () => const Center(child: LoadingAnimation()),
+                error: (error, _) =>
+                    const Center(child: Text('Failed to load transactions')),
+              );
+            },
+          ),
 
           Column(
             children: [
@@ -268,6 +329,7 @@ class _CampaignsMainScreenState extends ConsumerState<CampaignsMainScreen>
                                   child: CampaignCard(
                                     campaign: campaign,
                                     tag: campaign.tagType,
+                                    userPhone: null,
                                     leftButtonLabel:
                                         isMyCampaign ? '' : 'Learn More',
                                     rightButtonLabel: isMyCampaign
@@ -281,7 +343,7 @@ class _CampaignsMainScreenState extends ConsumerState<CampaignsMainScreen>
                                               MaterialPageRoute(
                                                 builder: (_) =>
                                                     CampaignDetailPage(
-                                                        campaign: campaign),
+                                                        campaign: campaign, userPhone: null),
                                               ),
                                             );
                                           },
@@ -290,7 +352,7 @@ class _CampaignsMainScreenState extends ConsumerState<CampaignsMainScreen>
                                         context,
                                         MaterialPageRoute(
                                           builder: (_) => CampaignDetailPage(
-                                              campaign: campaign),
+                                              campaign: campaign, userPhone: null),
                                         ),
                                       );
                                     },
@@ -324,6 +386,28 @@ class _CampaignsMainScreenState extends ConsumerState<CampaignsMainScreen>
         backgroundColor: kPrimaryColor,
         child: const Icon(Icons.add, color: Colors.white),
         tooltip: 'Add Campaign',
+      ),
+    );
+  }
+
+  Widget _buildRow(String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+        decoration: const BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: Color(0xFFE0E0E0), width: 1),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+            Flexible(child: Text(value, textAlign: TextAlign.right)),
+          ],
+        ),
       ),
     );
   }

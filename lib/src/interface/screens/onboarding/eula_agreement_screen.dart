@@ -1,9 +1,16 @@
+import 'dart:developer';
+
+import 'package:familytree/src/data/api_routes/finance_api/finance_api.dart';
+import 'package:familytree/src/data/globals.dart';
+import 'package:familytree/src/interface/screens/main_page.dart';
+import 'package:familytree/src/interface/screens/main_pages/menuPages/financial_program/financial_program_page.dart';
+import 'package:familytree/src/interface/screens/main_pages/menuPages/financial_program/program_join_request.dart';
 import 'package:flutter/material.dart';
 import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/data/services/navgitor_service.dart';
 import 'package:familytree/src/data/utils/secure_storage.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/terms.dart';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class EulaAgreementScreen extends StatelessWidget {
   const EulaAgreementScreen({super.key});
@@ -23,28 +30,53 @@ class EulaAgreementScreen extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-                  ElevatedButton(
-                    onPressed: () async {
-                      await SecureStorage.write('eula_agreed', 'true');
+                  Consumer(
+                    builder: (context, ref, child) {
+                      return ElevatedButton(
+                        onPressed: () async {
+                          await SecureStorage.write('eula_agreed', 'true');
 
-                      navigationService
-                          .pushNamedReplacement('FinancialProgramOnboarding');
+                          
+
+                          try {
+                            final membershipDetails = await ref
+                                .read(getProgramMemberByIdProvider(id).future);
+
+                            if (membershipDetails != null) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const MainPage(),
+                                ),
+                              );
+                            } else {
+                              navigationService.pushNamedReplacement(
+                                  'FinancialProgramOnboarding');
+                            }
+                          } catch (e, stackTrace) {
+                            log('❌ Error fetching membership: $e');
+                            log('Stack trace:\n$stackTrace');
+                            navigationService.pushNamedReplacement(
+                                'FinancialProgramOnboarding');
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: kPrimaryColor,
+                          minimumSize: const Size(double.infinity, 50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text(
+                          'I Agree to Terms & Conditions',
+                          style: TextStyle(
+                            color: kWhite,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      );
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: kPrimaryColor,
-                      minimumSize: const Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text(
-                      'I Agree to Terms & Conditions',
-                      style: TextStyle(
-                        color: kWhite,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
                   ),
                   const SizedBox(height: 16),
                   TextButton(

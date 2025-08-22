@@ -1,13 +1,152 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:familytree/src/data/api_routes/requirements_api/requirements_api.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:familytree/src/data/models/attendance_user_model.dart';
 import 'package:familytree/src/data/models/events_model.dart';
 import 'package:familytree/src/data/services/snackbar_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:familytree/src/data/globals.dart';
+import 'package:riverpod/src/framework.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'events_api.g.dart';
+
+@riverpod
+Future<EventWithPerson> fetchEventWithPerson(Ref ref,String eventId) async {
+  final eventResponse = await http.get(
+    Uri.parse('$baseUrl/events/$eventId'),
+    headers: {'Authorization': 'Bearer $token'},
+  );
+
+  if (eventResponse.statusCode != 200) {
+    throw Exception('Failed to load event');
+  }
+
+  final decoded = jsonDecode(eventResponse.body);
+  final data = decoded['data'];
+
+  final event = Event.fromJson(data); // your custom model parser
+
+  // Now get the person data using `createdBy` ID
+  final String createdById = data['createdBy'] is String
+      ? data['createdBy']
+      : data['createdBy']['_id'];
+
+  final personResponse = await http.get(
+    Uri.parse('$baseUrl/people/$createdById'),
+    headers: {'Authorization': 'Bearer $token'},
+  );
+
+  if (personResponse.statusCode != 200) {
+    throw Exception('Failed to load creator info');
+  }
+
+  final personJson = jsonDecode(personResponse.body)['data'];
+
+  return EventWithPerson(
+    event: event,
+    fullName: personJson['fullName'] ?? personJson['name'] ?? 'N/A',
+    phone: personJson['phone'] ?? 'N/A',
+  );
+}
+
+Future<void> updateEventStatus({
+  required String eventId,
+  required String status, // approved, rejected, pending
+}) async {
+  final response = await http.patch(
+    Uri.parse('$baseUrl/events/approve/$eventId'),
+    headers: {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    },
+    body: jsonEncode({'isApproved': status}),
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception('Failed to update event status: ${response.body}');
+  }
+}
+
+@riverpod
+Future<List<Map<String, dynamic>>> filteredEvents(
+  Ref ref,
+  List<String> memberIds,
+) async {
+  try {
+    final url = Uri.parse('$baseUrl/events/family/all');
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to fetch events: ${response.body}');
+    }
+
+    final data = jsonDecode(response.body)['data'] as List;
+
+    final filtered = data
+        .where((event) {
+          final creatorModel = event['creatorModel'];
+
+          // Handle both String and Map forms of `createdBy`
+          final createdBy = event['createdBy'] is String
+              ? event['createdBy']
+              : event['createdBy']?['_id'];
+
+          final isEventType =
+              event['type'] == 'Online' || event['type'] == 'Offline';
+
+          final isValid = creatorModel == 'Person' &&
+              createdBy != null &&
+              memberIds.contains(createdBy) &&
+              isEventType;
+
+          return isValid;
+        })
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
+
+    return filtered;
+  } catch (e) {
+    throw Exception('Error fetching filtered events: $e');
+  }
+}
+
+@riverpod
+Future<List<Map<String, dynamic>>> filteredFeeds(
+    Ref ref, List<String> memberIds) async {
+  try {
+    final url = Uri.parse('$baseUrl/feeds/family/all');
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to fetch feeds: ${response.body}');
+    }
+
+    final data = jsonDecode(response.body)['data'] as List;
+    final filtered = data
+        .where((feed) =>
+            feed['authorModel'] == 'Person' &&
+            memberIds.contains(feed['author']['_id']))
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
+
+    return filtered;
+  } catch (e) {
+    throw Exception('Error fetching filtered feeds: $e');
+  }
+}
 
 @riverpod
 Future<List<Event>> fetchEvents(Ref ref) async {
@@ -65,7 +204,7 @@ Future<Event> fetchEventById(id) async {
 
 @riverpod
 Future<AttendanceUserListModel> fetchEventAttendance(
-    FetchEventAttendanceRef ref,
+    Ref ref,
     {required String eventId}) async {
   final url = Uri.parse('$baseUrl/events/attend/$eventId');
   print('Requesting URL: $url');

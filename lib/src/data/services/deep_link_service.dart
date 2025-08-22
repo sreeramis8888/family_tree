@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:familytree/src/data/api_routes/events_api/events_api.dart';
 import 'package:familytree/src/data/api_routes/user_api/user_data/user_data.dart';
+import 'package:familytree/src/data/api_routes/chat_api/chat_api.dart';
 import 'package:familytree/src/data/globals.dart';
 import 'package:familytree/src/data/models/chat_model.dart';
 import 'package:familytree/src/data/router/nav_router.dart';
 import 'package:familytree/src/data/services/navgitor_service.dart';
 import 'package:familytree/src/data/utils/secure_storage.dart';
+import 'package:familytree/src/interface/screens/main_pages/chat/chat_screen.dart';
 
 final deepLinkServiceProvider = Provider<DeepLinkService>((ref) {
   return DeepLinkService(ref);
@@ -85,18 +87,52 @@ class DeepLinkService {
             final userId = pathSegments[1];
             try {
               final user = await UserService.fetchUserDetails(userId);
-              NavigationService.navigatorKey.currentState
-                  ?.pushNamed('IndividualPage', arguments: {
-                'sender': ChatUser(id: id),
-                'receiver': ChatUser(
-                  id: user.id,
-                  fullName: user.fullName,
-                  image: user.image,
-                ),
-              });
+              
+              // Fetch existing conversations
+              final conversations = await ChatApi().fetchConversations();
+              
+              // Check if there's already a direct conversation with this user
+              final directConversation = conversations
+                  .where((c) =>
+                      c.type == 'direct' &&
+                      c.participants.any((p) => p.userId == userId))
+                  .isNotEmpty
+                  ? conversations
+                      .where((c) =>
+                          c.type == 'direct' &&
+                          c.participants.any((p) => p.userId == userId))
+                      .first
+                  : null;
+              
+              if (directConversation != null) {
+                // Navigate to existing conversation
+                NavigationService.navigatorKey.currentState?.push(
+                  MaterialPageRoute(
+                    builder: (context) => IndividualPage(
+                      conversationImage: user.image ?? '',
+                      conversationTitle: user.fullName ?? '',
+                      conversation: directConversation,
+                      currentUserId: id,
+                    ),
+                  ),
+                );
+              } else {
+                // Create new conversation and navigate
+                final newConversation = await ChatApi().fetchDirectConversation(userId);
+                NavigationService.navigatorKey.currentState?.push(
+                  MaterialPageRoute(
+                    builder: (context) => IndividualPage(
+                      conversationImage: user.image ?? '',
+                      conversationTitle: user.fullName ?? '',
+                      conversation: newConversation,
+                      currentUserId: id,
+                    ),
+                  ),
+                );
+              }
             } catch (e) {
-              debugPrint('Error fetching user: $e');
-              _showError('Unable to load profile');
+              debugPrint('Error handling chat deep link: $e');
+              _showError('Unable to open chat');
             }
           }
           break;
@@ -117,7 +153,7 @@ class DeepLinkService {
         case 'my_feeds':
           try {
             NavigationService.navigatorKey.currentState
-                ?.pushNamed('MyBusinesses');
+                ?.pushNamed('MyPosts');
           } catch (e) {
             debugPrint('Error fetching requirement: $e');
             _showError('Unable to load profile');

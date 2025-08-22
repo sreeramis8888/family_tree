@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:familytree/src/data/models/msg_model.dart';
-import 'package:familytree/src/interface/screens/main_pages/menuPages/my_businesses.dart';
+import 'package:familytree/src/interface/screens/main_pages/menuPages/my_posts.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/my_products.dart';
 
 class ReplyCard extends StatelessWidget {
@@ -65,7 +65,7 @@ class ReplyCard extends StatelessWidget {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => MyBusinessesPage(),
+                            builder: (context) => MyPosts(),
                           ));
                     },
                     child: ClipRRect(

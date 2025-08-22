@@ -139,7 +139,7 @@ class _GlowingAnimatedAvatarState extends State<GlowingAnimatedAvatar>
           widget.imageUrl!,
           width: widget.size - 10,
           height: widget.size - 10,
-          fit: BoxFit.contain,
+          fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) {
             return _buildFallbackAvatar();
           },

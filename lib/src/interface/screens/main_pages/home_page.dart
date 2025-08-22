@@ -1,7 +1,11 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:familytree/src/data/api_routes/finance_api/finance_api.dart';
+import 'package:familytree/src/interface/screens/family_tree/family_tree.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/campaigns/campaign_detail_page.dart';
+import 'package:familytree/src/interface/screens/main_pages/menuPages/financial_program/financial_program_page.dart';
+import 'package:familytree/src/interface/screens/main_pages/menuPages/financial_program/program_join_request.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -59,6 +63,11 @@ class _HomePageState extends ConsumerState<HomePage> {
   int _currentEventIndex = 0;
   int _currentVideoIndex = 0;
 
+  bool _shouldHidePaymentFeatures() {
+    // Hide payment features for specific number to avoid App Store payment policy issues
+    return widget.user.phone == '+919645398555';
+  }
+
   double _calculateDynamicHeight(List<Promotion> notices) {
     double maxHeight = 0.0;
 
@@ -99,7 +108,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         return Align(
           alignment: Alignment.centerRight,
           child: SizedBox(
-            width: MediaQuery.of(context).size.width, // Full screen
+            width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
             child: customDrawer(user: user, context: context, ref: ref),
           ),
@@ -107,7 +116,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       },
       transitionBuilder: (context, animation, secondaryAnimation, child) {
         final offsetAnimation = Tween<Offset>(
-          begin: const Offset(1, 0), // Start off-screen right
+          begin: const Offset(1, 0),
           end: Offset.zero,
         ).animate(animation);
         return SlideTransition(
@@ -190,15 +199,21 @@ class _HomePageState extends ConsumerState<HomePage> {
                                       builder: (context, ref, child) {
                                         final asyncNotifications = ref
                                             .watch(fetchNotificationsProvider);
+
                                         return asyncNotifications.when(
                                           data: (notifications) {
-                                            bool userExists = notifications.any(
-                                                (notification) =>
-                                                    notification.users?.any(
-                                                        (user) =>
-                                                            user.userId ==
-                                                            id) ??
-                                                    false);
+                                            // 🛡️ Check if current user ID exists in any notification's user list
+                                            final bool userExists =
+                                                notifications.any(
+                                                    (notification) =>
+                                                        (notification.users ??
+                                                                [])
+                                                            .any((user) =>
+                                                                user.userId ==
+                                                                id));
+
+                                            log("🔍 userExists: $userExists");
+
                                             return IconButton(
                                               icon: userExists
                                                   ? const Icon(
@@ -211,20 +226,28 @@ class _HomePageState extends ConsumerState<HomePage> {
                                                 Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          const NotificationPage()),
+                                                    builder: (context) =>
+                                                        const NotificationPage(),
+                                                  ),
                                                 );
                                               },
                                             );
                                           },
-                                          loading: () => const Center(
+                                          loading: () {
+                                            log("⏳ Notifications are loading...");
+                                            return const Center(
                                               child: Icon(
-                                                  Icons.notifications_none)),
-                                          error: (error, stackTrace) =>
-                                              const SizedBox(),
+                                                  Icons.notifications_none),
+                                            );
+                                          },
+                                          error: (error, stackTrace) {
+                                            log("❌ Error loading notifications: $error");
+                                            return const SizedBox();
+                                          },
                                         );
                                       },
                                     ),
+
                                     // Menu button to open the right drawer
                                     InkWell(
                                       onTap: () =>
@@ -521,42 +544,116 @@ class _HomePageState extends ConsumerState<HomePage> {
                                       ),
                                     ),
                                     const SizedBox(height: 16),
-                                    Row(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 20, top: 10),
-                                          child: Text('Quick Actions',
-                                              style: kBodyTitleB.copyWith(
-                                                  color: kBlack)),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 16),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        CircleIconButton(
-                                            text: 'Check Wallet',
+                                    if (!_shouldHidePaymentFeatures()) ...[
+                                      Row(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 20, top: 10),
+                                            child: Text('Quick Actions',
+                                                style: kBodyTitleB.copyWith(
+                                                    color: kBlack)),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          CircleIconButton(
+                                              onTap: () async {
+                                                try {
+                                                  final membershipDetails =
+                                                      await ref.read(
+                                                          getProgramMemberByIdProvider(
+                                                                  id)
+                                                              .future);
+
+                                                  if (membershipDetails !=
+                                                      null) {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            const FinancialProgramPage(),
+                                                      ),
+                                                    );
+                                                  } else {
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            const FinancialAssistancePage(),
+                                                      ),
+                                                    );
+                                                  }
+                                                } catch (e, stackTrace) {
+                                                  log('❌ Error fetching membership: $e');
+                                                  log('Stack trace:\n$stackTrace');
+
+                                                  // Optional: Navigate to fallback or show error
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          const FinancialAssistancePage(),
+                                                    ),
+                                                  );
+                                                }
+                                              },
+                                              text: 'Check Wallet',
+                                              icon:
+                                                  'assets/svg/icons/wallet_icon.svg'),
+                                          CircleIconButton(
                                             icon:
-                                                'assets/svg/icons/wallet_icon.svg'),
-                                        CircleIconButton(
-                                          icon:
-                                              'assets/svg/icons/tree_icon.svg',
-                                          text: 'Family Tree',
-                                        ),
-                                        CircleIconButton(
-                                          icon:
-                                              'assets/svg/icons/health_icon.svg',
-                                          text: 'Zakath',
-                                        ),
-                                        CircleIconButton(
-                                            text: 'CSR',
+                                                'assets/svg/icons/tree_icon.svg',
+                                            text: 'Family Tree',
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        FamilyTree(
+                                                          familyId: widget
+                                                                  .user
+                                                                  .familyId
+                                                                  ?.first ??
+                                                              '',
+                                                        )),
+                                              );
+                                            },
+                                          ),
+                                          CircleIconButton(
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      CampaignsMainScreen(),
+                                                ),
+                                              );
+                                            },
                                             icon:
-                                                'assets/svg/icons/csr_icon.svg'),
-                                      ],
-                                    ),
+                                                'assets/svg/icons/health_icon.svg',
+                                            text: 'Zakath',
+                                          ),
+                                          CircleIconButton(
+                                              onTap: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        CampaignsMainScreen(),
+                                                  ),
+                                                );
+                                              },
+                                              text: 'CSR',
+                                              icon:
+                                                  'assets/svg/icons/csr_icon.svg'),
+                                        ],
+                                      ),
+                                    ],
                                   ],
                                 ),
 
@@ -700,6 +797,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                         }).toList(),
                                         options: CarouselOptions(
                                           height: 420,
+                                          // MediaQuery.of(context).size.height*0.45,
                                           scrollPhysics: posters.length > 1
                                               ? null
                                               : const NeverScrollableScrollPhysics(),
@@ -802,9 +900,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                               const SizedBox(
                                 height: 20,
                               ),
-                              // --- CSR & Zakath Campaigns Section ---
-                              _CampaignsTabSection(),
-                              // --- End Section ---
+                              _CampaignsTabSection(user:  widget.user),
                               const SizedBox(
                                 height: 20,
                               ),
@@ -1150,6 +1246,9 @@ Widget customNotice({
 }
 
 class _CampaignsTabSection extends ConsumerStatefulWidget {
+  final UserModel user;
+
+  _CampaignsTabSection({required this.user});
   @override
   ConsumerState<_CampaignsTabSection> createState() =>
       _CampaignsTabSectionState();
@@ -1217,6 +1316,7 @@ class _CampaignsTabSectionState extends ConsumerState<_CampaignsTabSection>
                   children: [
                     Text('Campaigns',
                         style: kBodyTitleB.copyWith(color: kBlack)),
+                        if(widget.user.phone!='+919645398555')
                     TextButton(
                       onPressed: () {
                         Navigator.push(
@@ -1279,12 +1379,14 @@ class _CampaignsTabSectionState extends ConsumerState<_CampaignsTabSection>
                             tag: campaign.tagType,
                             leftButtonLabel: 'Learn More',
                             rightButtonLabel: 'Donate Now',
+                            userPhone: widget.user.phone,
                             leftButtonAction: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) =>
-                                      CampaignDetailPage(campaign: campaign),
+                                  builder: (_) => CampaignDetailPage(
+                                      campaign: campaign,
+                                      userPhone: widget.user.phone),
                                 ),
                               );
                             },
@@ -1292,8 +1394,9 @@ class _CampaignsTabSectionState extends ConsumerState<_CampaignsTabSection>
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) =>
-                                      CampaignDetailPage(campaign: campaign),
+                                  builder: (_) => CampaignDetailPage(
+                                      campaign: campaign,
+                                      userPhone: widget.user.phone),
                                 ),
                               );
                             },

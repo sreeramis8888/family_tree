@@ -1,6 +1,8 @@
+import 'package:familytree/src/interface/components/custom_widgets/custom_icon_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/data/constants/style_constants.dart';
@@ -9,10 +11,22 @@ import 'package:familytree/src/data/services/navgitor_service.dart';
 import 'package:familytree/src/data/services/share_qr.dart';
 import 'package:familytree/src/interface/components/animations/glowing_profile.dart';
 import 'package:familytree/src/interface/screens/main_pages/profile/idcard.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 class ProfilePage extends ConsumerWidget {
   final UserModel user;
   const ProfilePage({super.key, required this.user});
+  //for launching dialar
+  Future<void> _launchDialer(String number) async {
+  final Uri launchUrL = Uri(
+    scheme: 'tel',
+    path: number,
+    );
+  if (!await launchUrl(launchUrL)) {
+    throw Exception('Could not launch $number');
+  }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -275,47 +289,56 @@ class ProfilePage extends ConsumerWidget {
                                                     //     color: kBlack,
                                                     //   ),
                                                     // ),
-                                                    SizedBox(height: 20),
-                                                    Container(
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 10,
-                                                          vertical: 6),
-                                                      decoration: BoxDecoration(
-                                                        color: kSecondaryColor,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(30),
-                                                      ),
-                                                      child: IntrinsicWidth(
-                                                        child: Row(
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceBetween,
-                                                          children: [
-                                                            Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .only(
-                                                                      left: 10),
-                                                              child: Image.asset(
-                                                                  scale: 30,
-                                                                  'assets/pngs/familytree_logo.png'),
-                                                            ),
-                                                            const SizedBox(
-                                                                width: 10),
-                                                            Text(
-                                                                'Member ID: ${user.email}',
-                                                                style: kSmallerTitleB
-                                                                    .copyWith(
-                                                                        color:
-                                                                            kPrimaryColor)),
-                                                          ],
+                                                    if (user.birthDate != null)
+                                                      SizedBox(height: 20),
+                                                    if (user.birthDate != null)
+                                                      Container(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                horizontal: 10,
+                                                                vertical: 6),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color:
+                                                              kSecondaryColor,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(30),
+                                                        ),
+                                                        child: IntrinsicWidth(
+                                                          child: Row(
+                                                            mainAxisSize:
+                                                                MainAxisSize
+                                                                    .min,
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .only(
+                                                                        left:
+                                                                            10),
+                                                                child: Image.asset(
+                                                                    scale: 30,
+                                                                    'assets/pngs/familytree_logo.png'),
+                                                              ),
+                                                              const SizedBox(
+                                                                  width: 10),
+                                                              if (user.birthDate !=
+                                                                  null)
+                                                                Text(
+                                                                    'Date of Birth: ${DateFormat('yyyy-MM-dd').format(user.birthDate!)}',
+                                                                    style: kSmallerTitleB
+                                                                        .copyWith(
+                                                                            color:
+                                                                                kPrimaryColor)),
+                                                            ],
+                                                          ),
                                                         ),
                                                       ),
-                                                    ),
                                                     SizedBox(height: 20),
                                                     Column(
                                                       children: [
@@ -339,12 +362,16 @@ class ProfilePage extends ConsumerWidget {
                                                           ),
                                                           child: Column(
                                                             children: [
-                                                              ContactRow(
-                                                                  icon: Icons
-                                                                      .phone,
-                                                                  text:
-                                                                      user.phone ??
-                                                                          ''),
+                                                              GestureDetector(
+                                                                //rediricting to dialer
+                                                                onTap: () => _launchDialer(user.phone.toString()),
+                                                                child: ContactRow(
+                                                                    icon: Icons
+                                                                        .phone,
+                                                                    text:
+                                                                        user.phone ??
+                                                                            ''),
+                                                              ),
                                                               if (user.email !=
                                                                       '' &&
                                                                   user.email !=
@@ -402,74 +429,74 @@ class ProfilePage extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          captureAndShareOrDownloadWidgetScreenshot(context);
-                        },
-                        child: SvgPicture.asset(
-                            color: kPrimaryColor,
-                            'assets/svg/icons/shareButton.svg'),
-                        // child: Container(
-                        //   width: 90,
-                        //   height: 90,
-                        //   decoration: BoxDecoration(
-                        //     color: kPrimaryColor,
-                        //     borderRadius: BorderRadius.circular(
-                        //         50), // Apply circular border to the outer container
-                        //   ),
-                        //   child: Padding(
-                        //     padding: const EdgeInsets.all(4.0),
-                        //     child: Container(
-                        //       decoration: BoxDecoration(
-                        //         borderRadius: BorderRadius.circular(50),
-                        //         color: kPrimaryColor,
-                        //       ),
-                        //       child: Icon(
-                        //         Icons.share,
-                        //         color: kWhite,
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
-                      ),
-                      const SizedBox(width: 40),
-                      GestureDetector(
-                          onTap: () {
-                            navigationService.pushNamed('Card',
-                                arguments: user);
-                          },
-                          child: SvgPicture.asset(
-                            'assets/svg/icons/qrButton.svg',
-                            color: kPrimaryColor,
-                          )
-                          // Container(
-                          //   width: 90,
-                          //   height: 90,
-                          //   decoration: BoxDecoration(
-                          //     color: kWhite,
-                          //     borderRadius: BorderRadius.circular(
-                          //         50), // Apply circular border to the outer container
-                          //   ),
-                          //   child: Padding(
-                          //     padding: const EdgeInsets.all(4.0),
-                          //     child: Container(
-                          //       decoration: BoxDecoration(
-                          //         borderRadius: BorderRadius.circular(50),
-                          //         color: kWhite,
-                          //       ),
-                          //       child: Icon(
-                          //         Icons.qr_code,
-                          //         color: Colors.grey,
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
-                          )
-                    ],
-                  ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: [
+                  //     GestureDetector(
+                  //       onTap: () {
+                  //         captureAndShareOrDownloadWidgetScreenshot(context);
+                  //       },
+                  //       child: SvgPicture.asset(
+                  //           color: kPrimaryColor,
+                  //           'assets/svg/icons/shareButton.svg'),
+                  //       // child: Container(
+                  //       //   width: 90,
+                  //       //   height: 90,
+                  //       //   decoration: BoxDecoration(
+                  //       //     color: kPrimaryColor,
+                  //       //     borderRadius: BorderRadius.circular(
+                  //       //         50), // Apply circular border to the outer container
+                  //       //   ),
+                  //       //   child: Padding(
+                  //       //     padding: const EdgeInsets.all(4.0),
+                  //       //     child: Container(
+                  //       //       decoration: BoxDecoration(
+                  //       //         borderRadius: BorderRadius.circular(50),
+                  //       //         color: kPrimaryColor,
+                  //       //       ),
+                  //       //       child: Icon(
+                  //       //         Icons.share,
+                  //       //         color: kWhite,
+                  //       //       ),
+                  //       //     ),
+                  //       //   ),
+                  //       // ),
+                  //     ),
+                  //     const SizedBox(width: 40),
+                  //     GestureDetector(
+                  //         onTap: () {
+                  //           navigationService.pushNamed('Card',
+                  //               arguments: user);
+                  //         },
+                  //         child: SvgPicture.asset(
+                  //           'assets/svg/icons/qrButton.svg',
+                  //           color: kPrimaryColor,
+                  //         )
+                  //         // Container(
+                  //         //   width: 90,
+                  //         //   height: 90,
+                  //         //   decoration: BoxDecoration(
+                  //         //     color: kWhite,
+                  //         //     borderRadius: BorderRadius.circular(
+                  //         //         50), // Apply circular border to the outer container
+                  //         //   ),
+                  //         //   child: Padding(
+                  //         //     padding: const EdgeInsets.all(4.0),
+                  //         //     child: Container(
+                  //         //       decoration: BoxDecoration(
+                  //         //         borderRadius: BorderRadius.circular(50),
+                  //         //         color: kWhite,
+                  //         //       ),
+                  //         //       child: Icon(
+                  //         //         Icons.qr_code,
+                  //         //         color: Colors.grey,
+                  //         //       ),
+                  //         //     ),
+                  //         //   ),
+                  //         // ),
+                  //         )
+                  //   ],
+                  // ),
                   SizedBox(
                     height: 30,
                   ),
@@ -481,4 +508,53 @@ class ProfilePage extends ConsumerWidget {
       ),
     );
   }
+}
+
+class ContactRow extends StatelessWidget {
+  final IconData icon;
+  final String text;
+
+  const ContactRow({
+    super.key,
+    required this.icon,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        CustomIconContainer(
+          icon: icon,
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            text,
+            style: GoogleFonts.poppins(color: kBlack, fontSize: 13),
+          ),
+        )
+      ],
+    );
+  }
+}
+
+class DottedLinePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    const dashWidth = 5.0;
+    const dashSpace = 5.0;
+    final paint = Paint()
+      ..color = Colors.white38
+      ..strokeWidth = 2.0;
+
+    double startX = 0;
+    while (startX < size.width) {
+      canvas.drawLine(Offset(startX, 0), Offset(startX + dashWidth, 0), paint);
+      startX += dashWidth + dashSpace;
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

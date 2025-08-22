@@ -334,7 +334,7 @@ class _GetAllFlatProgramMembersProviderElement
   int get limit => (origin as GetAllFlatProgramMembersProvider).limit;
 }
 
-String _$joinProgramHash() => r'4f937eb118c91a7bae90a6ed1d0039bff06e31e9';
+String _$joinProgramHash() => r'0a7caed9a43aaa862b2e0a218e63c7fa548079cb';
 
 /// See also [joinProgram].
 @ProviderFor(joinProgram)
@@ -349,7 +349,7 @@ class JoinProgramFamily extends Family<AsyncValue<bool>> {
   JoinProgramProvider call({
     required String memberId,
     String? membershipStatus,
-    double? amount,
+    int? amount,
   }) {
     return JoinProgramProvider(
       memberId: memberId,
@@ -390,7 +390,7 @@ class JoinProgramProvider extends AutoDisposeFutureProvider<bool> {
   JoinProgramProvider({
     required String memberId,
     String? membershipStatus,
-    double? amount,
+    int? amount,
   }) : this._internal(
           (ref) => joinProgram(
             ref as JoinProgramRef,
@@ -426,7 +426,7 @@ class JoinProgramProvider extends AutoDisposeFutureProvider<bool> {
 
   final String memberId;
   final String? membershipStatus;
-  final double? amount;
+  final int? amount;
 
   @override
   Override overrideWith(
@@ -482,7 +482,7 @@ mixin JoinProgramRef on AutoDisposeFutureProviderRef<bool> {
   String? get membershipStatus;
 
   /// The parameter `amount` of this provider.
-  double? get amount;
+  int? get amount;
 }
 
 class _JoinProgramProviderElement extends AutoDisposeFutureProviderElement<bool>
@@ -495,7 +495,7 @@ class _JoinProgramProviderElement extends AutoDisposeFutureProviderElement<bool>
   String? get membershipStatus =>
       (origin as JoinProgramProvider).membershipStatus;
   @override
-  double? get amount => (origin as JoinProgramProvider).amount;
+  int? get amount => (origin as JoinProgramProvider).amount;
 }
 
 String _$getAllTransactionsHash() =>

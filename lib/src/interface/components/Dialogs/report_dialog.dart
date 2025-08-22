@@ -1,3 +1,5 @@
+import 'package:familytree/src/data/api_routes/report_api/report_api.dart';
+import 'package:familytree/src/data/globals.dart';
 import 'package:flutter/material.dart';
 import 'package:familytree/src/data/api_routes/user_api/user_data/user_data.dart';
 import 'package:familytree/src/data/constants/color_constants.dart';
@@ -118,10 +120,14 @@ class ReportPersonDialog extends StatelessWidget {
         const SizedBox(width: 12),
         ElevatedButton(
           onPressed: () async {
-            UserService.createReport(
-                reason: reasonController.text,
-                reportedItemId: reportedItemId,
-                reportType: reportType);
+            ReportApiService().postReport(
+          data: {
+
+                                 "content": reportedItemId, 
+              "reportBy": id, 
+              "reportType":reportType,
+              "reason": reasonController.text
+                },);
             Navigator.pop(context);
           },
           style: ElevatedButton.styleFrom(

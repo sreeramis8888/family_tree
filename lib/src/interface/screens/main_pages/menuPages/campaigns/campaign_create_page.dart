@@ -11,6 +11,7 @@ import 'package:familytree/src/interface/screens/main_pages/admin/member_creatio
     show CustomDropdown;
 import 'package:familytree/src/data/api_routes/campain_api/campaign_api.dart';
 import 'package:familytree/src/interface/components/DropDown/selectionDropdown.dart';
+import 'package:familytree/src/data/services/image_upload.dart';
 
 class CampaignCreatePage extends StatefulWidget {
   const CampaignCreatePage({Key? key}) : super(key: key);
@@ -24,8 +25,7 @@ class _CampaignCreatePageState extends State<CampaignCreatePage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _organizerController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _targetAmountController =
-      TextEditingController(text: '₹1,00,000');
+  final TextEditingController _targetAmountController = TextEditingController();
   final TextEditingController _tagController = TextEditingController();
   DateTime? _startDate;
   DateTime? _targetDate;
@@ -145,9 +145,17 @@ class _CampaignCreatePageState extends State<CampaignCreatePage> {
                       const Icon(Icons.upload_file, color: Colors.grey),
                       const SizedBox(width: 12),
                       Expanded(
-                          child: Text(_coverImage == null
-                              ? 'Upload'
-                              : 'Image Selected')),
+                        child: _coverImage == null
+                            ? const Text('Upload')
+                            : Row(
+                                children: [
+                                  Image.file(_coverImage!,
+                                      height: 40, width: 40),
+                                  const SizedBox(width: 8),
+                                  const Text('Image Selected'),
+                                ],
+                              ),
+                      ),
                       const Icon(Icons.cloud_upload_outlined,
                           color: Colors.grey),
                       const SizedBox(width: 12),
@@ -200,7 +208,6 @@ class _CampaignCreatePageState extends State<CampaignCreatePage> {
                     ),
                   )),
               const SizedBox(height: 16),
-              Text('Status', style: kBodyTitleM),
               SelectionDropDown(
                 label: 'Status',
                 items: ['Active', 'Inactive']
@@ -213,7 +220,6 @@ class _CampaignCreatePageState extends State<CampaignCreatePage> {
                 onChanged: (v) => setState(() => _status = v ?? 'Active'),
               ),
               const SizedBox(height: 16),
-              Text('Tag', style: kBodyTitleM),
               SelectionDropDown(
                 label: 'Tag',
                 items: ['ZAKATH', 'CSR']
@@ -285,9 +291,17 @@ class _CampaignCreatePageState extends State<CampaignCreatePage> {
                       const Icon(Icons.upload_file, color: Colors.grey),
                       const SizedBox(width: 12),
                       Expanded(
-                          child: Text(_uploadImage == null
-                              ? 'Upload'
-                              : 'Image Selected')),
+                        child: _uploadImage == null
+                            ? const Text('Upload')
+                            : Row(
+                                children: [
+                                  Image.file(_uploadImage!,
+                                      height: 40, width: 40),
+                                  const SizedBox(width: 8),
+                                  const Text('Image Selected'),
+                                ],
+                              ),
+                      ),
                       const Icon(Icons.cloud_upload_outlined,
                           color: Colors.grey),
                       const SizedBox(width: 12),
@@ -298,7 +312,7 @@ class _CampaignCreatePageState extends State<CampaignCreatePage> {
               const SizedBox(height: 32),
               SizedBox(
                 width: double.infinity,
-                height: 54,
+                height: 44,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: kRed,
@@ -308,10 +322,23 @@ class _CampaignCreatePageState extends State<CampaignCreatePage> {
                   ),
                   onPressed: () async {
                     if (_formKey.currentState?.validate() ?? false) {
+                      String? coverImageUrl;
+                      String? uploadImageUrl;
+                      if (_coverImage != null) {
+                        coverImageUrl = await imageUpload(_coverImage!.path);
+                      }
+                      if (_uploadImage != null) {
+                        uploadImageUrl = await imageUpload(_uploadImage!.path);
+                      }
+                      List<String> documentUrls = [];
+                      for (final doc in _documents) {
+                        final url = await imageUpload(doc.file.path);
+                        documentUrls.add(url);
+                      }
                       final Map<String, dynamic> data = {
                         'title': _nameController.text,
                         'description': _descriptionController.text,
-                        'media': _coverImage?.path ?? '',
+                        'media': coverImageUrl ?? '',
                         'targetAmount': int.tryParse(_targetAmountController
                                 .text
                                 .replaceAll(RegExp(r'[^0-9]'), '')) ??
@@ -321,10 +348,11 @@ class _CampaignCreatePageState extends State<CampaignCreatePage> {
                             ? _tagController.text
                             : null,
                         'organizedBy': _organizerController.text,
-                        'documents':
-                            _documents.map((doc) => doc.file.path).toList(),
+                        'documents': documentUrls,
                         'status': _status,
-                        'createdBy': id
+                        'createdBy': id,
+                        if (uploadImageUrl != null)
+                          'uploadImage': uploadImageUrl,
                       };
                       log(data.toString());
                       showDialog(

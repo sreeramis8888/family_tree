@@ -1,6 +1,8 @@
-
+import 'package:familytree/src/data/models/chat_conversation_model.dart';
+import 'package:familytree/src/interface/screens/approvals/approvals_page.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/financial_program/program_join_onboarding_page.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/financial_program/program_join_request.dart';
+import 'package:familytree/src/interface/screens/main_pages/profile/profile_preview_withUserModel.dart';
 import 'package:flutter/material.dart';
 import 'package:familytree/src/data/models/chat_model.dart';
 import 'package:familytree/src/data/models/events_model.dart';
@@ -19,7 +21,7 @@ import 'package:familytree/src/interface/screens/main_pages/menuPages/levels/sen
 import 'package:familytree/src/interface/screens/main_pages/menuPages/change_number.dart';
 
 import 'package:familytree/src/interface/screens/main_pages/menuPages/levels/states.dart';
-import 'package:familytree/src/interface/screens/main_pages/menuPages/my_businesses.dart';
+import 'package:familytree/src/interface/screens/main_pages/menuPages/my_posts.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/my_enquiries.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/event/my_events.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/my_products.dart';
@@ -31,9 +33,7 @@ import 'package:familytree/src/interface/screens/main_pages/notification_page.da
 import 'package:familytree/src/interface/screens/main_pages/profile/editUser.dart';
 import 'package:familytree/src/interface/screens/main_pages/profile/idcard.dart';
 import 'package:familytree/src/interface/screens/main_pages/menuPages/my_subscription.dart';
-import 'package:familytree/src/interface/screens/main_pages/profile/profile_preview.dart';
 import 'package:familytree/src/interface/screens/main_pages/profile/profile_preview_withUserId.dart';
-
 import 'package:familytree/src/interface/screens/splash_screen.dart';
 
 Route<dynamic> generateRoute(RouteSettings? settings) {
@@ -47,6 +47,8 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
     // case 'ProfileCompletion':
     //   return MaterialPageRoute(
     //       builder: (context) => const ProfileCompletionScreen());
+    case 'Approvals':
+      return MaterialPageRoute(builder: (context) => const ApprovalsPage());
     case 'Card':
       UserModel user = settings?.arguments as UserModel;
       return MaterialPageRoute(
@@ -56,7 +58,7 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
     case 'ProfilePreview':
       UserModel user = settings?.arguments as UserModel;
       return MaterialPageRoute(
-          builder: (context) => ProfilePreview(
+          builder: (context) => ProfilePreviewWithUserModel(
                 user: user,
               ));
     case 'ProfilePreviewUsingID':
@@ -87,20 +89,22 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       return MaterialPageRoute(builder: (context) => EditUser());
     case 'FinancialAssistancePage':
       return MaterialPageRoute(builder: (context) => FinancialAssistancePage());
-    // case 'IndividualPage':
-    //   final args = settings?.arguments as Map<String, dynamic>?;
-    //   ChatUser sender = args?['sender'];
-    //   ChatUser receiver = args?['receiver'];
+    case 'IndividualPage':
+      final args = settings?.arguments as Map<String, dynamic>?;
+      ChatConversation conversation = args?['conversation'];
+      String currentUserId = args?['currentUserId'];
+      String conversationImage = args?['conversationImage'];
+      String conversationTitle = args?['conversationTitle'];
 
-    //   return MaterialPageRoute(
-    //       builder: (context) => IndividualPage(
-    //             receiver: receiver,
-    //             sender: sender,
-    //           ));
+      return MaterialPageRoute(
+          builder: (context) => IndividualPage(conversation: conversation,conversationImage: conversationImage,conversationTitle: conversationTitle,
+        currentUserId: currentUserId,
+              ));
     case 'ChangeNumber':
       return MaterialPageRoute(builder: (context) => ChangeNumberPage());
     case 'FinancialProgramOnboarding':
-      return MaterialPageRoute(builder: (context) => ProgramJoinOnboardingPage());
+      return MaterialPageRoute(
+          builder: (context) => ProgramJoinOnboardingPage());
     case 'NotificationPage':
       return MaterialPageRoute(builder: (context) => NotificationPage());
     case 'AboutPage':
@@ -114,8 +118,8 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       return MaterialPageRoute(builder: (context) => MyProductPage());
     case 'EnterProductsPage':
       return MaterialPageRoute(builder: (context) => EnterProductsPage());
-    case 'MyBusinesses':
-      return MaterialPageRoute(builder: (context) => MyBusinessesPage());
+    case 'MyPosts':
+      return MaterialPageRoute(builder: (context) => MyPosts());
     case 'AnalyticsPage':
       return MaterialPageRoute(builder: (context) => AnalyticsPage());
     case 'SendAnalyticRequest':

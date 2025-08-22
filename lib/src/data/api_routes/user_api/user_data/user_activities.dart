@@ -1,13 +1,15 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:familytree/src/data/globals.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as dio;
 
 Future<void> likeFeed(String feedId) async {
-  final url = Uri.parse('$baseUrl/feeds/like/$feedId');
+  final url = Uri.parse('$baseUrl/feeds/$feedId/like');
 
   try {
-    final response = await http.post(
+    final response = await http.put(
       url,
       headers: {
         'accept': '*/*',
@@ -29,13 +31,36 @@ Future<void> likeFeed(String feedId) async {
   }
 }
 
+
+//deleting comment
+Future<void> deleteComment(String feedId, String commentId) async {
+  final url = Uri.parse('$baseUrl/feeds/$feedId/comments/$commentId');
+  try {
+    final response = await http.delete(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'accept': '*/*',
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete comment: ${response.body}');
+    }
+  } catch (e) {
+    throw Exception('Error deleting comment: $e');
+  }
+}
+
+
+
+
+
+
+//posting comment
 Future<void> postComment(
     {required String feedId, required String comment}) async {
-  final url = Uri.parse('$baseUrl/feeds/comment/$feedId');
-
-  // Replace with your actual token
-
-  // Define the headers
+  final url = Uri.parse('$baseUrl/feeds/$feedId/comment');
+  log('$baseUrl/feeds/$feedId/comment');
   final headers = {
     'Authorization': 'Bearer $token',
     'Content-Type': 'application/json',
@@ -48,8 +73,7 @@ Future<void> postComment(
   });
 
   try {
-    // Send the POST request
-    final response = await http.post(
+    final response = await http.put(
       url,
       headers: headers,
       body: body,

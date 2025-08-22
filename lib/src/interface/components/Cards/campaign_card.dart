@@ -12,6 +12,7 @@ class CampaignCard extends StatelessWidget {
   final String rightButtonLabel;
   final VoidCallback? leftButtonAction;
   final VoidCallback? rightButtonAction;
+  final String? userPhone;
 
   const CampaignCard({
     Key? key,
@@ -21,16 +22,20 @@ class CampaignCard extends StatelessWidget {
     required this.rightButtonLabel,
     this.leftButtonAction,
     this.rightButtonAction,
+    this.userPhone,
   }) : super(key: key);
+
+  bool _shouldHidePaymentFeatures() {
+    // Hide payment features for specific number to avoid App Store payment policy issues
+    return userPhone == '+919645398555';
+  }
 
   @override
   Widget build(BuildContext context) {
     final collected = campaign.donatedAmount;
     final target = campaign.targetAmount;
     final progress = (collected / (target == 0 ? 1 : target)).clamp(0.0, 1.0);
-    final dueDate = campaign.deadline != null
-        ? DateFormat('dd MMM yyyy').format(campaign.deadline)
-        : '-';
+    final dueDate = DateFormat('dd MMM yyyy').format(campaign.deadline);
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
       decoration: BoxDecoration(
@@ -167,26 +172,27 @@ class CampaignCard extends StatelessWidget {
                     ),
                   const SizedBox(height: 10),
                 ],
-                Row(
-                  children: [
-                    if (rightButtonLabel != 'View Details')
+                if (!_shouldHidePaymentFeatures())
+                  Row(
+                    children: [
+                      if (rightButtonLabel != 'View Details')
+                        Expanded(
+                            child: customButton(
+                          labelColor: kBlack,
+                          sideColor: kSecondaryColor,
+                          buttonColor: kSecondaryColor,
+                          label: leftButtonLabel,
+                          onPressed: leftButtonAction ?? () {},
+                        )),
+                      if (rightButtonLabel != 'View Details')
+                        const SizedBox(width: 12),
                       Expanded(
                           child: customButton(
-                        labelColor: kBlack,
-                        sideColor: kSecondaryColor,
-                        buttonColor: kSecondaryColor,
-                        label: leftButtonLabel,
-                        onPressed: leftButtonAction ?? () {},
+                        label: rightButtonLabel,
+                        onPressed: rightButtonAction ?? () {},
                       )),
-                    if (rightButtonLabel != 'View Details')
-                      const SizedBox(width: 12),
-                    Expanded(
-                        child: customButton(
-                      label: rightButtonLabel,
-                      onPressed: rightButtonAction ?? () {},
-                    )),
-                  ],
-                ),
+                    ],
+                  ),
               ],
             ),
           ),

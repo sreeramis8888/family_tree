@@ -53,48 +53,17 @@ class _ViewMoreEventPageState extends ConsumerState<ViewMoreEventPage>
   String _getRegistrationButtonLabel() {
     if (widget.event.status == 'cancelled') return 'CANCELLED';
     if (registered) return 'REGISTERED';
-
-    final int limit = widget.event.limit ?? 0;
-    final int registeredCount = widget.event.rsvp?.length ?? 0;
-
-    if (limit > 0) {
-      final spotsLeft = limit - registeredCount;
-      if (spotsLeft <= 0) return 'REGISTRATION FULL';
-
-      if (spotsLeft == 1) {
-        return 'REGISTER (Last seat!)';
-      } else if (spotsLeft <= 5) {
-        return 'REGISTER (Only $spotsLeft seats left!)';
-      }
-      return 'REGISTER ($spotsLeft seats left)';
-    }
-
     return 'REGISTER EVENT';
   }
 
   bool _canRegister() {
     if (registered || widget.event.status == 'cancelled') return false;
-
-    final int limit = widget.event.limit ?? 0;
-    if (limit == 0) return true;
-
-    final int registeredCount = widget.event.rsvp?.length ?? 0;
-    return registeredCount < limit;
+    return true;
   }
 
   String _getRegistrationCountText() {
     final registered = widget.event.rsvp?.length ?? 0;
-    final limit = widget.event.limit!;
-    final remaining = limit - registered;
-
-    if (remaining == 0) {
-      return 'All seats taken ($registered/$limit)';
-    } else if (remaining == 1) {
-      return 'Last seat remaining ($registered/$limit)';
-    } else if (remaining <= 10) {
-      return 'Only $remaining seats left ($registered/$limit)';
-    }
-    return '$registered/$limit registered';
+    return '$registered registered';
   }
 
   @override
@@ -105,281 +74,194 @@ class _ViewMoreEventPageState extends ConsumerState<ViewMoreEventPage>
 
     return Scaffold(
       backgroundColor: kWhite,
-      body: NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [
-            SliverAppBar(
-              scrolledUnderElevation: 0,
-              expandedHeight: widget.event.image != null ? 205.0 : 0.0,
-              floating: false,
-              pinned: true,
-              backgroundColor: kWhite,
-              leading: Padding(
-                padding: const EdgeInsets.only(
-                    left: 8), // Optional: adjust spacing from screen edge
-                child: Material(
-                  color: kWhite,
-                  shape: const CircleBorder(),
-                  child: InkWell(
-                    customBorder: const CircleBorder(),
-                    onTap: () => Navigator.pop(context),
-                    child: Padding(
-                      padding: const EdgeInsets.all(
-                          6), // controls the spacing around the icon
-                      child: Icon(Icons.arrow_back, size: 20), // smaller icon
+      body: SafeArea(
+        child: NestedScrollView(
+          headerSliverBuilder: (context, innerBoxIsScrolled) {
+            return [
+              SliverAppBar(
+                scrolledUnderElevation: 0,
+                expandedHeight: widget.event.image != null ? 205.0 : 0.0,
+                floating: false,
+                pinned: true,
+                backgroundColor: kWhite,
+                leading: Padding(
+                  padding: const EdgeInsets.only(
+                      left: 8), // Optional: adjust spacing from screen edge
+                  child: Material(
+                    color: kWhite,
+                    shape: const CircleBorder(),
+                    child: InkWell(
+                      customBorder: const CircleBorder(),
+                      onTap: () => Navigator.pop(context),
+                      child: Padding(
+                        padding: const EdgeInsets.all(
+                            6), // controls the spacing around the icon
+                        child: Icon(Icons.arrow_back, size: 20), // smaller icon
+                      ),
                     ),
                   ),
                 ),
-              ),
-              flexibleSpace: FlexibleSpaceBar(
-                background: widget.event.image != null
-                    ? Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          Image.network(
-                            widget.event.image!,
-                            fit: BoxFit.contain,
-                          ),
-                          if (widget.event.status != null)
-                            Positioned(
-                              top: 60,
-                              right: 16,
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFE4483E),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      widget.event.status!.toUpperCase(),
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: kWhite,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    const Icon(Icons.circle,
-                                        color: kWhite, size: 8),
-                                  ],
-                                ),
-                              ),
+                flexibleSpace: FlexibleSpaceBar(
+                  background: widget.event.image != null
+                      ? Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            Image.network(
+                              widget.event.image!,
+                              fit: BoxFit.cover,
                             ),
-                        ],
-                      )
-                    : null,
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.event.eventName ?? '',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        const Icon(Icons.calendar_today,
-                            size: 12, color: Color(0xFF700F0F)),
-                        const SizedBox(width: 8),
-                        Text(
-                          formattedDate,
-                          style: const TextStyle(
-                            fontSize: 10,
-                            color: Color(0xFF700F0F),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      widget.event.description ?? 'No description available',
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SliverPersistentHeader(
-              pinned: true,
-              delegate: _SliverAppBarDelegate(
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: kGreyLight.withOpacity(0.2),
-                        width: 1,
-                      ),
-                    ),
-                  ),
-                  child: TabBar(
-                    labelPadding: EdgeInsets.symmetric(horizontal: 30),
-                    dividerColor: kGreyLight.withOpacity(.2),
-                    padding: EdgeInsets.only(left: 10),
-                    indicatorWeight: 4,
-                    controller: _tabController,
-                    isScrollable: true,
-                    labelColor: kPrimaryColor,
-                    unselectedLabelColor: Colors.grey,
-                    indicatorColor: kPrimaryColor,
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    labelStyle: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    unselectedLabelStyle: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    tabAlignment: TabAlignment.start,
-                    tabs: const [
-                      Tab(text: 'Info'),
-                      Tab(text: 'Media'),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ];
-        },
-        body: TabBarView(
-          controller: _tabController,
-          children: [
-            CustomScrollView(
-              slivers: [
-                SliverPadding(
-                  padding: const EdgeInsets.all(16.0),
-                  sliver: SliverList(
-                    delegate: SliverChildListDelegate([
-                      if (widget.event.venue != null)
-                        _buildLoactionInfo(
-                            'Venue & Location', widget.event.venue ?? ''),
-                      const SizedBox(height: 24),
-                      _buildInfoSection(
-                          'Organizer', widget.event.organiserName ?? ''),
-          
-                      const SizedBox(height: 24),
-                      _buildSpeakersSection(),
-                      const SizedBox(height: 14),
-                      if (widget.event.limit != null)
-                        _buildInfoSection(
-                            'Registration', _getRegistrationCountText()),
-          
-                      const SizedBox(
-                          height: 80), // Bottom padding for the register button
-                    ]),
-                  ),
-                ),
-              ],
-            ),
-
-            // Media Tab
-            ref.watch(getFoldersProvider(eventId: widget.event.id!)).when(
-                  loading: () => const Center(child: LoadingAnimation()),
-                  error: (error, stackTrace) => Column(
-                    children: [
-                      const Expanded(
-                        child: Center(child: Text('No Folders yet')),
-                      ),
-                      if (widget.event.status == 'completed')
-                        Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: customButton(
-                            label: 'Add Media',
-                            onPressed: () async {
-                              final result = await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => MediaUploadPage(
-                                    eventId: widget.event.id!,
+                            if (widget.event.status != null)
+                              Positioned(
+                                top: 60,
+                                right: 16,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFE4483E),
+                                    borderRadius: BorderRadius.circular(4),
                                   ),
-                                ),
-                              );
-                              if (result == true) {
-                                ref.invalidate(getFoldersProvider(
-                                    eventId: widget.event.id!));
-                              }
-                            },
-                          ),
-                        ),
-                    ],
-                  ),
-                  data: (folders) {
-                    return Column(
-                      children: [
-                        Expanded(
-                          child: ListView.separated(
-                            padding: const EdgeInsets.all(16),
-                            itemCount: folders.length,
-                            separatorBuilder: (context, index) =>
-                                const Divider(height: 1),
-                            itemBuilder: (context, index) {
-                              final folder = folders[index];
-                              return InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => FolderViewPage(
-                                        eventId: widget.event.id ?? '',
-                                        folderId: folder.id!,
-                                        folderName: folder.name,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 12),
                                   child: Row(
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      SvgPicture.asset(
-                                          'assets/svg/icons/folder_icon.svg'),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              folder.name,
-                                              style: const TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              '${folder.videoCount ?? 0} Videos, ${folder.imageCount ?? 0} Photos',
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                color: Colors.grey[600],
-                                              ),
-                                            ),
-                                          ],
+                                      Text(
+                                        widget.event.status!.toUpperCase(),
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: kWhite,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                      const Icon(
-                                        Icons.chevron_right,
-                                        color: Colors.grey,
-                                      ),
+                                      const SizedBox(width: 4),
+                                      const Icon(Icons.circle,
+                                          color: kWhite, size: 8),
                                     ],
                                   ),
                                 ),
-                              );
-                            },
+                              ),
+                          ],
+                        )
+                      : null,
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.event.eventName ?? '',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          const Icon(Icons.calendar_today,
+                              size: 12, color: Color(0xFF700F0F)),
+                          const SizedBox(width: 8),
+                          Text(
+                            formattedDate,
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: Color(0xFF700F0F),
+                            ),
                           ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        widget.event.description ?? 'No description available',
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: _SliverAppBarDelegate(
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: kGreyLight.withOpacity(0.2),
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                    child: TabBar(
+                      labelPadding: EdgeInsets.symmetric(horizontal: 30),
+                      dividerColor: kGreyLight.withOpacity(.2),
+                      padding: EdgeInsets.only(left: 10),
+                      indicatorWeight: 4,
+                      controller: _tabController,
+                      isScrollable: true,
+                      labelColor: kPrimaryColor,
+                      unselectedLabelColor: Colors.grey,
+                      indicatorColor: kPrimaryColor,
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      labelStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      unselectedLabelStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      tabAlignment: TabAlignment.start,
+                      tabs: const [
+                        Tab(text: 'Info'),
+                        Tab(text: 'Media'),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ];
+          },
+          body: TabBarView(
+            controller: _tabController,
+            children: [
+              CustomScrollView(
+                slivers: [
+                  SliverPadding(
+                    padding: const EdgeInsets.all(16.0),
+                    sliver: SliverList(
+                      delegate: SliverChildListDelegate([
+                        if (widget.event.venue != null)
+                          _buildLoactionInfo(
+                              'Venue & Location', widget.event.venue ?? ''),
+                        const SizedBox(height: 24),
+                        _buildInfoSection(
+                            'Organizer', widget.event.organiserName ?? ''),
+
+                        const SizedBox(height: 24),
+                        _buildSpeakersSection(),
+                        const SizedBox(height: 14),
+                        _buildInfoSection(
+                            'Registration', _getRegistrationCountText()),
+
+                        const SizedBox(
+                            height:
+                                80), // Bottom padding for the register button
+                      ]),
+                    ),
+                  ),
+                ],
+              ),
+
+              // Media Tab
+              ref.watch(getFoldersProvider(eventId: widget.event.id!)).when(
+                    loading: () => const Center(child: LoadingAnimation()),
+                    error: (error, stackTrace) => Column(
+                      children: [
+                        const Expanded(
+                          child: Center(child: Text('No Folders yet')),
                         ),
                         if (widget.event.status == 'completed')
                           Padding(
@@ -403,10 +285,100 @@ class _ViewMoreEventPageState extends ConsumerState<ViewMoreEventPage>
                             ),
                           ),
                       ],
-                    );
-                  },
-                ),
-          ],
+                    ),
+                    data: (folders) {
+                      return Column(
+                        children: [
+                          Expanded(
+                            child: ListView.separated(
+                              padding: const EdgeInsets.all(16),
+                              itemCount: folders.length,
+                              separatorBuilder: (context, index) =>
+                                  const Divider(height: 1),
+                              itemBuilder: (context, index) {
+                                final folder = folders[index];
+                                return InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => FolderViewPage(
+                                          eventId: widget.event.id ?? '',
+                                          folderId: folder.id!,
+                                          folderName: folder.name,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12),
+                                    child: Row(
+                                      children: [
+                                        SvgPicture.asset(
+                                            'assets/svg/icons/folder_icon.svg'),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                folder.name,
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                '${folder.videoCount ?? 0} Videos, ${folder.imageCount ?? 0} Photos',
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.grey[600],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const Icon(
+                                          Icons.chevron_right,
+                                          color: Colors.grey,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          if (widget.event.status == 'completed')
+                            Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: customButton(
+                                label: 'Add Media',
+                                onPressed: () async {
+                                  final result = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => MediaUploadPage(
+                                        eventId: widget.event.id!,
+                                      ),
+                                    ),
+                                  );
+                                  if (result == true) {
+                                    ref.invalidate(getFoldersProvider(
+                                        eventId: widget.event.id!));
+                                  }
+                                },
+                              ),
+                            ),
+                        ],
+                      );
+                    },
+                  ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: widget.event.status != 'completed'
@@ -516,7 +488,6 @@ class _ViewMoreEventPageState extends ConsumerState<ViewMoreEventPage>
       ],
     );
   }
-
 
   Widget _buildSpeakersSection() {
     if (widget.event.speakers == null || widget.event.speakers!.isEmpty) {

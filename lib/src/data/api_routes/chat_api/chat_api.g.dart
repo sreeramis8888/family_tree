@@ -7,7 +7,7 @@ part of 'chat_api.dart';
 // **************************************************************************
 
 String _$fetchChatConversationsHash() =>
-    r'cd8850d88e474f36306bf30b9e890b97c156fcf5';
+    r'0d49b5a900f6905db1881e12e5324ccc2b67cbd7';
 
 /// See also [fetchChatConversations].
 @ProviderFor(fetchChatConversations)
@@ -26,7 +26,7 @@ final fetchChatConversationsProvider =
 // ignore: unused_element
 typedef FetchChatConversationsRef
     = AutoDisposeFutureProviderRef<List<ChatConversation>>;
-String _$fetchChatMessagesHash() => r'105d067eeef66bab35b51515baeda183893c797d';
+String _$fetchChatMessagesHash() => r'f0ad6de9a1e92b8ebe85cea59507e191796a595e';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -181,7 +181,7 @@ class _FetchChatMessagesProviderElement
       (origin as FetchChatMessagesProvider).conversationId;
 }
 
-String _$sendChatMessageHash() => r'f6e118218d5cc4c3f0d69dea68e82a5db6dd7353';
+String _$sendChatMessageHash() => r'55162ad8c9cafca61d59bff0d88850c2cdb0d0f7';
 
 /// See also [sendChatMessage].
 @ProviderFor(sendChatMessage)
@@ -196,10 +196,14 @@ class SendChatMessageFamily extends Family<AsyncValue<ChatMessage>> {
   SendChatMessageProvider call({
     required String conversationId,
     required String content,
+    List<Map<String, dynamic>>? attachments,
+    dynamic replyTo,
   }) {
     return SendChatMessageProvider(
       conversationId: conversationId,
       content: content,
+      attachments: attachments,
+      replyTo: replyTo,
     );
   }
 
@@ -210,6 +214,8 @@ class SendChatMessageFamily extends Family<AsyncValue<ChatMessage>> {
     return call(
       conversationId: provider.conversationId,
       content: provider.content,
+      attachments: provider.attachments,
+      replyTo: provider.replyTo,
     );
   }
 
@@ -234,11 +240,15 @@ class SendChatMessageProvider extends AutoDisposeFutureProvider<ChatMessage> {
   SendChatMessageProvider({
     required String conversationId,
     required String content,
+    List<Map<String, dynamic>>? attachments,
+    dynamic replyTo,
   }) : this._internal(
           (ref) => sendChatMessage(
             ref as SendChatMessageRef,
             conversationId: conversationId,
             content: content,
+            attachments: attachments,
+            replyTo: replyTo,
           ),
           from: sendChatMessageProvider,
           name: r'sendChatMessageProvider',
@@ -251,6 +261,8 @@ class SendChatMessageProvider extends AutoDisposeFutureProvider<ChatMessage> {
               SendChatMessageFamily._allTransitiveDependencies,
           conversationId: conversationId,
           content: content,
+          attachments: attachments,
+          replyTo: replyTo,
         );
 
   SendChatMessageProvider._internal(
@@ -262,10 +274,14 @@ class SendChatMessageProvider extends AutoDisposeFutureProvider<ChatMessage> {
     required super.from,
     required this.conversationId,
     required this.content,
+    required this.attachments,
+    required this.replyTo,
   }) : super.internal();
 
   final String conversationId;
   final String content;
+  final List<Map<String, dynamic>>? attachments;
+  final dynamic replyTo;
 
   @override
   Override overrideWith(
@@ -282,6 +298,8 @@ class SendChatMessageProvider extends AutoDisposeFutureProvider<ChatMessage> {
         debugGetCreateSourceHash: null,
         conversationId: conversationId,
         content: content,
+        attachments: attachments,
+        replyTo: replyTo,
       ),
     );
   }
@@ -295,7 +313,9 @@ class SendChatMessageProvider extends AutoDisposeFutureProvider<ChatMessage> {
   bool operator ==(Object other) {
     return other is SendChatMessageProvider &&
         other.conversationId == conversationId &&
-        other.content == content;
+        other.content == content &&
+        other.attachments == attachments &&
+        other.replyTo == replyTo;
   }
 
   @override
@@ -303,6 +323,8 @@ class SendChatMessageProvider extends AutoDisposeFutureProvider<ChatMessage> {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
     hash = _SystemHash.combine(hash, conversationId.hashCode);
     hash = _SystemHash.combine(hash, content.hashCode);
+    hash = _SystemHash.combine(hash, attachments.hashCode);
+    hash = _SystemHash.combine(hash, replyTo.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -316,6 +338,12 @@ mixin SendChatMessageRef on AutoDisposeFutureProviderRef<ChatMessage> {
 
   /// The parameter `content` of this provider.
   String get content;
+
+  /// The parameter `attachments` of this provider.
+  List<Map<String, dynamic>>? get attachments;
+
+  /// The parameter `replyTo` of this provider.
+  dynamic get replyTo;
 }
 
 class _SendChatMessageProviderElement
@@ -328,6 +356,11 @@ class _SendChatMessageProviderElement
       (origin as SendChatMessageProvider).conversationId;
   @override
   String get content => (origin as SendChatMessageProvider).content;
+  @override
+  List<Map<String, dynamic>>? get attachments =>
+      (origin as SendChatMessageProvider).attachments;
+  @override
+  dynamic get replyTo => (origin as SendChatMessageProvider).replyTo;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

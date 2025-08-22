@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'package:familytree/src/data/models/chat_model.dart';
+import 'package:familytree/src/interface/components/DropDown/blockreport_dropdown.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,6 @@ import 'package:familytree/src/data/models/business_model.dart';
 import 'package:familytree/src/data/models/user_model.dart';
 import 'package:familytree/src/data/notifiers/business_notifier.dart';
 import 'package:familytree/src/interface/components/Dialogs/upgrade_dialog.dart';
-import 'package:familytree/src/interface/components/DropDown/block_repor_dropDown.dart';
 import 'package:familytree/src/interface/components/ModalSheets/addBusinessSheet.dart';
 import 'package:familytree/src/interface/components/custom_widgets/user_tile.dart';
 import 'package:familytree/src/interface/components/expandable_text.dart';
@@ -25,6 +25,8 @@ import 'package:familytree/src/interface/screens/crop_image_screen.dart';
 import 'package:familytree/src/interface/screens/main_pages/notification_page.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:familytree/src/data/api_routes/chat_api/chat_api.dart';
+import 'package:familytree/src/interface/screens/main_pages/chat/chat_screen.dart';
 
 class BusinessView extends ConsumerStatefulWidget {
   const BusinessView({super.key});
@@ -71,7 +73,11 @@ class _BusinessViewState extends ConsumerState<BusinessView> {
         final result = await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CropImageScreen(imageFile: imageFile),
+            builder: (context) => CropImageScreen(
+              imageFile: imageFile,
+              shape: CropShape.rectangle,
+              aspectRatio: Size(4, 5),
+            ),
           ),
         );
 
@@ -87,7 +93,7 @@ class _BusinessViewState extends ConsumerState<BusinessView> {
           }
 
           // Write the cropped image bytes to the file
-          await tempFile.writeAsBytes(result.bytes);
+          await tempFile.writeAsBytes(result); // result is Uint8List
 
           setState(() {
             _feedImage = tempFile;
@@ -205,7 +211,7 @@ class _BusinessViewState extends ConsumerState<BusinessView> {
               child: GestureDetector(
                 onTap: () {
                   // if (subscriptionType != 'free') {
-                    _openModalSheet(sheet: 'post');
+                  _openModalSheet(sheet: 'post');
                   // } else {
                   //   showDialog(
                   //     context: context,
@@ -295,22 +301,40 @@ class _BusinessViewState extends ConsumerState<BusinessView> {
                   ref.read(businessNotifierProvider.notifier).refreshFeed();
                 },
                 onComment: () async {},
-                onShare: () {
-                  // businessEnquiry(
-                  //     businessAuthor: user,
-                  //     context: context,
-                  //     onButtonPressed: () async {},
-                  //     buttonText: 'MESSAGE',
-                  //     businesss: feed,
-                  //     receiver: receiver,
-                  //     sender: sender);
+                onShare: () async {
+                  // Fetch or create direct chat with the post author
+                  if (feed.author == null || feed.author == id)
+                    return; // Don't allow sharing to self or if no author
+                  try {
+                    final chatApi = ChatApi();
+                    final conversation =
+                        await chatApi.fetchDirectConversation(feed.author!);
+                    if (!mounted) return;
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => IndividualPage(
+                          conversationImage: user.image ?? '',
+                          conversationTitle: user.fullName ?? '',
+                          conversation: conversation,
+                          currentUserId: id,
+                          initialMessage: feed.content ?? '',
+                          initialImageUrl: feed.media ?? '',
+                        ),
+                      ),
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content:
+                              Text('Failed to open chat: ' + e.toString())),
+                    );
+                  }
                 });
           },
           loading: () => const ReusableFeedPostSkeleton(),
           error: (error, stackTrace) {
-            return const Center(
-              child: Text('No Posts'),
-            );
+            return SizedBox.shrink();
           },
         );
       },
@@ -384,6 +408,7 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
   }
 
   void _openCommentModal() {
+    print('comments:${widget.business.comments?.length}');
     log('comments: ${widget.business.comments?.length}');
     showModalBottomSheet(
       context: context,
@@ -437,6 +462,38 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                         itemBuilder: (context, index) {
                           return Consumer(
                             builder: (context, ref, child) {
+                              final commentUser =
+                                  widget.business.comments![index].user;
+
+                              Widget titleWidget;
+
+                              // 1) Use the embedded name if present
+                              if (commentUser?.name != null &&
+                                  commentUser!.name!.trim().isNotEmpty) {
+                                titleWidget = Text(commentUser.name!);
+                                print("1 is working");
+                              }
+                              // 2) Otherwise fetch full user by id and use fullName
+                              else if (commentUser?.id != null &&
+                                  commentUser!.id!.trim().isNotEmpty) {
+                                    print('2 is working');
+                                final asyncUser = ref.watch(
+                                    fetchUserDetailsProvider(commentUser.id!));
+                                titleWidget = asyncUser.when(
+                                  data: (u) => Text(
+                                    (u.fullName?.trim().isNotEmpty == true
+                                        ? u.fullName!
+                                        : 'Unknown User'),
+                                  ),
+                                  loading: () => const Text('...'),
+                                  error: (_, __) => const Text('Unknown User'),
+                                );
+                              }
+                              // 3) Last resort
+                              else {
+                                titleWidget = const Text('Unknown User');
+                              }
+
                               return ListTile(
                                 leading: ClipOval(
                                   child: Container(
@@ -444,29 +501,64 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                                     height: 30,
                                     color: const Color.fromARGB(
                                         255, 255, 255, 255),
-                                    child: widget.business.comments?[index].user
-                                                ?.image !=
-                                            null
-                                        ? Image.network(
-                                            fit: BoxFit.fill,
-                                            widget.business.comments![index]
-                                                .user!.image!)
+                                    child: (commentUser?.image != null &&
+                                            commentUser!.image!.isNotEmpty)
+                                        ? Image.network(commentUser.image!,
+                                            fit: BoxFit.fill)
                                         : const Icon(Icons.person),
                                   ),
                                 ),
-                                title: Text(
-                                    widget.business.comments![index].user !=
-                                            null
-                                        ? widget.business.comments![index].user!
-                                                .name ??
-                                            'Unknown User'
-                                        : 'Unknown User'),
+                                title: titleWidget,
                                 subtitle: Text(
                                     widget.business.comments?[index].comment ??
                                         ''),
+                                
                               );
                             },
                           );
+
+                          // return Consumer(
+                          //   builder: (context, ref, child) {
+                          //     return
+                          //     ListTile(
+                          //       leading: ClipOval(
+                          //         child: Container(
+                          //           width: 30,
+                          //           height: 30,
+                          //           color: const Color.fromARGB(
+                          //               255, 255, 255, 255),
+                          //           child: widget.business.comments?[index].user
+                          //                       ?.image !=
+                          //                   null
+                          //               ? Image.network(
+                          //                   fit: BoxFit.fill,
+                          //                   widget.business.comments![index]
+                          //                       .user!.image!)
+                          //               : const Icon(Icons.person),
+                          //         ),
+                          //       ),
+                          //       title:
+                          //       Text(
+                          //           widget.business.comments![index].user !=
+                          //                   null
+                          //               ? widget.business.comments![index].user!
+                          //                       .name ??
+                          //                   'Unknown User'
+                          //               : 'Unknown User'),
+
+                          //       // Text(
+                          //       //       widget.business.comments![index].user != null
+                          //       //     ? (widget.business.comments![index].user!.fullName ??
+                          //       //      widget.business.comments![index].user!.name ??
+                          //       //     'Unknown User')
+                          //       //     : 'Unknown User'
+                          //       //   ),
+                          //       subtitle: Text(
+                          //           widget.business.comments?[index].comment ??
+                          //               ''),
+                          //     );
+                          //   },
+                          // );
                         },
                       ),
                     ),
@@ -581,13 +673,6 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                     ],
                   ),
                 ),
-                if (widget.business.author != id)
-                  IconButton(
-                    icon: const Icon(Icons.more_vert, color: Colors.grey),
-                    onPressed: () {
-                      // Show options menu
-                    },
-                  ),
               ],
             ),
           ),
@@ -610,20 +695,6 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: ExpandableText(text: widget.business.content ?? ''),
-          ),
-
-          const SizedBox(height: 12),
-
-          // Hashtags
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              '#FamilyHistory #FoundersStory',
-              style: TextStyle(
-                color: Colors.blue[700],
-                fontSize: 14,
-              ),
-            ),
           ),
 
           const SizedBox(height: 16),
@@ -682,33 +753,22 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
 
                 const SizedBox(width: 24),
 
-                // Share button with count
                 if (widget.business.author != id)
                   GestureDetector(
                     onTap: () => widget.onShare(),
                     child: Row(
                       children: [
                         SvgPicture.asset('assets/svg/icons/share.svg'),
-                        const SizedBox(width: 4),
-                        Text(
-                          '32', // You can replace this with actual share count
-                          style: TextStyle(
-                            color: Colors.grey[700],
-                            fontSize: 14,
-                          ),
-                        ),
                       ],
                     ),
                   ),
-
                 const Spacer(),
 
-                // Bookmark button
-                Icon(
-                  Icons.bookmark_border,
-                  color: Colors.grey[600],
-                  size: 29,
-                ),
+                if (widget.business.author != id)
+                  BlockReportDropdown(
+                    isBlocked: false,
+                    feed: widget.business,
+                  )
               ],
             ),
           ),

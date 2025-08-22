@@ -6,7 +6,7 @@ part of 'requirements_api.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$fetchBusinessHash() => r'06d24739e35eb1fb17c82f73be44c91e3b36b625';
+String _$filteredFeedsHash() => r'bab39d6391c444ea8515474d9de061dff162ab47';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -28,6 +28,141 @@ class _SystemHash {
     return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
   }
 }
+
+/// See also [filteredFeeds].
+@ProviderFor(filteredFeeds)
+const filteredFeedsProvider = FilteredFeedsFamily();
+
+/// See also [filteredFeeds].
+class FilteredFeedsFamily
+    extends Family<AsyncValue<List<Map<String, dynamic>>>> {
+  /// See also [filteredFeeds].
+  const FilteredFeedsFamily();
+
+  /// See also [filteredFeeds].
+  FilteredFeedsProvider call(
+    List<String> memberIds,
+  ) {
+    return FilteredFeedsProvider(
+      memberIds,
+    );
+  }
+
+  @override
+  FilteredFeedsProvider getProviderOverride(
+    covariant FilteredFeedsProvider provider,
+  ) {
+    return call(
+      provider.memberIds,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'filteredFeedsProvider';
+}
+
+/// See also [filteredFeeds].
+class FilteredFeedsProvider
+    extends AutoDisposeFutureProvider<List<Map<String, dynamic>>> {
+  /// See also [filteredFeeds].
+  FilteredFeedsProvider(
+    List<String> memberIds,
+  ) : this._internal(
+          (ref) => filteredFeeds(
+            ref as FilteredFeedsRef,
+            memberIds,
+          ),
+          from: filteredFeedsProvider,
+          name: r'filteredFeedsProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$filteredFeedsHash,
+          dependencies: FilteredFeedsFamily._dependencies,
+          allTransitiveDependencies:
+              FilteredFeedsFamily._allTransitiveDependencies,
+          memberIds: memberIds,
+        );
+
+  FilteredFeedsProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.memberIds,
+  }) : super.internal();
+
+  final List<String> memberIds;
+
+  @override
+  Override overrideWith(
+    FutureOr<List<Map<String, dynamic>>> Function(FilteredFeedsRef provider)
+        create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: FilteredFeedsProvider._internal(
+        (ref) => create(ref as FilteredFeedsRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        memberIds: memberIds,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<List<Map<String, dynamic>>> createElement() {
+    return _FilteredFeedsProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is FilteredFeedsProvider && other.memberIds == memberIds;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, memberIds.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+mixin FilteredFeedsRef
+    on AutoDisposeFutureProviderRef<List<Map<String, dynamic>>> {
+  /// The parameter `memberIds` of this provider.
+  List<String> get memberIds;
+}
+
+class _FilteredFeedsProviderElement
+    extends AutoDisposeFutureProviderElement<List<Map<String, dynamic>>>
+    with FilteredFeedsRef {
+  _FilteredFeedsProviderElement(super.provider);
+
+  @override
+  List<String> get memberIds => (origin as FilteredFeedsProvider).memberIds;
+}
+
+String _$fetchBusinessHash() => r'5204abaa072b373b3752dbad2e58344e99130f2a';
 
 /// See also [fetchBusiness].
 @ProviderFor(fetchBusiness)
@@ -175,7 +310,7 @@ class _FetchBusinessProviderElement
   int get limit => (origin as FetchBusinessProvider).limit;
 }
 
-String _$fetchMyBusinessesHash() => r'840a62daf1026e171c973bbf6208868ad22dbb73';
+String _$fetchMyBusinessesHash() => r'3921cded82ffdc61e8753d3f23fc8d8a257320b6';
 
 /// See also [fetchMyBusinesses].
 @ProviderFor(fetchMyBusinesses)
