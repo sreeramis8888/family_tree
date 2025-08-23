@@ -3,6 +3,7 @@ import 'package:familytree/src/data/constants/style_constants.dart';
 import 'package:familytree/src/data/notifiers/user_notifier.dart';
 import 'package:familytree/src/interface/components/Dialogs/blockPersonDialog.dart';
 import 'package:familytree/src/interface/components/Dialogs/report_dialog.dart';
+import 'package:familytree/src/interface/screens/main_pages/profile/profile_preview_withUserModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:familytree/src/data/api_routes/chat_api/chat_api.dart';
@@ -1113,59 +1114,70 @@ class _IndividualPageState extends ConsumerState<IndividualPage>
           icon: const Icon(Icons.arrow_back, color: kWhite),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Row(
-          children: [
-            Stack(
-              children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundColor: kGrey,
-                  backgroundImage: widget.conversationImage != '' &&
-                          widget.conversationImage.isNotEmpty
-                      ? NetworkImage(otherUser.image!)
-                      : null,
-                ),
-                if (otherUserStatus == 'online')
-                  Positioned(
-                    right: 0,
-                    bottom: 0,
-                    child: _buildStatusIndicator(),
-                  ),
-              ],
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        title: GestureDetector(
+          onTap: () {
+      // Navigate to the other participant’s profile
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) =>
+              ProfilePreviewWithUserModel(user: widget.conversation.participants[1].user!),
+        ),
+      );
+    },
+          child: Row(
+            children: [
+              Stack(
                 children: [
-                  Text(
-                    widget.conversationTitle ?? '',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: kWhite,
-                    ),
+                  CircleAvatar(
+                    radius: 20,
+                    backgroundColor: kGrey,
+                    backgroundImage: widget.conversationImage != '' &&
+                            widget.conversationImage.isNotEmpty
+                        ? NetworkImage(otherUser.image!)
+                        : null,
                   ),
-                  // const SizedBox(height: 2),
-                  // Text(
-                  //   overflow: TextOverflow.ellipsis,
-                  //   maxLines: 2,
-                  //   otherUserStatus.isNotEmpty
-                  //       ? otherUserStatus[0].toUpperCase() +
-                  //           otherUserStatus.substring(1)
-                  //       : (widget.conversation.lastActivity != null
-                  //           ? 'Last seen ' +
-                  //               timeAgo(widget.conversation.lastActivity!)
-                  //           : 'Offline'),
-                  //   style: TextStyle(
-                  //     fontSize: 12,
-                  //     color: kWhite.withOpacity(0.8),
-                  //   ),
-                  // ),
+                  if (otherUserStatus == 'online')
+                    Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: _buildStatusIndicator(),
+                    ),
                 ],
               ),
-            ),
-          ],
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.conversationTitle ?? '',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: kWhite,
+                      ),
+                    ),
+                    // const SizedBox(height: 2),
+                    // Text(
+                    //   overflow: TextOverflow.ellipsis,
+                    //   maxLines: 2,
+                    //   otherUserStatus.isNotEmpty
+                    //       ? otherUserStatus[0].toUpperCase() +
+                    //           otherUserStatus.substring(1)
+                    //       : (widget.conversation.lastActivity != null
+                    //           ? 'Last seen ' +
+                    //               timeAgo(widget.conversation.lastActivity!)
+                    //           : 'Offline'),
+                    //   style: TextStyle(
+                    //     fontSize: 12,
+                    //     color: kWhite.withOpacity(0.8),
+                    //   ),
+                    // ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       body: Container(
