@@ -3,6 +3,7 @@ import 'package:familytree/src/data/constants/style_constants.dart';
 import 'package:familytree/src/data/notifiers/user_notifier.dart';
 import 'package:familytree/src/interface/components/Dialogs/blockPersonDialog.dart';
 import 'package:familytree/src/interface/components/Dialogs/report_dialog.dart';
+import 'package:familytree/src/interface/screens/main_pages/profile/profile_preview_withUserId.dart';
 import 'package:familytree/src/interface/screens/main_pages/profile/profile_preview_withUserModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,11 +22,12 @@ import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 class IndividualPage extends ConsumerStatefulWidget {
   final String conversationTitle;
   final String conversationImage;
+ final String conversationUserId;
   final ChatConversation conversation;
   final String currentUserId;
   final String? initialMessage;
   final String? initialImageUrl;
-  const IndividualPage({
+  const IndividualPage( {required this.conversationUserId,
     required this.conversation,
     required this.currentUserId,
     this.initialMessage,
@@ -1120,7 +1122,7 @@ class _IndividualPageState extends ConsumerState<IndividualPage>
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) =>
-              ProfilePreviewWithUserModel(user: widget.conversation.participants[1].user!),
+              ProfilePreviewUsingId(userId:widget.conversationUserId),
         ),
       );
     },

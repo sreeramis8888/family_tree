@@ -89,17 +89,17 @@ Route<dynamic> generateRoute(RouteSettings? settings) {
       return MaterialPageRoute(builder: (context) => EditUser());
     case 'FinancialAssistancePage':
       return MaterialPageRoute(builder: (context) => FinancialAssistancePage());
-    case 'IndividualPage':
-      final args = settings?.arguments as Map<String, dynamic>?;
-      ChatConversation conversation = args?['conversation'];
-      String currentUserId = args?['currentUserId'];
-      String conversationImage = args?['conversationImage'];
-      String conversationTitle = args?['conversationTitle'];
+    // case 'IndividualPage':
+    //   final args = settings?.arguments as Map<String, dynamic>?;
+    //   ChatConversation conversation = args?['conversation'];
+    //   String currentUserId = args?['currentUserId'];
+    //   String conversationImage = args?['conversationImage'];
+    //   String conversationTitle = args?['conversationTitle'];
 
-      return MaterialPageRoute(
-          builder: (context) => IndividualPage(conversation: conversation,conversationImage: conversationImage,conversationTitle: conversationTitle,
-        currentUserId: currentUserId,
-              ));
+    //   return MaterialPageRoute(
+    //       builder: (context) => IndividualPage(conversation: conversation,conversationImage: conversationImage,conversationTitle: conversationTitle,
+    //     currentUserId: currentUserId,
+    //           ));
     case 'ChangeNumber':
       return MaterialPageRoute(builder: (context) => ChangeNumberPage());
     case 'FinancialProgramOnboarding':

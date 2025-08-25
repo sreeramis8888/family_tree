@@ -313,7 +313,7 @@ class _BusinessViewState extends ConsumerState<BusinessView> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => IndividualPage(
+                        builder: (context) => IndividualPage(conversationUserId: user.id??'',
                           conversationImage: user.image ?? '',
                           conversationTitle: user.fullName ?? '',
                           conversation: conversation,

@@ -268,7 +268,7 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                                       if (directConversation != null) {
                                         Navigator.of(context).push(
                                           MaterialPageRoute(
-                                            builder: (context) => IndividualPage(
+                                            builder: (context) => IndividualPage(conversationUserId: user.id??'',
                                               conversationImage: user.image ?? '',
                                               conversationTitle: user.fullName ?? 'Chat',
                                               conversation: directConversation,
@@ -284,7 +284,7 @@ class _MembersPageState extends ConsumerState<MembersPage> {
 
                                         Navigator.of(context).push(
                                           MaterialPageRoute(
-                                            builder: (context) => IndividualPage(
+                                            builder: (context) => IndividualPage(conversationUserId: user.id??'',
                                               conversationImage: user.image ?? '',
                                               conversationTitle: user.fullName ?? 'Chat',
                                               conversation: newConversation,

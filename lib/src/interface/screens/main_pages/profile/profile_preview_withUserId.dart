@@ -373,7 +373,8 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                           onTap: () {
                                             _launchDialer(
                                                 user.phone.toString());
-                                                print('Address value: ${user.address}');
+                                            print(
+                                                'Address value: ${user.address}');
                                           },
                                           child: Row(
                                             mainAxisAlignment:
@@ -406,8 +407,7 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                           ),
                                         if (user.address != null &&
                                             user.address != '')
-                                          const SizedBox(
-                                              height: 15),
+                                          const SizedBox(height: 15),
                                         if (user.address != null &&
                                             user.address != '')
                                           Row(
@@ -791,7 +791,7 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                               Navigator.of(context).push(
                                                 MaterialPageRoute(
                                                   builder: (context) =>
-                                                      IndividualPage(
+                                                      IndividualPage(conversationUserId: user.id??'',
                                                     conversationImage:
                                                         user.image ?? '',
                                                     conversationTitle:
@@ -810,7 +810,7 @@ class ProfilePreviewUsingId extends ConsumerWidget {
                                               Navigator.of(context).push(
                                                 MaterialPageRoute(
                                                   builder: (context) =>
-                                                      IndividualPage(
+                                                      IndividualPage(conversationUserId: user.id??'',
                                                     conversationImage:
                                                         user.image ?? '',
                                                     conversationTitle:
@@ -857,6 +857,7 @@ class ProfilePreviewUsingId extends ConsumerWidget {
               },
               loading: () => ProfileShimmer(),
               error: (error, stackTrace) {
+                log(error.toString());
                 return Center(
                   child: LoadingAnimation(),
                 );

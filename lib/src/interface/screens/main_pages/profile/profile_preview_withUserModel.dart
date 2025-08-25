@@ -540,7 +540,7 @@ class ProfilePreviewWithUserModel extends StatelessWidget {
                                   if (directConversation != null) {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder: (context) => IndividualPage(
+                                        builder: (context) => IndividualPage(conversationUserId: user.id??'',
                                           conversationImage: user.image ?? '',
                                           conversationTitle:
                                               user.fullName ?? '',
@@ -554,7 +554,7 @@ class ProfilePreviewWithUserModel extends StatelessWidget {
                                         .fetchDirectConversation(userId);
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
-                                        builder: (context) => IndividualPage(
+                                        builder: (context) => IndividualPage(conversationUserId: user.id??'',
                                           conversationImage: user.image ?? '',
                                           conversationTitle:
                                               user.fullName ?? '',

@@ -133,7 +133,7 @@ class _ChatDashState extends ConsumerState<ChatDash> {
                     trailing: const SizedBox.shrink(),
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => IndividualPage(
+                        builder: (context) => IndividualPage(conversationUserId: otherUser.id??'',
                           conversationImage: otherUser.image ?? '',
                           conversationTitle: otherUser.fullName ?? '',
                           conversation: conversation,

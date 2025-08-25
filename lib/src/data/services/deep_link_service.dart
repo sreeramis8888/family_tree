@@ -108,7 +108,7 @@ class DeepLinkService {
                 // Navigate to existing conversation
                 NavigationService.navigatorKey.currentState?.push(
                   MaterialPageRoute(
-                    builder: (context) => IndividualPage(
+                    builder: (context) => IndividualPage(conversationUserId: user.id??'',
                       conversationImage: user.image ?? '',
                       conversationTitle: user.fullName ?? '',
                       conversation: directConversation,
@@ -121,7 +121,7 @@ class DeepLinkService {
                 final newConversation = await ChatApi().fetchDirectConversation(userId);
                 NavigationService.navigatorKey.currentState?.push(
                   MaterialPageRoute(
-                    builder: (context) => IndividualPage(
+                    builder: (context) => IndividualPage(conversationUserId: user.id??'',
                       conversationImage: user.image ?? '',
                       conversationTitle: user.fullName ?? '',
                       conversation: newConversation,
