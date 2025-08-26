@@ -309,7 +309,7 @@ class _MembersPageState extends ConsumerState<MembersPage> {
                                   //             ),
                                   //           ),
                                   //         ).then((_) {
-                                  //           // 🔥 Force ChatDash to update when you come back
+                                  //           // Force ChatDash to update when you come back
                                   //           ref.invalidate(fetchChatConversationsProvider);
                                   //         });
 

@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:familytree/src/data/models/chat_model.dart';
 import 'package:familytree/src/interface/components/DropDown/blockreport_dropdown.dart';
+import 'package:familytree/src/interface/screens/main_pages/profile/profile_preview_withUserModel.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -508,7 +509,41 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
                                         : const Icon(Icons.person),
                                   ),
                                 ),
-                                title: titleWidget,
+                                title: GestureDetector(
+                                  onTap: () {
+                                        if (commentUser?.id != null) {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => Consumer(
+                                                builder: (context, ref, _) {
+                                                  final asyncUser = ref.watch(fetchUserDetailsProvider(commentUser!.id!));
+                                                  return asyncUser.when(
+                                                    data: (user) => ProfilePreviewWithUserModel(user: user),
+                                                    loading: () => const Scaffold(
+                                                      body: Center(child: CircularProgressIndicator()),
+                                                    ),
+                                                    error: (e, _) => Scaffold(
+                                                      body: Center(child: Text("Failed to load user")),
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                                                      // () {
+                                  //       if (commentUser != null) {
+                                  //         Navigator.push(
+                                  //           context,
+                                  //           MaterialPageRoute(
+                                  //             builder: (context) => ProfilePreviewWithUserModel(user:commentUser.name),
+                                  //           ),
+                                  //         );
+                                  //       }
+                                  //     },
+                                  child: titleWidget),
                                 subtitle: Text(
                                     widget.business.comments?[index].comment ??
                                         ''),
@@ -636,44 +671,55 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                ClipOval(
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    color: Colors.grey[200],
-                    child: widget.author.image != null
-                        ? Image.network(
-                            widget.author.image!,
-                            fit: BoxFit.cover,
-                          )
-                        : const Icon(Icons.person, color: Colors.grey),
+            child: GestureDetector(
+              onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ProfilePreviewWithUserModel( user: widget.author ,
+          ),
+        ),
+      );
+    },
+              child: Row(
+                children: [
+                  ClipOval(
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      color: Colors.grey[200],
+                      child: widget.author.image != null
+                          ? Image.network(
+                              widget.author.image!,
+                              fit: BoxFit.cover,
+                            )
+                          : const Icon(Icons.person, color: Colors.grey),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.author.fullName ?? 'Unknown User',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.author.fullName ?? 'Unknown User',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
-                      ),
-                      Text(
-                        timeAgo(widget.business.createdAt!),
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 12,
+                        Text(
+                          timeAgo(widget.business.createdAt!),
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 12,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
 
