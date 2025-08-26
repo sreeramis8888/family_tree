@@ -673,15 +673,15 @@ class _ReusableBusinessPostState extends ConsumerState<ReusableBusinessPost>
             padding: const EdgeInsets.all(16.0),
             child: GestureDetector(
               onTap: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ProfilePreviewWithUserModel( user: widget.author ,
-          ),
-        ),
-      );
-    },
-              child: Row(
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProfilePreviewWithUserModel( user: widget.author ,
+                        ),
+                      ),
+                    );
+                  },
+                            child: Row(
                 children: [
                   ClipOval(
                     child: Container(

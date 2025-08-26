@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:familytree/src/interface/screens/main_pages/profile/profile_image_viewer.dart';
 import 'package:familytree/src/interface/screens/main_pages/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -147,14 +148,50 @@ class ProfilePreviewWithUserModel extends StatelessWidget {
                         SizedBox(
                           height: 110,
                         ),
-                        GlowingAnimatedAvatar(
-                          imageUrl: user.image,
-                          defaultAvatarAsset:
-                              'assets/svg/icons/dummy_person_large.svg',
-                          size: 110,
-                          glowColor: kRed,
-                          borderColor: kWhite,
-                          borderWidth: 3.0,
+                        GestureDetector(
+                          onTap: 
+                          () {
+                              showDialog(
+                                context: context,
+                                barrierDismissible: true,
+                                barrierColor: Colors.black.withOpacity(0.8), // dim background
+                                builder: (context) {
+                                  return Center(
+                                    child: Hero(
+                                      tag: "profileImageHero",
+                                      child: ClipOval(
+                                        child: Image.network(
+                                          user.image ?? "",
+                                          width: MediaQuery.of(context).size.width * 0.7,
+                                          height: MediaQuery.of(context).size.width * 0.7,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          // () {
+                          //   Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //       builder: (_) => ProfileImageViewPage(imageUrl: user.image),
+                          //     ),
+                          //   );
+                          // },
+                          child: Hero(
+                            tag: "profileImageHero",
+                            child: GlowingAnimatedAvatar(
+                              imageUrl: user.image,
+                              defaultAvatarAsset:
+                                  'assets/svg/icons/dummy_person_large.svg',
+                              size: 110,
+                              glowColor: kRed,
+                              borderColor: kWhite,
+                              borderWidth: 3.0,
+                            ),
+                          ),
                         ),
                         Text(
                           user.fullName ?? '',
