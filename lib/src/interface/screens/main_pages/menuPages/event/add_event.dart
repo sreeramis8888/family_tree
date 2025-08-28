@@ -36,6 +36,8 @@ class _AddEventPageState extends State<AddEventPage> {
   final TextEditingController _endDateController = TextEditingController();
   final TextEditingController _startTimeController = TextEditingController();
   final TextEditingController _endTimeController = TextEditingController();
+  final TextEditingController _posterVisibilityStartDateController = TextEditingController();
+  final TextEditingController _posterVisibilityEndDateController = TextEditingController();
 
   final ImagePicker _picker = ImagePicker();
 
@@ -68,6 +70,26 @@ class _AddEventPageState extends State<AddEventPage> {
           _endDate = picked;
           _endDateController.text =
               _endDate!.toLocal().toString().split(' ')[0];
+        }
+      });
+    }
+  }
+
+  Future<void> _pickPosterVisibilityDate({required bool isStart}) async {
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      setState(() {
+        if (isStart) {
+          _posterVisibilityStartDateController.text =
+              picked.toLocal().toString().split(' ')[0];
+        } else {
+          _posterVisibilityEndDateController.text =
+              picked.toLocal().toString().split(' ')[0];
         }
       });
     }
@@ -262,27 +284,59 @@ class _AddEventPageState extends State<AddEventPage> {
                 ),
               ),
               const SizedBox(height: 10),
-              SelectionDropDown(
-                label: 'Virtual Platform',
-                value: _platform,
-                hintText: 'Choose the Virtual Platform',
-                items: [
-                  DropdownMenuItem(value: 'Zoom', child: Text('Zoom')),
-                  DropdownMenuItem(
-                      value: 'Google Meet', child: Text('Google Meet')),
-                  DropdownMenuItem(value: 'Teams', child: Text('Teams')),
-                  DropdownMenuItem(value: 'Other', child: Text('Other')),
-                ],
-                onChanged: (val) => setState(() => _platform = val),
-                validator: (val) =>
-                    val == null ? 'Please select platform' : null,
+              GestureDetector(
+                onTap: () => _pickPosterVisibilityDate(isStart: true),
+                child: AbsorbPointer(
+                  child: CustomTextFormField(
+                    title: 'Poster Visibility Start Date',
+                    labelText: 'Select Poster Visibility Start Date',
+                    textController: _posterVisibilityStartDateController,
+                    readOnly: true,
+                    onChanged: () {},
+                    validator: (val) =>
+                        val == null || val.isEmpty ? 'Select poster visibility start date' : null,
+                  ),
+                ),
               ),
-              CustomTextFormField(
-                title: 'Link',
-                labelText: 'Add Meeting Link here',
-                textController: _linkController,
-                validator: (val) => null,
+              const SizedBox(height: 10),
+              GestureDetector(
+                onTap: () => _pickPosterVisibilityDate(isStart: false),
+                child: AbsorbPointer(
+                  child: CustomTextFormField(
+                    title: 'Poster Visibility End Date',
+                    labelText: 'Select Poster Visibility End Date',
+                    textController: _posterVisibilityEndDateController,
+                    readOnly: true,
+                    onChanged: () {},
+                    validator: (val) =>
+                        val == null || val.isEmpty ? 'Select poster visibility end date' : null,
+                  ),
+                ),
               ),
+              const SizedBox(height: 10),
+              if (_eventType == 'Online')
+                SelectionDropDown(
+                  label: 'Virtual Platform',
+                  value: _platform,
+                  hintText: 'Choose the Virtual Platform',
+                  items: [
+                    DropdownMenuItem(value: 'Zoom', child: Text('Zoom')),
+                    DropdownMenuItem(
+                        value: 'Google Meet', child: Text('Google Meet')),
+                    DropdownMenuItem(value: 'Teams', child: Text('Teams')),
+                    DropdownMenuItem(value: 'Other', child: Text('Other')),
+                  ],
+                  onChanged: (val) => setState(() => _platform = val),
+                  validator: (val) =>
+                      val == null ? 'Please select platform' : null,
+                ),
+              if (_eventType == 'Online')
+                CustomTextFormField(
+                  title: 'Link',
+                  labelText: 'Add Meeting Link here',
+                  textController: _linkController,
+                  validator: (val) => null,
+                ),
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
@@ -302,10 +356,8 @@ class _AddEventPageState extends State<AddEventPage> {
                       final description = _descriptionController.text;
                       final eventStartDate = _startDateController.text;
                       final eventEndDate = _endDateController.text;
-                      final posterVisibilityStartDate = _startDateController
-                          .text; // You may want a separate field
-                      final posterVisibilityEndDate = _endDateController
-                          .text; // You may want a separate field
+                      final posterVisibilityStartDate = _posterVisibilityStartDateController.text;
+                      final posterVisibilityEndDate = _posterVisibilityEndDateController.text;
                       final platform = _platform ?? '';
                       final link = _linkController.text;
                       final venue = '';

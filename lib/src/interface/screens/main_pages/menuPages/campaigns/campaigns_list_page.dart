@@ -42,7 +42,7 @@ class _CampaignsMainScreenState extends ConsumerState<CampaignsMainScreen>
   ];
   final fetchCampaignTransactionsProvider =
       FutureProvider.family<List<TransactionModel>, String>((ref, type) async {
-    return await TransactionApiService.getTransactions(type: type);
+    return await fetchTransactions(ref, type: type);
   });
 
   @override

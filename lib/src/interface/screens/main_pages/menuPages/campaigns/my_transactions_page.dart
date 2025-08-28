@@ -8,7 +8,7 @@ import 'package:familytree/src/data/constants/color_constants.dart';
 import 'package:familytree/src/data/constants/style_constants.dart';
 
 final fetchAllTransactionsProvider = FutureProvider<List<TransactionModel>>((ref) async {
-  return await TransactionApiService.getTransactions(); // No type filter
+  return await fetchTransactions(ref); // No type filter
 });
 
 class MyTransactionsPage extends ConsumerWidget {

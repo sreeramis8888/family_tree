@@ -256,6 +256,35 @@ Future<List<Event>> fetchMyEvents(FetchMyEventsRef ref) async {
   }
 }
 
+@riverpod
+Future<List<Event>> fetchEventsCreatedByUser(Ref ref) async {
+  final url = Uri.parse('$baseUrl/events/get_events_by_user/$id');
+  print('Requesting URL: $url');
+  final response = await http.get(
+    url,
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $token"
+    },
+  );
+  print(json.decode(response.body)['status']);
+  if (response.statusCode == 200) {
+    final List<dynamic> data = json.decode(response.body)['data'];
+    print(response.body);
+    List<Event> events = [];
+
+    for (var item in data) {
+      events.add(Event.fromJson(item));
+    }
+    log(events.toString());
+    return events;
+  } else {
+    print(json.decode(response.body)['message']);
+
+    throw Exception(json.decode(response.body)['message']);
+  }
+}
+
 Future<void> markEventAsRSVP(String eventId) async {
   final String url = '$baseUrl/events/$eventId';
 

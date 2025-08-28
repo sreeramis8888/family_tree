@@ -599,5 +599,24 @@ final fetchMyEventsProvider = AutoDisposeFutureProvider<List<Event>>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef FetchMyEventsRef = AutoDisposeFutureProviderRef<List<Event>>;
+String _$fetchEventsCreatedByUserHash() =>
+    r'77039094c9608ca9e569661a3edd12b8753ef84e';
+
+/// See also [fetchEventsCreatedByUser].
+@ProviderFor(fetchEventsCreatedByUser)
+final fetchEventsCreatedByUserProvider =
+    AutoDisposeFutureProvider<List<Event>>.internal(
+  fetchEventsCreatedByUser,
+  name: r'fetchEventsCreatedByUserProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$fetchEventsCreatedByUserHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
+typedef FetchEventsCreatedByUserRef = AutoDisposeFutureProviderRef<List<Event>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

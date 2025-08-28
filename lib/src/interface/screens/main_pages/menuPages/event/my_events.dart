@@ -16,59 +16,134 @@ class MyEventsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer(
-      builder: (context, ref, child) {
-        final asyncEvents = ref.watch(fetchMyEventsProvider);
-        return Scaffold(
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        backgroundColor: kWhite,
+        appBar: AppBar(
+          title: Text(
+            "My Events",
+            style: TextStyle(fontSize: 17),
+          ),
           backgroundColor: kWhite,
-          appBar: AppBar(
-            title: Text(
-              "My Events",
-              style: TextStyle(fontSize: 17),
+          scrolledUnderElevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          bottom: TabBar(
+            enableFeedback: true,
+            isScrollable: false,
+            indicatorColor: kPrimaryColor,
+            indicatorWeight: 3.0,
+            indicatorSize: TabBarIndicatorSize.tab,
+            labelColor: kPrimaryColor,
+            unselectedLabelColor: Colors.grey.shade600,
+            labelStyle: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 0.3,
             ),
-            backgroundColor: kWhite,
-            scrolledUnderElevation: 0,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.of(context).pop();
+            tabs: [
+              Tab(text: "Registered Events"),
+              Tab(text: "My Events"),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            // Registered Events Tab
+            Consumer(
+              builder: (context, ref, child) {
+                final asyncRegisteredEvents = ref.watch(fetchMyEventsProvider);
+                return asyncRegisteredEvents.when(
+                  data: (registeredEvents) {
+                    log(registeredEvents.toString());
+                    if (registeredEvents.isEmpty) {
+                      return Center(
+                        child: Text(
+                          'No events registered',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      );
+                    }
+                    return ListView.builder(
+                      itemCount: registeredEvents.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: eventCard(
+                              context: context, event: registeredEvents[index]),
+                        );
+                      },
+                    );
+                  },
+                  loading: () => Center(child: LoadingAnimation()),
+                  error: (error, stackTrace) {
+                    return Center(
+                      child: Text('NO EVENTS REGISTERED'),
+                    );
+                  },
+                );
               },
             ),
-          ),
-          body: asyncEvents.when(
-            data: (registeredEvents) {
-              log(registeredEvents.toString());
-              return ListView.builder(
-                itemCount: registeredEvents.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: eventCard(
-                        context: context, event: registeredEvents[index]),
-                  );
-                },
-              );
-            },
-            loading: () => Center(child: LoadingAnimation()),
-            error: (error, stackTrace) {
-
-              return Center(
-                child: Text('NO EVENTS REGISTERED'),
-              );
-            },
-          ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const AddEventPage()),
-              );
-            },
-            backgroundColor: Colors.red,
-            child: const Icon(Icons.add, color: Colors.white),
-          ),
-        );
-      },
+            // My Events Tab (Events created by user)
+            Consumer(
+              builder: (context, ref, child) {
+                final asyncMyEvents =
+                    ref.watch(fetchEventsCreatedByUserProvider);
+                return asyncMyEvents.when(
+                  data: (myEvents) {
+                    log(myEvents.toString());
+                    if (myEvents.isEmpty) {
+                      return Center(
+                        child: Text(
+                          'No events created',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      );
+                    }
+                    return ListView.builder(
+                      itemCount: myEvents.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: eventCard(
+                              context: context, event: myEvents[index]),
+                        );
+                      },
+                    );
+                  },
+                  loading: () => Center(child: LoadingAnimation()),
+                  error: (error, stackTrace) {
+                    return Center(
+                      child: Text('NO EVENTS CREATED'),
+                    );
+                  },
+                );
+              },
+            ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AddEventPage()),
+            );
+          },
+          backgroundColor: Colors.red,
+          child: const Icon(Icons.add, color: Colors.white),
+        ),
+      ),
     );
   }
 
@@ -88,10 +163,9 @@ class MyEventsPage extends StatelessWidget {
               Image.network(
                 loadingBuilder: (context, child, loadingProgress) {
                   if (loadingProgress == null) {
-         
                     return child;
                   }
-       
+
                   return Container(
                     child: Shimmer.fromColors(
                       baseColor: Colors.grey[300]!,
