@@ -7,8 +7,6 @@
 <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
 <uses-permission android:name="android.permission.READ_CONTACTS"/>  
 <uses-permission android:name="android.permission.WRITE_CONTACTS"/>  
-<uses-permission android:name="android.permission.RECEIVE_SMS" />
-<uses-permission android:name="android.permission.READ_SMS" />
 <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application android:name="${applicationName}" android:icon="@mipmap/ic_launcher" android:label="KN Family Connect" android:theme="@style/Theme.MaterialComponents.Light.NoActionBar">
